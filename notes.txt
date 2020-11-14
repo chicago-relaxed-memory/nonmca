@@ -1,0 +1,187 @@
+fence{.sem}.scope;
+membar.level;
+.sem =   { .sc, .acq_rel };
+.scope = { .cta, .gpu, .sys };
+.level = { .cta, .gl, .sys }; // gl = gpu
+
+ld{.weak}{.ss}{.cop}{.vec}.type d, [a];
+ld.volatile{.ss}{.vec}.type d, [a];
+ld.relaxed.scope{.ss}{.vec}.type d, [a];
+ld.acquire.scope{.ss}{.vec}.type d, [a];
+.ss =    { .const, .global, .local, .param, .shared };
+.cop =   { .ca, .cg, .cs, .lu, .cv };
+.scope = { .cta, .gpu, .sys };
+.vec =   { .v2, .v4 };
+.type =  { .b8, .b16, .b32, .b64, .u8, .u16, .u32, .u64, .s8, .s16, .s32, .s64, .f32, .f64 };
+
+st{.weak}{.ss}{.cop}{.vec}.type [a], b;
+st.volatile{.ss}{.vec}.type [a], b;
+st.relaxed.scope{.ss}{.vec}.scope.type [a], b;
+st.release.scope{.ss}{.vec}.scope.type [a], b;
+.ss =    { .global, .local, .param, .shared };
+.cop =   { .wb, .cg, .cs, .wt };
+.sem =   { .relaxed, .release };
+.scope = { .cta, .gpu, .sys };
+.vec =   { .v2, .v4 };
+.type =  { .b8, .b16, .b32, .b64, .u8, .u16, .u32, .u64, .s8, .s16, .s32, .s64, .f32, .f64 };
+
+atom{.sem}{.scope}{.space}.op.type d, [a], b;
+atom{.sem}{.scope}{.space}.op.type d, [a], b, c;
+atom{.sem}{.scope}{.space}.cas.b16 d, [a], b, c;
+atom{.sem}{.scope}{.space}.add.noftz.f16   d, [a], b;
+atom{.sem}{.scope}{.space}.add.noftz.f16x2 d, [a], b;
+.space = { .global, .shared };
+.sem =   { .relaxed, .acquire, .release, .acq_rel };
+.scope = { .cta, .gpu, .sys };
+.op =    { .and, .or, .xor, .cas, .exch, .add, .inc, .dec, .min, .max };
+.type =  { .b32, .b64, .u32, .u64, .s32, .s64, .f32, .f64 };
+
+red{.sem}{.scope}{.space}.op.type [a], b;
+red{.sem}{.scope}{.space}.add.noftz.f16   [a], b;
+red{.sem}{.scope}{.space}.add.noftz.f16x2 [a], b;
+.space = { .global, .shared };
+.sem =   { .relaxed, .release };
+.scope = { .cta, .gpu, .sys };
+.op =    { .and, .or, .xor, .add, .inc, .dec, .min, .max };
+.type =  { .b32, .b64, .u32, .u64, .s32, .s64, .f32, .f64 };
+
+
+Weak operations:   {ld,st}.weak
+Strong operations: ld.   {relaxed, acquire, volatile}
+                   st.   {relaxed, release, volatile}
+                   atom. {relaxed, acquire, release, acq_rel}
+                   red.  {relaxed, release}
+                   fence.{sc, acq_rel} membar 
+
+Scopes:
+.cta (same cooperative thread array)
+.gpu (same compute device)
+.sys (global)
+
+ld.volatile operation is always performed and it will not be reordered with
+respect to other volatile operations to the same memory location. volatile
+and non-volatile load operations to the same memory location may be
+reordered. ld.volatile has the same memory synchronization semantics as
+ld.relaxed.sys.  Same for st.
+
+Two operations are said to be morally strong relative to each other if they
+satisfy both the following conditions:
+
+  The operations are related in program order (i.e, they are both executed by
+  the same thread), or each operation is strong and specifies a scope that
+  includes the thread executing the other operation.
+
+  If both are memory operations, then they overlap completely.
+
+The communication order is a non-transitive order, determined at runtime,
+that relates write operations to other overlapping memory operations.
+
+  A write W precedes an overlapping read R in communication order if R
+  returns the value of any byte that was written by W.
+
+  A write W precedes a write W’ in communication order if W precedes W’ in
+  coherence order.
+
+  A read R precedes an overlapping write W in communication order if, for any
+  byte accessed by both R and W, R returns the value written by a write W’
+  that precedes W in coherence order.
+
+Communication order captures the visibility of memory operations --- when a
+memory operation X1 precedes a memory operation X2 in communication order, X1
+is said to be visible to X2.
+
+patternrel := ([W≥REL]; po_loc?; [W]) ∪ ([FREL]; po; [W])
+patternacq := ([R]; po_loc?; [R≥ACQ ]) ∪ ([R]; po; [FACQ ])
+obs        := (morally_strong ∩ rf ) ∪ (obs; rmw; obs)
+sw         := (morally_strong ∩ (patternrel; obs; patternacq)) ∪ syncbarrier ∪ sc
+causebase  := (po?; sw; po?)+
+cause      := causebase ∪ (obs; (causebase ∪ po_loc))
+
+co  = partial order relating overlapping write operations
+sc  = partial order relating every pair of morally strong fence.sc operations
+dep = chains of instruction dependencies
+com = rf ∪ co ∪ fr
+
+Axiom 1 (Coherence).       [W]; cause; [W] ⊆ co
+Axiom 2 (FenceSC).         irreflexive(sc; cause)
+Axiom 3 (Atomicity).       empty(((morally_strong ∩ fr);(morally_strong ∩ co)) ∩ rmw)
+Axiom 4 (No-Thin-Air).     acyclic(rf ∪ dep)
+Axiom 5 (SC-per-Location). acyclic((morally_strong ∩ (rf ∪ co ∪ fr)) ∪ po_loc)
+Axiom 6 (Causality).       irreflexive((rf ∪ co ∪ fr); cause)
+
+Lustig leaves co out of Causality, but it's there in the documentation
+
+SC-per-location ensures that each program slice of overlapping pairwise
+morally strong operations is strictly sequentially-consistent.
+For relaxed access, they do not validate CSE.
+
+X1<=>X2 = X1 and X2 are mutually strong
+X1<!>X2 = X1 and X2 are not mutually strong
+
+Using example names from OOPSLA final.
+
+RMW1: This is possible if Wx2
+
+OOTA1: rf needs to be in causal order
+
+MCA3: In order to allow this, we need to use per-location order for (f4) and (p5b)
+
+TC16/Coherence:  In order to allow TC16, we have to change (f4) to be existential:
+   There exists no conflicting c such that d <= c <= e
+This means that we won't get scope extrusion
+Suggestion is to throw out "var x; C" for GPU programs
+
+PUB1: aka "Message Passing"
+Publication occurs whenever ra accesses are "morally strong"
+This argues that one causal order is not enough
+
+
+In def of pomset:
+- Require d ⊑ e when d ≤ e, d/e conflict, morally strong
+(morally strong requirement captures it's use in SC-per-location)
+
+When prefixing d:
+- (p5b) Required d ⊑ e when d/e conflict
+
+When d fulfill e 
+- (f4) for every conflicting, morally strong write c, either c ⊑ d or e ⊑ c
+
+
+
+
+Radha Examples 2021/11/14:
+
+Example 1.  Coherence has to respect cause even for not morally strong
+
+  Writes on x are weak.
+
+     x=1; y^rel_sys =1;  
+     ||
+     if y^acq_sys =1 { x=2};
+
+  x=1 co x=2 by Axiom 1, since the y actions are in cause
+
+Example 2.  Need for multiple <=.  
+
+  Let y=1,y=0 be strong  (scope is irrelevant)
+     
+    T1: y=0;y=1; x^rel_s = 1
+    T2: if (x^acq_t =1) r =y
+
+  r=1 is forced iff BOTH of the following hold: 
+     (a) T1 in t AND T2 in s
+  (* Comment: thus, scope/strength of read of y is irrelevant *)
+
+  <===    
+  if (a) holds: x=1 cause r x 1
+  By Axiom 6, (fr; cause) is irreflexive
+
+  ===> (By contradiction)
+  If T1 not in t or T2 not in s, 
+     x=1 not(cause) r x 1 
+  So, r=0 is permitted
+
+  One <=-relation models cannot capture this.  
+     They are either going to have or not have
+         y=0-->y=1 --> x=1
+         R x 1 --> (R y ..)
