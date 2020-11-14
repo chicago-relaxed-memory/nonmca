@@ -151,37 +151,37 @@ When d fulfill e
 
 Radha Examples 2021/11/14:
 
-Example 1.  Coherence has to respect cause even for not morally strong
+Pub-Co:
 
   Writes on x are weak.
 
-     x=1; y^rel_sys =1;  
-     ||
-     if y^acq_sys =1 { x=2};
+     T1: x=1; y^rel_sys=1
+     T2: if (y^acq_sys) {x=2}
 
-  x=1 co x=2 by Axiom 1, since the y actions are in cause
+  Wx1 co Wx2 by Axiom 1, since the y actions are in cause
+  Do we need to have the requirement for pomsets be:
 
-Example 2.  Need for multiple <=.  
+  - Require d ⊑ e when d ≤ e, d/e conflict and either 1) are morally strong or 2) are both writes
 
-  Let y=1,y=0 be strong  (scope is irrelevant)
+
+Pub1:
+
+  Let x=1,x=0 be strong  (scope is irrelevant)
      
-    T1: y=0;y=1; x^rel_s = 1
-    T2: if (x^acq_t =1) r =y
+    T1: x=0;x=1; y^rel_s = 1
+    T2: if (y^acq_t) {r=x}
 
-  r=1 is forced iff BOTH of the following hold: 
-     (a) T1 in t AND T2 in s
-  (* Comment: thus, scope/strength of read of y is irrelevant *)
+  Rx0 is impossible iff BOTH T1 in t AND T2 in s
+  (* Comment: thus, scope/strength of read of x is irrelevant *)
 
   <===    
-  if (a) holds: x=1 cause r x 1
+  if T1 in t AND T2 in s then Wy1 cause Ry1
   By Axiom 6, (fr; cause) is irreflexive
 
   ===> (By contradiction)
   If T1 not in t or T2 not in s, 
-     x=1 not(cause) r x 1 
-  So, r=0 is permitted
+     Wy1 not(cause) Ry1 
+  So, Rx0 is permitted
 
-  One <=-relation models cannot capture this.  
-     They are either going to have or not have
-         y=0-->y=1 --> x=1
-         R x 1 --> (R y ..)
+Current proposal handles Pub1 because Wx1 ⊑ Rx0 is required iff Wy1/Ry1 are morally strong
+
