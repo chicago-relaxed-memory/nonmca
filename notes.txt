@@ -115,6 +115,20 @@ SC-per-location ensures that each program slice of overlapping pairwise
 morally strong operations is strictly sequentially-consistent.
 For relaxed access, they do not validate CSE.
 
+In the IMM paper, they say
+
+  G is coherent if (hb ; eco?) is irreflexive,
+  or equivalently (hb|loc ∪ rf ∪ co ∪ fr) is acyclic.
+
+So, I believe we can rewrite Axiom 6:
+
+Axiom 6 (Causality).       acyclic((rf ∪ co ∪ fr ∪ cause|loc)
+
+
+
+
+
+
 X1<=>X2 = X1 and X2 are mutually strong
 X1<!>X2 = X1 and X2 are not mutually strong
 
