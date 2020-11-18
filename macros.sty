@@ -1,12 +1,9 @@
 % recommended by ACM
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{microtype}
-\clubpenalty = 10000
-\widowpenalty = 10000
-\displaywidowpenalty = 10000
+% \usepackage[T1]{fontenc}
+% \usepackage[utf8]{inputenc}
+% \usepackage{microtype}
 
-\usepackage{anyfontsize}
+%\usepackage{anyfontsize}
 \usepackage{mathtools}
 \usepackage{amsmath}
 \usepackage{hyphenat}
@@ -51,8 +48,10 @@
 \newcommand{\pcs}{\textsc{pc}s}
 
 \newcommand{\sem}[2][]{\llbracket#2\rrbracket}
-\NewDocumentCommand\DR{O{} O{} m m}{\mathsf{R}^{#1}\ifnotempty{#3}{\mkern1mu#3\ifnotempty{#4}{\mkern1mu#4}}}
-\NewDocumentCommand\DW{O{} O{} m m}{\mathsf{W}^{#1}\ifnotempty{#3}{\mkern0mu#3\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\PR{O{} O{} m m}{{#4} \GETS {#3}^{#1}_{#2}}
+\NewDocumentCommand\PW{O{} O{} m m}{{#3}^{#1}_{#2} \GETS #4}
+\NewDocumentCommand\DR{O{} O{} m m}{\mathsf{R}^{#1}_{#2}\ifnotempty{#3}{\mkern1mu#3\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DW{O{} O{} m m}{\mathsf{W}^{#1}_{#2}\ifnotempty{#3}{\mkern0mu#3\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand \PAR {O{} O{}}{\,\mathbin{\texttt{\textbf{|}}\mkern-6mu\texttt{\textbf{|}}}\,}
 % \newcommand{\sem}[2][]{\llbracket#2\rrbracket_{#1}}
 % \NewDocumentCommand\DR{O{} O{} m m}{#2\mathsf{R}^{#1}\ifnotempty{#3}{\mkern1mu#3\ifnotempty{#4}{\mkern1mu#4}}}
@@ -65,7 +64,7 @@
     \@bsphack%
     \csname phantomsection\endcsname% in case hyperref is used
     \def\tst{#1}%
-    \def\labelmarkup##1{\textsc{\lowercase{##1}}}% How to markup the label itself
+    \def\labelmarkup##1{\textnormal{\textsc{\lowercase{##1}}}}% How to markup the label itself
     %\def\refmarkup{\labelmarkup}% How to markup the reference
     \def\refmarkup##1{\textsc{\lowercase{##1}}}% How to markup the label itself
     \ifx\tst\empty\def\@currentlabel{\refmarkup{#2}}{\label{#3}}%
@@ -94,7 +93,7 @@
 
 \newcommand{\DSTOP}[1][]{\checkmark_{#1}} 
 \newcommand{\stopPS}{\textsf{SKIP}}
-\newcommand{\taglabel}[1]{\tag{\textsc{\lowercase{#1}}}\label{#1}}
+\newcommand{\taglabel}[2][]{\tag{$\textsc{\lowercase{#2}}_{\textsc{\lowercase{#1}}}$}\label{#2#1}}
 \newcommand{\taglabelp}[1]{\tag{\textsc{\lowercase{#1}}$'$}\label{#1p}}
 \newcommand{\taglabelpp}[1]{\tag{\textsc{\lowercase{#1}}$''$}\label{#1pp}}
 \newcommand{\ignore}[1]{}
@@ -150,15 +149,17 @@
 
 \newcommand{\amode}{\mu}
 \newcommand{\fmode}{\nu}
-\newcommand{\REL}{^{\mathsf{ra}}}
-\newcommand{\ACQ}{^{\mathsf{ra}}}
-\newcommand{\RLX}{^{\mathsf{rlx}}}
-\newcommand{\mSC}{^{\mathsf{sc}}}
-\newcommand{\modeRA}{{\mathsf{ra}}}
-\newcommand{\modeRLX}{{\mathsf{rlx}}}
-\newcommand{\modeREL}{{\mathsf{rel}}}
-\newcommand{\modeACQ}{{\mathsf{acq}}}
-\newcommand{\modeSC}{{\mathsf{sc}}}
+\newcommand{\mWK}{{\mathsf{wk}}}
+\newcommand{\mRA}{{\mathsf{ra}}}
+\newcommand{\mRLX}{{\mathsf{rlx}}}
+\newcommand{\mREL}{{\mathsf{rel}}}
+\newcommand{\mACQ}{{\mathsf{acq}}}
+\newcommand{\mSC}{{\mathsf{sc}}}
+
+\newcommand{\ascope}{\varsigma}
+\newcommand{\sCTA}{{\mathsf{cta}}}
+\newcommand{\sGPU}{{\mathsf{gpu}}}
+\newcommand{\sSYS}{{\mathsf{sys}}}
 
 %\newcommand{\amsqed}{\tag*{\QEDSYMBOL}\NoEndMark}
 
@@ -256,7 +257,7 @@
 \newcommand{\mods}{\mathsf{Models}}
 
 \newcommand{\eqorder}{\sim}
-\newcommand{\suborder}{\sqsubseteq}
+%\newcommand{\suborder}{\sqsubseteq}
 \newcommand{\inj}{f}
 \newcommand{\hoare}[3]{\{#1\}\allowbreak\;#2\;\allowbreak\{#3\}}
 \newcommand{\fwp}{\textit{wp}}
@@ -274,6 +275,8 @@
 \newcommand{\restrict}[1]{\mathbin{|}_{#1}}
 \newcommand{\textand}{\;\allowbreak\text{and}\allowbreak\;}
 \newcommand{\textif}{\;\allowbreak\text{if}\allowbreak\;}
+\newcommand{\textwhen}{\;\allowbreak\text{when}\allowbreak\;}
+\newcommand{\textotherwise}{\;\allowbreak\text{otherwise}\allowbreak\;}
 \newcommand{\textimplies}{\; \allowbreak\text{implies}\allowbreak\;}
 \newcommand{\textor}{\; \allowbreak\text{or}\allowbreak\;}
 
@@ -420,16 +423,21 @@
 \newcommand{\gtNsp}{\mathrel{\,\mid\!\!\!>}}
 \newcommand{\ltNsp}{\mathrel{\,\mid\!\!\!<}}
 \newcommand{\geN}{<}
-\newcommand{\leobs}{\sqsubseteq_\mathsf{obs}}
-\newcommand{\ltobs}{\sqsubset_\mathsf{obs}}
-\newcommand{\lesc}{\sqsubseteq_\mathsf{sc}}
-\newcommand{\ltsc}{\sqsubset_\mathsf{sc}}
-\newcommand{\lew}{\le_\mathsf{w}}
-\newcommand{\les}{\le_\mathsf{s}}
-\newcommand{\ltw}{<_\mathsf{w}}
-\newcommand{\lts}{<_\mathsf{s}}
-\newcommand{\mutstrong}{\mathbin{\blacktriangle}}
+%\newcommand{\le}{\le}%_\mathsf{w}}
+%\newcommand{\lt}{<}%_\mathsf{w}}
+\newcommand{\leloc}{\preceq}%\le_\mathsf{s}}
+\newcommand{\ltloc}{\prec}%<_\mathsf{s}}
+\newcommand{\lestrong}{\trianglelefteq}
+\newcommand{\ltstrong}{\vartriangleleft}
+\newcommand{\lesc}{\sqsubseteq}
+\newcommand{\ltsc}{\sqsubset}
+% \newcommand{\leobs}{\sqsubseteq_\mathsf{obs}}
+% \newcommand{\ltobs}{\sqsubset_\mathsf{obs}}
+% \newcommand{\lesc}{\sqsubseteq_\mathsf{sc}}
+% \newcommand{\ltsc}{\sqsubset_\mathsf{sc}}
+\newcommand{\moral}{\mathbin{\blacktriangle}}
 \newcommand{\conflict}{\mathbin{\vartriangle}}
+\newcommand{\concur}{\asymp}
 
 % \newcommand{\slt}{\vartriangleleft}
 % \newcommand{\sle}{\trianglelefteq}
@@ -802,6 +810,22 @@
 %\newcommand{\xarrow}[1]{\xrightarrow{\raisebox{-1ex}{$\scriptstyle\smash{#1}$}}}
 \newcommand{\Xarrow}[1]{\xRightarrow{#1}}
 
+\def\@versim#1#2{\raise0.24ex\vbox{\baselineskip\z@skip\lineskip-2.4ex\ialign{$\m@th#1\hfil##\hfil$\crcr\sim\crcr#2\crcr}}}
+\def\@versime#1#2{\raise0\p@\vbox{\baselineskip\z@skip\lineskip-1.6ex\ialign{$\m@th#1\hfil##\hfil$\crcr\sim\crcr#2\crcr}}}
+\def\@verharpright#1#2{\raise0.24ex\vbox{\baselineskip\z@skip\lineskip-2.1ex\ialign{$\m@th#1\hfil##\hfil$\crcr{\scriptstyle\rightharpoondown}\crcr#2\crcr}}}
+\def\@verharpleft#1#2{\raise0.24ex\vbox{\baselineskip\z@skip\lineskip-2.1ex\ialign{$\m@th#1\hfil##\hfil$\crcr{\scriptstyle\leftharpoondown}\crcr#2\crcr}}}
+\def\@vernharpright#1#2{\raise0.24ex\vbox{\baselineskip\z@skip\lineskip-2.1ex\ialign{$\m@th#1\hfil##\hfil$\crcr{\scriptstyle\arrownot\rightharpoondown}\crcr#2\crcr}}}
+\def\@vereqqright#1#2{\raise0.24ex\vbox{\baselineskip\z@skip\lineskip-2.1ex\ialign{$\m@th#1\hfil##\hfil$\crcr{\scriptscriptstyle=}\crcr#2\crcr}}}
+\def\@vereqqleft#1#2{\raise0.24ex\vbox{\baselineskip\z@skip\lineskip-2.1ex\ialign{$\m@th#1\hfil##\hfil$\crcr{\scriptscriptstyle=}\crcr#2\crcr}}}
+\def\VDash{\mathrel{\rule{.08ex}{1.54ex}\mkern-2.4mu\vDash}}
+\newcommand{\sqsubseteqq}{\mathrel{\mathpalette\@vereqqright\sqsubset}}%eqq
+\newcommand{\sqsupseteqq}{\mathrel{\mathpalette\@vereqqleft\sqsupset}}%eqq
+\newcommand{\sqsubsetharp}{\mathrel{\mathpalette\@verharpright\sqsubset}}%harpoon
+\newcommand{\sqsupsetharp}{\mathrel{\mathpalette\@verharpleft\sqsupset}}%harpoon
+\newcommand{\sqsubsetnharp}{\mathrel{\mathpalette\@vernharpright\sqsubset}}%harpoon
+\newcommand{\sqsubsetsim}{\mathrel{\mathpalette\@versim\sqsubset}}%sim
+\newcommand{\sqsupsetsim}{\mathrel{\mathpalette\@versim\sqsupset}}%sim
+\newcommand{\eqqsim}{\mathrel{\mathpalette\@versime=}}%sim
 
 
 % Local Variables:
