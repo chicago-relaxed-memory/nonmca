@@ -250,6 +250,15 @@ $(\DR{x}{0})$ must be allowed:
 We do not have $(\DW[\mRA]{y}{1})\le (\DR[\mRA]{y}{1})$ since \ref{rf3} only
 requires order for things that are morally strong.  
 
+Another example that may be of interest (nothing morally strong).  Can this $(\DR{x}{0})$?
+\begin{gather*}
+  %\taglabel[cta]{pub1}
+  \PW{x}{0} \SEMI
+  \PW{x}{1} \PAR 
+  \PWR{y}{x} \PAR
+  \IF{\PR{y}{}}\THEN \PR{x}{r} \FI
+\end{gather*}
+
 PTX allows TC16 for events that are not mutually strong
 \begin{gather*}
   \taglabel[wk]{TC16}
