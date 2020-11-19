@@ -91,7 +91,7 @@ See \ref{pub1sys}.
   $\labelingAct(\aEv)=(\DR[]{x}{v})$ if
   \begin{description}
   \item[{\labeltextsc[F3]{(F3)}{rf3}}] $\bEv \ltloc \aEv$ and
-    $\bEv \lestrong \aEv$
+    $\bEv \ltstrong \aEv$
   \item[{\labeltextsc[F4]{(F4)}{rf4}}]
     $\forall\labelingAct(\cEv)=(\DW[]{x}{..})$ either $\cEv \leloc \bEv$ or
     $\aEv \leloc \cEv$
@@ -104,7 +104,7 @@ degenerates to
 \begin{description}
 \item[\eqref{rf3}]
   $\bEv \ltsc \aEv$
-  and $\bEv \lestrong \aEv$
+  and $\bEv \ltstrong \aEv$
 \item[\eqref{rf4}]
   $\forall\labelingAct(\cEv)=(\DW[]{x}{..})$ either
   $\cEv \lesc \bEv$ or $\aEv \lesc \cEv$
@@ -113,11 +113,11 @@ degenerates to
 If no accesses are morally strong with each other, this degenerates to
 \begin{description}
 \item[\eqref{rf3}]
-  $\aEv \not\ltsc \bEv$
-  and $\bEv \lestrong \aEv$
+  $\aEv \not\lesc \bEv$
+  and $\bEv \ltstrong \aEv$
 \item[\eqref{rf4}]
   $\not\mkern-5mu\exists\labelingAct(\cEv)=(\DW[]{x}{..})$ 
-  both $\bEv \lesc \cEv$ and $\cEv \lesc \aEv$
+  both $\bEv \ltsc \cEv$ and $\cEv \ltsc \aEv$
 \end{description}
 \begin{definition}
   Let $\aPS'\in(\aForm \mid \aAct) \prefix \aPSS$ when
