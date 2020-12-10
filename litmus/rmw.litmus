@@ -1,0 +1,18 @@
+AArch64 RMW
+{ 
+0:X0=x; 0:X2=z; 0:X5=z; 0:X8=y;
+1:X0=y; 1:X2=x;
+2:X0=z;
+}
+ P0              | P1              | P2 ;
+ LDR W1,[X0]     | LDR W1,[X0]     | MOV W1,#2 ;
+ NOP             | STR W1,[X2]     | STR W1,[X0] ;
+ Fail:           | NOP             | NOP ;
+ LDXR W3,[X2]    | NOP             | NOP ;
+ ADD  W4,W1,W3   | NOP             | NOP ;
+ STXR W6,W4,[X5] | NOP             | NOP ;
+ CBNZ W6,Fail    | NOP             | NOP ;
+ ADD  W7,W3,#1   | NOP             | NOP ;
+ STR  W7,[X8]    | NOP             | NOP ;
+exists
+(0:X1=3)

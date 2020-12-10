@@ -1,0 +1,16 @@
+AArch64 James
+"PodWW Rfe PodRR Fre"
+Cycle=Rfe PodRR Fre PodWW
+Com=Rf Fr
+Orig=PodWW Rfe PodRR Fre
+{
+0:X1=x; 0:X3=x;
+1:X1=x; 1:X3=y;
+2:X1=y; 2:X3=x;
+}
+ P0          | P1          | P2             ;
+ LDR W0,[X1] | LDR W1,[X1] | LDR W1,[X1]    ;
+ MOV W1,#1   | STR W1,[X3] | STR W1,[X3]    ;
+ STR W1,[X3] |             |                ;
+exists
+(0:X0=1 /\ 1:X1=1 /\ 2:X1=1)

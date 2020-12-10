@@ -1,0 +1,12 @@
+AArch64 rfi-bob-fre-coe
+{ 
+0:X0=x; 0:X2=x; 0:X4=y;
+1:X0=y; 1:X2=x;
+}
+ P0              | P1               ;
+ MOV  W1,#2      | MOV  W1,#2      ;
+ STR  W1,[X0]    | STR  W1,[X0]    ;
+ LDAR W3,[X2]    | MOV  W3,#1      ;
+ LDR  W5,[X4]    | STLR W3,[X2]    ;
+exists
+(0:X3=2 /\ 0:X5=0 /\ x=2)
