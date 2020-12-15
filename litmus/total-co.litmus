@@ -1,0 +1,12 @@
+AArch64 TotalCO
+{
+0:X1=x; 0:X3=y; 
+1:X1=x; 1:X3=y;
+2:X1=x; 2:X3=y;
+}
+ P0            | P1           | P2;
+ LDR X2,[X1]   | LDAR X5, [X3]| LDAR X5,[X1];
+ MOV X0,#1     | MOV X2,#2    | MOV X0, #1;
+ STR X0,[X1]   | STR X2,[X1]  | STR X0, [X3];
+
+exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
