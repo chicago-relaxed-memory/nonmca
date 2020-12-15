@@ -602,8 +602,10 @@ $\bEv\leloc\aEv$.
     \end{tikzinline}}
 \end{gather*}
 
-About Release-Acquire semantics.  Not sure the status of this example in C11
-and \IMM{}:
+About Release-Acquire semantics.  Anton confirms that the following example
+is allowed in C11, but disallowed in the \IMM{}.  It is apparently allowed in
+C11 with the intention to allow releasing writes to be downgraded to relaxed
+in the case that only fulfill relaxed reads.
 \begin{gather*}
   \taglabel{LB-REL}
   \PR[\mRLX]{x}[\sSYS]{r} \SEMI \PW[\mRA]{y}[\sSYS]{1}
@@ -624,10 +626,11 @@ and \IMM{}:
 \end{gather*}
 
 
-\section{OOPSLA Counterexamples}
+\section{RFI Examples}
 
 Anton example 1 (Allowed by ARM) \texttt{[rfi-bob-coe-coe]}
 \begin{gather*}
+  \taglabel{rfi-bob-coe-coe}
   \PW{x}{2}\SEMI 
   \PR[\mRA]{x}{r}\SEMI
   \PW{y}{1} \PAR
@@ -674,6 +677,7 @@ of same thread (don't need to allow this when the write is part of an \RMW{}).
 
 RF variant \texttt{[rfi-bob-rfe-coe]}:
 \begin{gather*}
+  \taglabel{rfi-bob-rfe-coe}
   \PW{x}{2}\SEMI 
   \PR[\mRA]{x}{r}\SEMI
   \PW{y}{1} \PAR
@@ -697,6 +701,7 @@ RF variant \texttt{[rfi-bob-rfe-coe]}:
 
 TSO variant \texttt{[rfi-bob-fre-coe]}:
 \begin{gather*}
+  \taglabel{rfi-bob-coe-coe}
   \PW{x}{2}\SEMI 
   \PR[\mRA]{x}{r}\SEMI
   \PR{y}{s} \PAR
@@ -720,6 +725,7 @@ TSO variant \texttt{[rfi-bob-fre-coe]}:
 
 Double FRE variant \texttt{[rfi-bob-fre-fre]}:
 \begin{gather*}
+  \taglabel{rfi-bob-fre-fre}
   \PW{x}{2}\SEMI 
   \PR[\mRA]{x}{r}\SEMI
   \PR{y}{s} \PAR
@@ -745,8 +751,9 @@ Double FRE variant \texttt{[rfi-bob-fre-fre]}:
 \end{gather*}
 
 It does not seem possible to do this only with $\rrfe$.
-ARM disallows this \texttt{[data-rfi-bob-rfe-rfe]}:
+ARM disallows this \texttt{[data-rfi-rfe-rfe]}:
 \begin{gather*}
+  \taglabel{data-rfi-rfe-rfe}
   \PW{x}{\PR{z}{}} \SEMI
   \PR[\mRA]{x}{r}\SEMI
   \PW{y}{1} \PAR
@@ -769,8 +776,9 @@ ARM disallows this \texttt{[data-rfi-bob-rfe-rfe]}:
     \end{tikzinline}}
 \end{gather*}
 
-It also disallows \texttt{[ctrl-rfi-bob-rfe-rfe]}:
+It also disallows \texttt{[ctrl-rfi-rfe-rfe]}:
 \begin{gather*}
+  \taglabel{ctrl-rfi-rfe-rfe}
   \IF{\PR{z}{}}\THEN\FI \SEMI
   \PW{x}{1} \SEMI
   \PR[\mRA]{x}{r}\SEMI
@@ -795,8 +803,9 @@ It also disallows \texttt{[ctrl-rfi-bob-rfe-rfe]}:
     \end{tikzinline}}
 \end{gather*}
 
-ARM allows some counterintuitive results for SC access \texttt{[ctrl-rfi-bob-fre-rfe]}:
+ARM allows some counterintuitive results for SC access \texttt{[ctrl-rfi-fre-rfe]}:
 \begin{gather*}
+  \taglabel{ctrl-rfi-fre-rfe}
   \IF{\PR{x}{}}\THEN\FI\SEMI
   \PW{x}{2} \SEMI
   \PR[\mSC]{x}{r}\SEMI
@@ -820,8 +829,9 @@ ARM allows some counterintuitive results for SC access \texttt{[ctrl-rfi-bob-fre
       \rfe[out=-165,in=-15]{f}{a}
     \end{tikzinline}}
 \end{gather*}
-Not possible with $\rcoe$ \texttt{[ctrl-rfi-bob-coe-rfe]}:
+Not possible with $\rcoe$ \texttt{[ctrl-rfi-coe-rfe]}:
 \begin{gather*}
+  \taglabel{ctrl-rfi-coe-rfe}
   \IF{\PR{x}{}}\THEN\FI\SEMI
   \PW{x}{2} \SEMI
   \PR[\mSC]{x}{r}\SEMI
@@ -846,8 +856,9 @@ Not possible with $\rcoe$ \texttt{[ctrl-rfi-bob-coe-rfe]}:
     \end{tikzinline}}
 \end{gather*}
 
-This is not allowed with a data dependency instead of a control dependency \texttt{[data-rfi-bob-fre-rfe]}:
+This is not allowed with a data dependency instead of a control dependency \texttt{[data-rfi-fre-rfe]}:
 \begin{gather*}
+  \taglabel{data-rfi-fre-rfe}
   \PW{x}{\PR{x}{}{+}1} \SEMI
   \PR[\mSC]{x}{r}\SEMI
   \PR[\mSC]{y}{s} \PAR
@@ -873,19 +884,19 @@ This is not allowed with a data dependency instead of a control dependency \text
 
 \section{SC Examples}
 
-This execution is allowed by trailing-sync compilation to power
-\texttt{[IRIW-aqc-sc]} from \cite[\textsection
-A.2]{DBLP:conf/pldi/LahavVKHD17}.
+\ref{IRIW-aqc-sc} is allowed by trailing-sync compilation to power
+\cite[\textsection 1]{DBLP:conf/pldi/LahavVKHD17}.
 \begin{gather*}
   \PW[\mSC]{x}{1}
   \PAR
-  \PW[\mSC]{x}{1}
+  \PW[\mSC]{y}{1}
   \PAR
   \PR[\mRA]{x}{r}\SEMI \PR[\mSC]{y}{s}
   \PAR
   \PR[\mRA]{y}{r}\SEMI \PR[\mSC]{x}{s}
+  \taglabel{IRIW-aqc-sc}
   \\
-  \tag{\cmark\ppc}
+  \tag{\cmark\ppc,\rcXI}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       % \event{wx0}{\DW{x}{0}}{}
       % \event{wx1}{\DW{x}{1}}{right=of wx0}
@@ -909,6 +920,119 @@ A.2]{DBLP:conf/pldi/LahavVKHD17}.
       \wk{ry0}{wy1}
     \end{tikzinline}}
 \end{gather*}
+Leading sync is also unsound in \cXI{} with \RMW{}
+\cite[\textsection 2.1]{DBLP:conf/pldi/LahavVKHD17}.
+\begin{gather*}
+  \PW[\mSC]{x}{1} \SEMI \PW[\mRA]{y}{1}
+  \PAR
+  \FADD^{\mSC,\mSC}(y,1) \SEMI \PR{y}{s}
+  \PAR
+  \PW[\mSC]{y}{3} \SEMI \PR[\mSC]{x}{s}
+  \taglabel{Z6.U}
+  \\
+  \tag{\cmark\ppc,\rcXI}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DW[\mSC]{x}{1}}{}
+      \event{b}{\DW[\mRA]{y}{1}}{right=of a}
+      \event{c1}{\DR[\mSC]{y}{1}}{right=2.5em of b}
+      \event{c2}{\DW[\mSC]{y}{2}}{right=of c1}
+      \event{d}{\DR{y}{3}}{right=of c2}
+      \event{e}{\DW[\mSC]{y}{3}}{right=2.5 em of d}
+      \event{f}{\DR[\mSC]{x}{0}}{right=of e}
+      \sync{a}{b}
+      \rf{b}{c1}
+      \rf{e}{d}
+      \rmw{c1}{c2}
+      %\wk{c2}{d}
+      \wk[out=-15,in=-165]{c2}{e}
+      % \sync[out=-15,in=-165]{c1}{d}
+      %\wk{c2}{d}
+      \sync{e}{f}
+      \wk[out=-165,in=-15]{f}{a}
+    \end{tikzinline}}
+\end{gather*}
+Leading sync is also unsound in \cXI{} with SC fences
+\cite[\textsection A.1]{DBLP:conf/pldi/LahavVKHD17}.
+\begin{gather*}
+  \PW{x}{2} \SEMI \PF{\mSC} \SEMI \PR{y}{r}
+  \PAR
+  \PW[\mSC]{y}{1}
+  \PAR
+  \PR[\mRA]{y}{r} \SEMI \PW[\mRA]{x}{1}  \SEMI \PR{x}{s}
+  \PAR
+  \PR[\mSC]{x}{r}
+   \taglabel{rsync+rsc}
+  \\
+  \tag{\cmark\rcXI}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DW{x}{2}}{}
+      \event{b}{\DF{\mSC}}{right=of a}
+      \event{c}{\DR{y}{0}}{right=of b}
+      \event{d}{\DW[\mSC]{y}{1}}{right=2.5em of c}
+      \event{e}{\DR[\mRA]{y}{1}}{right=2.5em of d}
+      \event{f}{\DW[\mRA]{x}{1}}{right=of e}
+      \event{g}{\DR{x}{2}}{right=of f}
+      \event{h}{\DR[\mSC]{x}{1}}{right=2.5em of g}
+      \sync{a}{b}
+      \sync{b}{c}
+      \rf{d}{e}
+      \rf[out=-15,in=-165]{f}{h}
+      \wk[in=-15,out=-165]{f}{a}
+      %\rf[out=-15,in=-165]{a}{g}
+      \wk{c}{d}
+      \wk{f}{g}
+      \sync{e}{f}
+      %\sync[out=15,in=165]{e}{g}
+    \end{tikzinline}}
+\end{gather*}
+Fulfillment of $(\DR{x}{2})$ requires that either
+\begin{math}
+  (\DW[\mRA]{x}{1})
+  \xwk
+  (\DW{x}{2})
+\end{math}
+or 
+\begin{math}
+  (\DR{x}{2})
+  \xwk
+  (\DW[\mRA]{x}{1}).
+\end{math}
+It's interesting that in the pomset, $(\DR[\mSC]{x}{1})$ is not needed to get
+a cycle.
+
+There is a long discussion of this in \cite[\textsection 5.2,
+Fig.~17]{DBLP:journals/pacmpl/BenderP19}, where they also discuss this example:
+\begin{gather*}
+  \PW[\mSC]{x}{1}\SEMI \PW{x}{2}
+  \PAR
+  \PW[\mSC]{y}{1}\SEMI \PW{y}{2}
+  \PAR
+  \PR[\mRA]{x}{r}\SEMI \PR[\mSC]{y}{s}
+  \PAR
+  \PR[\mRA]{y}{r}\SEMI \PR[\mSC]{x}{s}
+  \taglabel{IRIW-sc-rlx-acq}
+  \\
+  \tag{\cmark\rcXI}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{wx1}{\DW[\mSC]{x}{1}}{}
+      \event{wx2}{\DW{x}{2}}{right=of wx1}
+      \event{wy1}{\DW[\mSC]{y}{1}}{below=4ex of wx1}
+      \event{wy2}{\DW{y}{2}}{right=of wy1}
+      \event{ry1}{\DR[\mRA]{y}{2}}{right=2.5em of wy2}
+      \event{rx0}{\DR[\mSC]{x}{0}}{right=of ry1}
+      \event{rx1}{\DR[\mRA]{x}{2}}{right=2.5 em of wx2}
+      \event{ry0}{\DR[\mSC]{y}{0}}{right=of rx1}
+      \sync{rx1}{ry0}
+      \sync{ry1}{rx0}
+      \rf{wx2}{rx1}
+      \rf{wy2}{ry1}
+      \wk{rx0}{wx1}
+      \wk{ry0}{wy1}
+      \wk{wx1}{wx2}
+      \wk{wy1}{wy2}
+    \end{tikzinline}}
+\end{gather*}
+
 
 \cite[\textsection A.2]{DBLP:conf/pldi/LahavVKHD17} claims that \armeight{}
 allows this \texttt{[RWC+acq+sc]}, but \href{http://diy.inria.fr/www/?record=aarch64}{herd7} rejects it.
@@ -923,6 +1047,7 @@ Reason: they are citing the flowing/pop model
 \cite{DBLP:conf/popl/FlurGPSSMDS16} rather than
 \cite{DBLP:journals/pacmpl/PulteFDFSS18}.
 \begin{gather*}
+  \taglabel{rwc+acq+sc}
   \PW[\mSC]{x}{1} \PAR
   \PR{x}{r}\SEMI
   \PF{\mACQ}\SEMI
@@ -946,6 +1071,107 @@ Reason: they are citing the flowing/pop model
       \sync{e}{f}
     \end{tikzinline}}
 \end{gather*}
+
+\section{RMWs}
+From \cite[\textsection 3.3]{DBLP:journals/pacmpl/BenderP19}.  With partial
+coherence/weak fulfillment you need to be careful that \RMW{}s are totally
+ordered (if that's a property you want).  May not come for free.
+
+
+
+\section{Example from JAM paper}
+From \cite[\textsection B]{DBLP:journals/pacmpl/BenderP19}:
+``Here we demonstrate that it is possible to construct a program that is only
+forbidden due to the total coherence order''
+
+\begin{comment}
+AArch64 TotalCO
+{
+0:X1=x; 0:X3=y; 
+1:X1=x; 1:X3=y;
+2:X1=x; 2:X3=y;
+}
+ P0            | P1           | P2;
+ LDR X2,[X1]   | LDAR X5, [X3]| LDAR X5,[X1];
+ MOV X0,#1     | MOV X2,#2    | MOV X0, #1;
+ STR X0,[X1]   | STR X2,[X1]  | STR X0, [X3];
+
+exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
+\end{comment}
+
+
+\begin{gather*}
+  \PR{x}{r}\SEMI
+  \PW{x}{1}
+  \PAR
+  \PR[\mRA]{x}{r}\SEMI
+  \PW{x}{1}
+  \PAR
+  \PR[\mRA]{y}{r}\SEMI
+  \PW{x}{2}
+  \taglabel{Total-CO}
+  \\
+  \tag{\xmark\armeight}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{2}}{}
+      \event{b}{\DW{x}{1}}{right=of a}
+      \event{c}{\DR[\mACQ]{x}{1}}{right=2.5em of b}
+      \event{d}{\DW{y}{1}}{right=of c}
+      \event{e}{\DR[\mACQ]{y}{1}}{right=2.5em of d}
+      \event{f}{\DW{x}{2}}{right=of e}
+      \wk{a}{b}
+      \sync{c}{d}
+      \sync{e}{f}
+      \rf{b}{c}
+      \rf{d}{e}
+      \rf[out=-165,in=-15]{f}{a}
+    \end{tikzinline}}
+  % \\
+  % \tag{\xmark\armeight}
+  % \hbox{\begin{tikzinline}[node distance=1.5em]
+  %     \event{a}{\DR{x}{2}}{}
+  %     \event{b}{\DW{x}{1}}{right=of a}
+  %     \event{c}{\DR[\mACQ]{x}{1}}{right=2.5em of b}
+  %     \event{d}{\DW{y}{1}}{right=of c}
+  %     \event{e}{\DR[\mACQ]{y}{1}}{right=2.5em of d}
+  %     \event{f}{\DW{x}{2}}{right=of e}
+  %     \poloc{a}{b}
+  %     \co[out=15,in=165]{b}{f}
+  %     \rfx[out=-165,in=-15]{f}{a}
+  %   \end{tikzinline}}
+  \\
+  \tag{\xmark\armeight}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{2}}{}
+      \event{b}{\DW{x}{1}}{right=of a}
+      \event{c}{\DR[\mACQ]{x}{1}}{right=2.5em of b}
+      \event{d}{\DW{y}{1}}{right=of c}
+      \event{e}{\DR[\mACQ]{y}{1}}{right=2.5em of d}
+      \event{f}{\DW{x}{2}}{right=of e}
+      \poloc{a}{b}
+      \co[out=15,in=165]{b}{f}
+      \rfx{b}{c}
+      \fr[out=15,in=165]{c}[below]{f}
+      \rfx[out=-165,in=-15]{f}{a}
+    \end{tikzinline}}
+  \\
+  \tag{\xmark\armeight}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{2}}{}
+      \event{b}{\DW{x}{1}}{right=of a}
+      \event{c}{\DR[\mACQ]{x}{1}}{right=2.5em of b}
+      \event{d}{\DW{y}{1}}{right=of c}
+      \event{e}{\DR[\mACQ]{y}{1}}{right=2.5em of d}
+      \event{f}{\DW{x}{2}}{right=of e}
+      \coe[out=165,in=15]{f}[above]{b}
+      %\rfe[out=-165,in=-15]{f}{a}
+      \bob{c}{d}
+      \bob{e}{f}
+      \rfe{b}{c}
+      \rfe{d}{e}
+    \end{tikzinline}}
+\end{gather*}
+
 
 \section{More Model}
 These definitions need to be updated to include the additional orders.

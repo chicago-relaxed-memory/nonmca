@@ -1,3 +1,8 @@
+% get ams to ignore tag in spacing
+\renewcommand{\tagform@}[1]{\maketag@@@{\makebox[0pt][r]{(\ignorespaces#1\unskip\@@italiccorr)}}}
+\newcommand{\spacetag}[2][3em]{\makebox[#1]{}\tag{#2}}
+\newcommand{\notagparens}{\renewcommand{\tagform@}[1]{\maketag@@@{\makebox[0pt][r]{\ignorespaces##1\unskip\@@italiccorr}}}}
+
 \usepackage{pifont}
 \newcommand{\qmark}{{\color{blue!80!black}\text{?}}}
 \newcommand{\cmark}{{\color{green!80!black}\text{\ding{51}}}}
@@ -230,6 +235,8 @@
 \newcommand{\IMM}{{\sc imm}}
 \newcommand{\PTX}{{\sc ptx}}
 \newcommand{\ppc}{{\sc power}}
+\newcommand{\rcXI}{{\sc rc11}}
+\newcommand{\cXI}{{\sc c11}}
 \newcommand{\mca}{{\sc mca}}
 \newcommand{\iriw}{{\sc iriw}}
 
