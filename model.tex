@@ -135,12 +135,19 @@ degenerates to
   $\not\mkern-5mu\exists\labelingAct(\cEv)=(\DW[]{x}{..})$ 
   both $\bEv \ltloc \cEv$ and $\cEv \ltloc \aEv$
 \end{description}
+
+Note that the difference between strong and weak fulfillment is limited to $\leloc$.
+We sometimes write $\lelocstrong$ for strong fulfillment and
+$\lelocweak$ for weak fulfillment.
+
+Prefixing is as in OOPSLA, using $\lehb$ for order everywhere except
+\ref{5b}, which has $\leloc$.
 \begin{definition}
   Let $\aPS'\in(\aForm \mid \aAct) \prefix \aPSS$ when
   $(\exists\aPS\in\aPSS)$ $(\forall\aEv\in\Event)$
   \begin{description}
   \item[{\labeltextsc[P1]{(P1)}{1}}] $\Event' = \Event \cup \{\bEv\}$
-  \item[{\labeltextsc[P2]{(P2)}{2}}] ${\le'}\supseteq{\lehb}$,
+  \item[{\labeltextsc[P2]{(P2)}{2}}] ${\lehb'}\supseteq{\lehb}$,
     ${\lestrong'}\supseteq{\lestrong}$, and ${\leloc'}\supseteq{\leloc}$
   \item[{\labeltextsc[P3]{(P3a)}{3a}\labeltextsc[P3]{}{3}}]%
     $\labelingAct'(\aEv) = \labelingAct(\aEv)$
@@ -155,22 +162,62 @@ degenerates to
     $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)[\aVal/\aLoc]$
   \item[{\labeltextsc[P5a]{(P5a)}{5a}\labeltextsc[P5]{}{5}}]%
     if $\bEv=(\DR[]{..)}{}$, $\aEv=(\DW[]{..)}{}$ then $\aEv=\bEv$ or
-    $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)$ or $\bEv\le'\aEv$
+    $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)$ or $\bEv\lehb'\aEv$
   \item[{\labeltextsc[P5b]{(P5b)}{5b}}] if $\bEv$ conflicts with
     $\aEv$ %$\bEv\conflict\aEv$
     then $\bEv\leloc'\aEv$
   \item[{\labeltextsc[P5c]{(P5c)}{5c}}] if $\bEv$ is an acquire or $\aEv$ is
-    a release then $\bEv \le' \aEv$
+    a release then $\bEv \lehb' \aEv$
   \item[{\labeltextsc[P5d]{(P5d)}{5d}}] if $\bEv$ is an SC write and $\aEv$
-    is an SC read then $\bEv \le' \aEv$
+    is an SC read then $\bEv \lehb' \aEv$
   \item[{\labeltextsc[P5e]{(P5e)}{5e}}] if $\bEv$ reads, and $\aEv$ is an
     acquiring fence, then
-    $\bEv \le' \aEv$
+    $\bEv \lehb' \aEv$
   \item[{\labeltextsc[P5f]{(P5f)}{5f}}] if $\bEv$ is a releasing fence,
     and $\aEv$ writes, then
-    $\bEv \le' \aEv$
+    $\bEv \lehb' \aEv$
   \end{description}
 \end{definition}
+
+\section{Thin Air}
+
+Need $\lestrong$ to prevent thin air on $\mRLX$:
+\begin{gather*}
+  \PW{y}{\PR{x}{}}\PAR
+  \PW{x}{\PR{y}{}}
+  \\
+  \tag{$\lestrong$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{1}}{}
+      \event{b}{\DW{y}{1}}{right=of a}
+      \event{c}{\DR{y}{1}}{right=2.5em of b}
+      \event{d}{\DW{x}{1}}{right=of c}
+      \po{a}{b}
+      \rf{b}{c}
+      \po{c}{d}
+      \rf[out=-165,in=-15]{d}{a}
+    \end{tikzinline}}
+  \\
+  \tag{$\lehb$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{1}}{}
+      \event{b}{\DW{y}{1}}{right=of a}
+      \event{c}{\DR{y}{1}}{right=2.5em of b}
+      \event{d}{\DW{x}{1}}{right=of c}
+      \po{a}{b}
+      \po{c}{d}
+    \end{tikzinline}}
+  \\
+  \tag{$\lelocstrong$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{1}}{}
+      \event{b}{\DW{y}{1}}{right=of a}
+      \event{c}{\DR{y}{1}}{right=2.5em of b}
+      \event{d}{\DW{x}{1}}{right=of c}
+      \rf{b}{c}
+      \rf[out=-165,in=-15]{d}{a}
+    \end{tikzinline}}
+\end{gather*}
 
 \section{IMM Examples}
 
@@ -184,6 +231,7 @@ Interpreting this definition for the \IMM:
 
 Disallowed by \IMM{}:
 \begin{gather*}
+  \taglabel{pub-rel-acq-coe}
   \PW{x}{2}\SEMI 
   \PW[\mRA]{y}{1} \PAR
   \PR[\mRA]{y}{r}\SEMI
@@ -229,10 +277,11 @@ Disallowed by \IMM{}:
 
 Allowed by \IMM, but not by Power/ARMv7/ARMv8/TSO:
 \begin{gather*}
+  \taglabel{pub-rel-rlx-coe}
   \PW{x}{2}\SEMI 
   \PW[\mRA]{y}{1} \PAR
   \PR{y}{r}\SEMI
-  \PW{x}{r}
+  \PW{x}{1}
   \\
   \tag{\cmark\IMM}
   \hbox{\begin{tikzinline}[node distance=1.5em]
@@ -282,51 +331,11 @@ Allowed by \IMM, but not by Power/ARMv7/ARMv8/TSO:
       %\wk[out=-165,in=-15]{d}{a}
     \end{tikzinline}}
 \end{gather*}
-Anton says we could potentially disallow by adding an axiom to \IMM{}
-forbidding cycles in
-$\rco \cup ([W]; \rrfe^?; ([R^{\mRA}] \cup \rpox; [FW^{\mRA}]); \rar^{*};
-[W])$
 
 
-Need $\lestrong$ to prevent thin air on $\mRLX$:
-\begin{gather*}
-  \PW{y}{\PR{x}{}}\PAR
-  \PW{x}{\PR{y}{}}
-  \\
-  \tag{$\lestrong$}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a}{\DR{x}{1}}{}
-      \event{b}{\DW{y}{1}}{right=of a}
-      \event{c}{\DR{y}{1}}{right=2.5em of b}
-      \event{d}{\DW{x}{1}}{right=of c}
-      \po{a}{b}
-      \rf{b}{c}
-      \po{c}{d}
-      \rf[out=-165,in=-15]{d}{a}
-    \end{tikzinline}}
-  \\
-  \tag{$\lehb$}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a}{\DR{x}{1}}{}
-      \event{b}{\DW{y}{1}}{right=of a}
-      \event{c}{\DR{y}{1}}{right=2.5em of b}
-      \event{d}{\DW{x}{1}}{right=of c}
-      \po{a}{b}
-      \po{c}{d}
-    \end{tikzinline}}
-  \\
-  \tag{$\lelocstrong$}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a}{\DR{x}{1}}{}
-      \event{b}{\DW{y}{1}}{right=of a}
-      \event{c}{\DR{y}{1}}{right=2.5em of b}
-      \event{d}{\DW{x}{1}}{right=of c}
-      \rf{b}{c}
-      \rf[out=-165,in=-15]{d}{a}
-    \end{tikzinline}}
-\end{gather*}
 Example from talk:
 \begin{gather*}
+  \taglabel{arm7-weak}
   r\GETS x\SEMI x\GETS 1
   \PAR
   y\GETS x 
@@ -399,14 +408,19 @@ Example from talk:
       %\rf[out=172,in=8]{f}{a}
     \end{tikzinline}}
 \end{gather*}
-Comment: Two order idea from OOPLSA talk does not work for this example.  In
-this setting it corresponds to:
+
+\section{Two order idea}
+The two order idea from OOPSLA talk is:
 \begin{itemize}
 \item Require: $\bEv\leloc\aEv$ when $\bEv\lestrong\aEv$ and they conflict
 \end{itemize}
-Using this, we would have a cycle (weak/strong fulfillment not relevant here):
+This does not work for the \IMM{} or ARMv7, but it may work for Power, TSO,
+ARMv8.  That would be nice.  Let's write $\leloctwo$ for this notion, with
+strong fulfillment.
+
+With this there is a cycle in \ref{arm7-weak} (weak/strong fulfillment not relevant here):
 \begin{gather*}
-  \tag{$\leloc$}
+  \tag{$\leloctwo$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{1}}{}
       \event{b}{d:\DW{x}{1}}{right=of a}
@@ -423,7 +437,19 @@ Using this, we would have a cycle (weak/strong fulfillment not relevant here):
       \rf[out=172,in=8]{f}{a}
     \end{tikzinline}}    
 \end{gather*}
+Anton says: \ref{arm7-weak} is forbidden by Power, TSO, ARMv8, but allowed by
+ARMv7. Maybe it isn't that important to support it anymore.
 
+There is also a cycle in \ref{pub-rel-rlx-coe}.  Anton says: I checked
+Power/ARMv7 models in this regard. They disallow the behavior (as well as
+ARMv8 and TSO), so we can in principle strengthen \IMM{} to forbid it as
+well.  For that, we may add axiom to \IMM{} forbidding cycles in
+\begin{math}
+  \rco \cup ([\mathsf{W}]; \rrfe^?; ([\mathsf{R}^{\mACQ}] \cup \rpox;
+  [\mathsf{FW}^{\mREL}]); \rar^{*}; [\mathsf{W}]).
+\end{math}
+This works if we have acquire/release accesses on the path
+since they are compiled with fences to Power.
 
 
 \section{PTX Examples}
@@ -1197,7 +1223,7 @@ These definitions need to be updated to include the additional orders.
 
 \begin{definition}
   Let $\aPS'\in(\aPSS[M/x])\mkern2mu$ when $(\exists\aPS\in\aPSS$)\\\qquad
-  $\Event' = \Event$, ${\le'} = {\lehb}$, $\labelingAct' = \labelingAct$, and
+  $\Event' = \Event$, ${\lehb'} = {\lehb}$, $\labelingAct' = \labelingAct$, and
   $(\forall\aEv\in\Event')$ $\labelingForm'(\aEv) = \labelingForm(\aEv)[M/x]$
 \end{definition}
 \begin{definition}
@@ -1205,7 +1231,7 @@ These definitions need to be updated to include the additional orders.
   $(\exists\aPS^1 \in \aPSS^1)$ $(\exists\aPS^2 \in \aPSS^2)$
   \\% $\aPS^1$ is completed exactly when $\aPS^2$ is completed, there is at most one termination in $\Event'$,
   \qquad $\Event' = \Event^1 \cup \Event^2$,
-  ${\le'}\supseteq{\lehb^1}\cup{\lehb^2}$, and $(\forall\aEv\in\Event')$ either
+  ${\lehb'}\supseteq{\lehb^1}\cup{\lehb^2}$, and $(\forall\aEv\in\Event')$ either
   \begin{gather*}
     \begin{aligned}
       \aEv \not\in \Event^2,\; \labelingAct'(\aEv) &= \labelingAct^1(\aEv)
