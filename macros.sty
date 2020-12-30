@@ -62,12 +62,15 @@
 
 \newcommand{\sem}[2][]{\llbracket#2\rrbracket}
 \NewDocumentCommand\PF{O{} m}{\texttt{F}^{#2}_{#1}}
-\NewDocumentCommand\DF{O{} m}{\mathsf{F}^{#2}_{#1}}
 \NewDocumentCommand\PR{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{#2}^{#1}_{#3}}
 \NewDocumentCommand\PW{O{} m O{} m}{{#2}^{#1}_{#3} \GETS #4}
+\NewDocumentCommand\DF{O{} m}{\mathsf{F}^{#2}_{#1}}
 \NewDocumentCommand\DR{O{} m O{} m}{\mathsf{R}^{#1}_{#3}\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DW{O{} m O{} m}{\mathsf{W}^{#1}_{#3}\ifnotempty{#2}{\mkern0mu#2\ifnotempty{#4}{\mkern1mu#4}}}
-\NewDocumentCommand \PAR {O{} O{}}{\,\mathbin{\texttt{\textbf{|}}\mkern-6mu\texttt{\textbf{|}}}\,}
+\NewDocumentCommand\DFP{O{} m}{(\DF[#1]{#2})}
+\NewDocumentCommand\DRP{O{} m O{} m}{\DR[#1]{#2}[#3]{#4}}
+\NewDocumentCommand\DWP{O{} m O{} m}{\DW[#1]{#2}[#3]{#4}}
+\NewDocumentCommand\PAR{O{} O{}}{\,\mathbin{\texttt{\textbf{|}}\mkern-6mu\texttt{\textbf{|}}}\,}
 % \newcommand{\sem}[2][]{\llbracket#2\rrbracket_{#1}}
 % \NewDocumentCommand\DR{O{} O{} m m}{#2\mathsf{R}^{#1}\ifnotempty{#3}{\mkern1mu#3\ifnotempty{#4}{\mkern1mu#4}}}
 % \NewDocumentCommand\DW{O{} O{} m m}{#2\mathsf{W}^{#1}\ifnotempty{#3}{\mkern0mu#3\ifnotempty{#4}{\mkern1mu#4}}}

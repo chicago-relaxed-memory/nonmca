@@ -654,9 +654,9 @@ in the case that only fulfill relaxed reads.
 
 \section{RFI Examples}
 
-Anton example 1 (Allowed by ARM) \texttt{[rfi-bob-coe-coe]}
+Anton example 1 (Allowed by ARM) \texttt{[rfi-coe-coe]}
 \begin{gather*}
-  \taglabel{rfi-bob-coe-coe}
+  \taglabel{rfi-coe-coe}
   \PW{x}{2}\SEMI 
   \PR[\mRA]{x}{r}\SEMI
   \PW{y}{1} \PAR
@@ -675,6 +675,147 @@ Anton example 1 (Allowed by ARM) \texttt{[rfi-bob-coe-coe]}
       \coe{c}{d}
       \bob{d}{e}
       \coe[out=-165,in=-15]{e}{a}
+    \end{tikzinline}}
+\end{gather*}
+Internal reads survive acquires \texttt{[rfi-acq-coe-coe]} (where SC read =
+\texttt{LDAR})
+\begin{gather*}
+  \taglabel{rfi-acq-coe-coe}
+  \PW{x}{2}\SEMI 
+  \PR[\mSC]{z}{s}\SEMI
+  \PR[\mSC]{x}{r}\SEMI
+  \PW{y}{1} \PAR
+  \PW{y}{2}\SEMI
+  \PW[\mRA]{x}{1}
+  \\
+  \tag{\cmark\armeight}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DW{x}{2}}{}
+      \event{b0}{\DR[\mSC]{z}{0}}{right=of a}
+      \event{b}{\DR[\mSC]{x}{2}}{right=of b0}
+      \event{c}{\DW{y}{1}}{right=of b}
+      \event{d}{\DW{y}{2}}{right=2.5em of c}
+      \event{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \rfi[out=20,in=160]{a}{b}
+      %\bob[out=20,in=160]{b0}{c}
+      \bob{b0}{b}
+      \bob{b}{c}
+      \coe{c}{d}
+      \bob{d}{e}
+      \coe[out=-165,in=-15]{e}{a}
+    \end{tikzinline}}
+\end{gather*}
+And release-acquire pairs \texttt{[rfi-ra-coe-coe]} (where acquiring read
+= \texttt{LDAPR})
+\begin{gather*}
+  \taglabel{rfi-ra-coe-coe2}
+  \PW{x}{2}\SEMI 
+  \PW[\mRA]{w}{1}\SEMI
+  \PR[\mRA]{z}{s}\SEMI
+  \PR[\mRA]{x}{r}\SEMI
+  \PW{y}{1}
+  \\[-1ex]\PAR
+  \PW{y}{2}\SEMI
+  \PW[\mRA]{x}{1}
+  \PAR
+  \PR{r}{w}\SEMI
+  \PW{r}{1}\SEMI
+  \\
+  \tag{\cmark\armeight}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DW{x}{2}}{}
+      \event{b1}{\DW[\mRA]{w}{1}}{right=of a}
+      \event{b0}{\DR[\mRA]{z}{1}}{right=of b1}
+      \event{b}{\DR[\mRA]{x}{2}}{right=of b0}
+      \event{c}{\DW{y}{1}}{right=of b}
+      \event{d}{\DW{y}{2}}{right=2.5em of c}
+      \event{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \rfi[out=20,in=160]{a}{b}
+      %\bob[out=20,in=160]{b0}{c}
+      \bob{a}{b1}
+      %\bob{b1}{b0}
+      \bob{b0}{b}
+      \bob{b}{c}
+      \coe{c}{d}
+      \bob{d}{e}
+      \coe[out=-165,in=-15]{e}{a}
+      \event{f1}{\DR{w}{1}}{below=of b1}
+      \event{f0}{\DW{z}{1}}{below=of b0}
+      %\data{f1}{f0}
+      \rfe{b1}{f1}
+      \rfe{f0}{b0}
+    \end{tikzinline}}
+\end{gather*}
+% \begin{gather*}
+%   \taglabel{rfi-ra-coe-coe}
+%   \PW{x}{2}\SEMI 
+%   \PW[\mRA]{w}{1}\SEMI
+%   \PR[\mRA]{z}{s}\SEMI
+%   \PR[\mRA]{x}{r}\SEMI
+%   \PW{y}{1} \PAR
+%   \PW{y}{2}\SEMI
+%   \PW[\mRA]{x}{1}
+%   \\
+%   \tag{\cmark\armeight}
+%   \hbox{\begin{tikzinline}[node distance=1.5em]
+%       \event{a}{\DW{x}{2}}{}
+%       \event{b1}{\DW[\mRA]{w}{1}}{right=of a}
+%       \event{b0}{\DR[\mRA]{z}{0}}{right=of b1}
+%       \event{b}{\DR[\mRA]{x}{2}}{right=of b0}
+%       \event{c}{\DW{y}{1}}{right=of b}
+%       \event{d}{\DW{y}{2}}{right=2.5em of c}
+%       \event{e}{\DW[\mRA]{x}{1}}{right=of d}
+%       \rfi[out=20,in=160]{a}{b}
+%       %\bob[out=20,in=160]{b0}{c}
+%       \bob{a}{b1}
+%       %\bob{b1}{b0}
+%       \bob{b0}{b}
+%       \bob{b}{c}
+%       \coe{c}{d}
+%       \bob{d}{e}
+%       \coe[out=-165,in=-15]{e}{a}
+%     \end{tikzinline}}
+% \end{gather*}
+But not if either acquire is strengthened to SC (where SC read =
+\texttt{LDAR}).  The execution is also disallowed if an external thread
+places order between the $\mRA$ accesses:
+\begin{gather*}
+  \taglabel{rfi-ra-data-coe-coe}
+  \PW{x}{2}\SEMI 
+  \PW[\mRA]{w}{1}\SEMI
+  \PR[\mRA]{z}{s}\SEMI
+  \PR[\mRA]{x}{r}\SEMI
+  \PW{y}{1}
+  \\[-1ex]\PAR
+  \PW{y}{2}\SEMI
+  \PW[\mRA]{x}{1}
+  \PAR
+  \PR{r}{w}\SEMI
+  \PW{r}{z}\SEMI
+  \\
+  \tag{\xmark\armeight}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DW{x}{2}}{}
+      \event{b1}{\DW[\mRA]{w}{1}}{right=of a}
+      \event{b0}{\DR[\mRA]{z}{1}}{right=of b1}
+      \event{b}{\DR[\mRA]{x}{2}}{right=of b0}
+      \event{c}{\DW{y}{1}}{right=of b}
+      \event{d}{\DW{y}{2}}{right=2.5em of c}
+      \event{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \rfi[out=20,in=160]{a}{b}
+      %\bob[out=20,in=160]{b0}{c}
+      \bob{a}{b1}
+      %\bob{b1}{b0}
+      \bob{b0}{b}
+      \bob{b}{c}
+      \coe{c}{d}
+      \bob{d}{e}
+      \coe[out=-165,in=-15]{e}{a}
+      \event{f1}{\DR{w}{1}}{below=of b1}
+      \event{f0}{\DW{z}{1}}{below=of b0}
+      \data{f1}{f0}
+      \rfe{b1}{f1}
+      \rfe{f0}{b0}
     \end{tikzinline}}
 \end{gather*}
 
@@ -701,9 +842,9 @@ of same thread (don't need to allow this when the write is part of an \RMW{}).
     \end{tikzinline}}
 \end{gather*}
 
-RF variant \texttt{[rfi-bob-rfe-coe]}:
+RF variant \texttt{[rfi-rfe-coe]}:
 \begin{gather*}
-  \taglabel{rfi-bob-rfe-coe}
+  \taglabel{rfi-rfe-coe}
   \PW{x}{2}\SEMI 
   \PR[\mRA]{x}{r}\SEMI
   \PW{y}{1} \PAR
@@ -725,9 +866,9 @@ RF variant \texttt{[rfi-bob-rfe-coe]}:
     \end{tikzinline}}
 \end{gather*}
 
-TSO variant \texttt{[rfi-bob-fre-coe]}:
+\tso{} variant \texttt{[rfi-fre-coe]}:
 \begin{gather*}
-  \taglabel{rfi-bob-coe-coe}
+  \taglabel{rfi-coe-coe}
   \PW{x}{2}\SEMI 
   \PR[\mRA]{x}{r}\SEMI
   \PR{y}{s} \PAR
@@ -747,11 +888,77 @@ TSO variant \texttt{[rfi-bob-fre-coe]}:
       \bob{d}{e}
       \coe[out=-165,in=-15]{e}{a}
     \end{tikzinline}}
+  \\
+  \tag{\cmark\tso}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DW{x}{2}}{}
+      \event{b}{\DR{x}{2}}{right=of a}
+      \event{c}{\DR{y}{0}}{right=of b}
+      \event{d}{\DW{y}{2}}{right=2.5em of c}
+      \event{e}{\DW{x}{1}}{right=of d}
+      %\rfi{a}{b}
+      \lob{b}{c}
+      \fre{c}{d}
+      \lob{d}{e}
+      \coe[out=-165,in=-15]{e}{a}
+    \end{tikzinline}}
 \end{gather*}
-
-Double FRE variant \texttt{[rfi-bob-fre-fre]}:
+Note that \tso{} does not order W to R in local order, even in poloc.
+Nonetheless, \tso{} disallows the following because of local visibility in first thread.
 \begin{gather*}
-  \taglabel{rfi-bob-fre-fre}
+  \PW{x}{2}\SEMI 
+  \PR{x}{r} \PAR
+  \PW{x}{1}\SEMI
+  \PR{x}{s}
+  \\
+  \tag{\xmark\tso}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DW{x}{2}}{}
+      \event{b}{\DR{x}{1}}{right=of a}
+      \event{c}{\DW{x}{1}}{right=2.5em of b}
+      \event{d}{\DR{x}{2}}{right=of c}
+      \coe[out=-165,in=-15]{c}{a}
+      \rfe{c}[above]{b}
+      \rfe[out=15,in=165]{a}{d}
+      \fr{b}[above]{a}
+    \end{tikzinline}}
+\end{gather*}
+\cite{DBLP:conf/hipc/HighamK00} describe \tso{} as a linearization of partial
+order including:
+\begin{itemize}
+\item ${\rpoloc}$
+\item lws = ${\rpox};[\mathsf{W}]$
+\item $\bEv\xpox\aEv$ when $\cEv\xrfe\bEv\xpox\aEv$
+\end{itemize}
+\cite{armed-cats} describe \tso{} as linearization of partial order
+satisfying internal visibility and including
+\begin{itemize}
+\item $[\mathsf{W}];\rpox;[\mathsf{W}]$
+\item $\bEv\xpox\aEv$ when $\cEv\xrfe\bEv\xpox\aEv$, from \verb|(range(rfe) * _)|
+\item $[\mathsf{R}];\rpox;[\mathsf{W}]$, from \verb|(rfi^-1; lob)|
+\end{itemize}
+Ignoring fences and \RMW{}s:
+\begin{verbatim}
+let rec lob = po \ ([W]; po; [R])
+let IM0 = loc & ((IW * (M\IW)) | ((W\FW) * FW))
+let gc-req = (W * _) | ((R * _) & ((range(rfe) * _) | (rfi^-1; lob))
+let preorder-gcb = IM0 | lob & gc-req
+\end{verbatim}
+% \begin{verbatim}
+% let rec lob = po \ ([W]; po; [R])
+%         | [W]; po; [MFENCE]; po; [R]
+%         | [W]; po; [R & X]
+%         | [W & X]; po; [R]
+%         | lob; lob
+% let IM0 = loc & ((IW * (M\IW)) | ((W\FW) * FW))
+% let gc-req = (W * _) | ((R * _) & ((range(rfe) * _) | (rfi^-1; lob))
+% let preorder-gcb = IM0 | lob & gc-req
+% \end{verbatim}
+
+
+Double FRE variant \texttt{[rfi-fre-fre]}:
+\begin{gather*}
+  \taglabel{rfi-fre-fre}
   \PW{x}{2}\SEMI 
   \PR[\mRA]{x}{r}\SEMI
   \PR{y}{s} \PAR
