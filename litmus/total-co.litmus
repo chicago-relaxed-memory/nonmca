@@ -10,3 +10,5 @@ AArch64 TotalCO
  STR X0,[X1]   | STR X2,[X1]  | STR X0, [X3];
 
 exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
+
+(* from palsberg *)

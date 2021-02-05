@@ -179,6 +179,62 @@ Prefixing is as in OOPSLA, using $\lehb$ for order everywhere except
   \end{description}
 \end{definition}
 
+\section{Anton's recent examples relating IMM and PTX}
+It looks like we cannot prove compilation correctness from IMM to PTX.
+(In this email I assume that all threads are in the same CTA, so any relation is a morally strong one if it is applicable.)
+The problem is in the LB-data-rel example:
+\begin{comment}
+a := [x]  || b := [y]
+[y] := a  || [x]_rel := 1
+\end{comment}
+\begin{gather*}
+  \PR{x}{r}\SEMI
+  \PW{y}{r}
+  \PAR
+  \PR{y}{s}\SEMI
+  \PW[\mRA]{x}{1}
+  \\
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{1}}{}
+      \event{b}{\DW{y}{1}}{right=of a}
+      \event{c}{\DR{y}{1}}{right=3em of b}
+      \event{d}{\DW[\mRA]{x}{1}}{right=of c}
+      \data{a}{b}
+      \rfe{b}{c}
+      \bob{c}{d}
+      \rfe[out=-165,in=-15]{d}[below]{a}
+    \end{tikzinline}}
+\end{gather*}
+
+IMM forbids it, but PTX allows it. The point is that IMM mixes dependencies and release/acquire-induced po-order in its NoOOTA axiom,
+whereas PTX doesn't --- release/acquire are only used to have coherence.
+
+The problem is related to the one we have already discussed in the context of the C++ model -- if you don't have acquire reads in the
+program, then you can erase release annotations from writes. In this regard, PTX is closer to PL memory models than to hardware ones.
+
+AFAIU for the same reason we won't be able to show compilation correctness from the Pomset model to PTX even directly,
+if the Pomset model mixes release/acquire induced order with dependencies in the same causality relation.
+
+Another oddity: PTX includes the $\rbob$ edge below; IMM does not.
+\begin{gather*}
+  \PW[\mRA]{x}{1}
+  \PAR
+  \PR{x}{r}\SEMI
+  \PW{x}{1}\SEMI
+  \PR[\mRA]{x}{1}
+  \\
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DW[\mRA]{x}{1}}{}
+      \event{b}{\DR{x}{1}}{right=3em of a}
+      \event{c}{\DW{x}{1}}{right=of b}
+      \event{d}{\DR[\mRA]{x}{1}}{right=of c}
+      \rfe{a}{b}
+      \wk{b}{c}
+      \rfi{c}{d}
+      \bob[in=-165,out=-15]{a}[below]{d}
+    \end{tikzinline}}
+\end{gather*}
+
 \section{Thin Air}
 
 Need $\lestrong$ to prevent thin air on $\mRLX$:
@@ -647,6 +703,27 @@ in the case that only fulfill relaxed reads.
       \rf{a2}{b1}
       \rf[out=-165,in=-15]{b2}{a1}
       \sync{a1}{a2}
+      \sync{b1}{b2}
+    \end{tikzinline}}
+\end{gather*}
+
+Another example from Anton.  This is allowed in PTX because it does not
+include synchronization in the no-tar axiom, only in coherence and causality.
+\begin{gather*}
+  \taglabel{LB-data-rel}
+  \PR[\mRLX]{x}[\sSYS]{r} \SEMI \PW[\mRLX]{y}[\sSYS]{r}
+  \PAR                                             
+  \PR[\mRLX]{y}[\sSYS]{s} \SEMI \PW[\mRA]{x}[\sSYS]{1}
+  \\
+  \tag{${\lestrong}={\lehb}$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a1}{\DR[\mRLX]{x}[\sSYS]{1}}{}
+      \event{a2}{\DW[\mRLX]{y}[\sSYS]{1}}{right=of a1}
+      \event{b1}{\DR[\mRLX]{y}[\sSYS]{1}}{right=3em of a2}
+      \event{b2}{\DW[\mRA]{x}[\sSYS]{1}}{right=of b1}
+      \rf{a2}{b1}
+      \rf[out=-165,in=-15]{b2}{a1}
+      \po{a1}{a2}
       \sync{b1}{b2}
     \end{tikzinline}}
 \end{gather*}
