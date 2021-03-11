@@ -2,9 +2,9 @@ paper:
 	rm  -f paper.pdf
 	latexmk --pvc --pdf --halt-on-error paper.tex
 	killall Skim
-x:
-	rm  -f x.pdf
-	latexmk --pvc --pdf --halt-on-error x.tex
+notes:
+	rm  -f notes.pdf
+	latexmk --pvc --pdf --halt-on-error notes.tex
 	killall Skim
 talk:
 	rm  -f talk.pdf

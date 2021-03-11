@@ -1,3 +1,37 @@
+@inproceedings{DBLP:conf/icfp/FerreiraHJ96,
+  author    = {William Ferreira and
+               Matthew Hennessy and
+               Alan Jeffrey},
+  editor    = {Robert Harper and
+               Richard L. Wexelblat},
+  title     = {A Theory of Weak Bisimulation for Core {CML}},
+  booktitle = {Proceedings of the 1996 {ACM} {SIGPLAN} International Conference on
+               Functional Programming, {ICFP} 1996, Philadelphia, Pennsylvania, USA,
+               May 24-26, 1996},
+  pages     = {201--212},
+  publisher = {{ACM}},
+  year      = {1996},
+  url       = {https://doi.org/10.1145/232627.232649},
+  doi       = {10.1145/232627.232649},
+  timestamp = {Tue, 16 Jul 2019 08:38:46 +0200},
+  biburl    = {https://dblp.org/rec/conf/icfp/FerreiraHJ96.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/iandc/Brookes96,
+  author    = {Stephen D. Brookes},
+  title     = {Full Abstraction for a Shared-Variable Parallel Language},
+  journal   = {Inf. Comput.},
+  volume    = {127},
+  number    = {2},
+  pages     = {145--163},
+  year      = {1996},
+  url       = {https://doi.org/10.1006/inco.1996.0056},
+  doi       = {10.1006/inco.1996.0056},
+  timestamp = {Thu, 18 May 2017 09:54:17 +0200},
+  biburl    = {https://dblp.org/rec/journals/iandc/Brookes96.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
 
 @article{DBLP:journals/pacmpl/BenderP19,
   author    = {John Bender and
@@ -64,22 +98,21 @@
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
-@article{10.1145/3428262,
-author = {Jagadeesan, Radha and Jeffrey, Alan and Riely, James},
-title = {Pomsets with Preconditions: A Simple Model of Relaxed Memory},
-year = {2020},
-issue_date = {November 2020},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-volume = {4},
-number = {OOPSLA},
-url = {https://doi.org/10.1145/3428262},
-doi = {10.1145/3428262},
-journal = {Proc. ACM Program. Lang.},
-month = nov,
-articleno = {194},
-numpages = {30},
-keywords = {Concurrency, Thin-Air Reads, ARMv8, Temporal Safety Properties, Preconditions, Relaxed Memory Models, Pomsets, Multi-Copy Atomicity, Compiler Optimizations}
+@article{DBLP:journals/pacmpl/JagadeesanJR20,
+  author    = {Radha Jagadeesan and
+               Alan Jeffrey and
+               James Riely},
+  title     = {Pomsets with preconditions: a simple model of relaxed memory},
+  journal   = {Proc. {ACM} Program. Lang.},
+  volume    = {4},
+  number    = {{OOPSLA}},
+  pages     = {194:1--194:30},
+  year      = {2020},
+  url       = {https://doi.org/10.1145/3428262},
+  doi       = {10.1145/3428262},
+  timestamp = {Fri, 11 Dec 2020 14:27:07 +0100},
+  biburl    = {https://dblp.org/rec/journals/pacmpl/JagadeesanJR20.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 
@@ -211,14 +244,23 @@ keywords = {Concurrency, Thin-Air Reads, ARMv8, Temporal Safety Properties, Prec
 @MISC{undefined,
   author = {Hans-J. Boehm},
   title = {Memory Model Rationales},
+  month = mar,
   year = {2007},
   howpublished = {\url{http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2176}}
 }
 @MISC{boehm-tar,
   author = {Hans-J. Boehm},
   title = {Specifying the Absence of ``Out Of Thin Air'' Results},
+  month = aug,
   year = {2013},
   howpublished = {\url{http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3710}}
+}
+@MISC{boehm-c14,
+  author = {Hans-J. Boehm},
+  title = {Prohibiting ``Out Of Thin Air'' Results in C++14},
+  month = nov,
+  year = {2013},
+  howpublished = {\url{http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3786}}
 }
 @MISC{undefined2,
   author = {Pascal Cuoq and John Regehr},
@@ -239,21 +281,21 @@ keywords = {Concurrency, Thin-Air Reads, ARMv8, Temporal Safety Properties, Prec
   title = {This commit adds three alternative formulations of the Arm model, both for non-mixed and mixed size accesses},
   month = jun,
   year = {2020},
-  howpublished = {\url{https://github.com/herd/herdtools7/commit/685ee4b5f821254c947888c6cc731e9eedbe937d}}
+  howpublished = {\url{https://github.com/herd/herdtools7/commit/685ee4}}
 }
 @MISC{alglave-git,
   author = {Jade Alglave},
   title = {This commit adds the Armv8 memory model for mixed-size accesses},
   month = oct,
   year = {2019},
-  howpublished = {\url{https://github.com/herd/herdtools7/commit/95785c747750be4a3b64adfab9d5f5ee0ead8240}}
+  howpublished = {\url{https://github.com/herd/herdtools7/commit/95785c}}
 }
 @MISC{deacon-git,
   author = {Will Deacon},
   title = {Formal memory model for Armv8.0 application level},
   month = apr,
   year = {2017},
-  howpublished = {\url{https://github.com/herd/herdtools7/commit/daa126680b6ecba97ba47b3e05bbaa51a89f27b7}}
+  howpublished = {\url{https://github.com/herd/herdtools7/commit/daa126}}
 }
 
 
@@ -591,6 +633,7 @@ series = {ASPLOS ’15}
     Daniel Wright},
   title = {Modular Relaxed Dependencies: A new approach to the Out-Of-Thin-Air Problem},
   year = {2019},
+  month = jun,
   howpublished = {\url{http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1780r0}}
 }
 
@@ -614,7 +657,8 @@ series = {ASPLOS ’15}
            Jeffrey, Alan and
            Sezgin, Ali and
            Tye, Tony},
-  title = {0422R0: Out-of-thin-air execution is vacuous},
+         title = {0422R0: Out-of-thin-air execution is vacuous},
+         month = jul,
   year = {2016},
   howpublished = {\url{http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0422r0}}
 }
@@ -984,6 +1028,7 @@ series = {ASPLOS ’15}
   author = {Boehm, Hans-J.},
   title = {Out-of-thin-air, revisited, again},
   year = {2018},
+  month = oct,
   howpublished = {\url{http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1217r0}}
 }
 
@@ -1247,24 +1292,19 @@ url="https://doi.org/10.1007/978-3-319-10575-8_32"
  address = {Essex, UK},
  keywords = {Concurrency, Logics of programs, Separation logic},
 }
-@article{Dijkstra:1975:GCN:360933.360975,
- author = {Dijkstra, Edsger W.},
- title = {Guarded Commands, Nondeterminacy and Formal Derivation of Programs},
- journal = {Commun. ACM},
- issue_date = {Aug. 1975},
- volume = {18},
- number = {8},
- month = aug,
- year = {1975},
- issn = {0001-0782},
- pages = {453--457},
- numpages = {5},
- url = {http://doi.acm.org/10.1145/360933.360975},
- doi = {10.1145/360933.360975},
- acmid = {360975},
- publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {case-construction, correctness proof, derivation of programs, nondeterminancy, program semantics, programming language semantics, programming languages, programming methodology, repetition, sequencing primitives, termination},
+@article{DBLP:journals/cacm/Dijkstra75,
+  author    = {Edsger W. Dijkstra},
+  title     = {Guarded Commands, Nondeterminacy and Formal Derivation of Programs},
+  journal   = {Commun. {ACM}},
+  volume    = {18},
+  number    = {8},
+  pages     = {453--457},
+  year      = {1975},
+  url       = {https://doi.org/10.1145/360933.360975},
+  doi       = {10.1145/360933.360975},
+  timestamp = {Wed, 14 Nov 2018 10:22:34 +0100},
+  biburl    = {https://dblp.org/rec/journals/cacm/Dijkstra75.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 @INPROCEEDINGS {2019-sp,
@@ -1789,6 +1829,12 @@ month={July},}
   title     = {Private correspondence},
   month =  dec,
   year      = 2018,
+}
+@misc{anton,
+  author    = {Anton Podkopaev},
+  title     = {Private correspondence},
+  month =  nov,
+  year      = 2020,
 }
 @proceedings{DBLP:conf/popl/2017,
   editor    = {Giuseppe Castagna and

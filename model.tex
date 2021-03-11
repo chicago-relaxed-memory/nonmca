@@ -1,183 +1,12 @@
-\section{Model}
-
-\begin{align*}
-  \amode \BNFDEF& \mWK &&\text{{(Weak)}}                      &\ascope \BNFDEF& \sCTA &&\text{(Thread group)} &\hbox{$\;\mkern60mu\;$}&
-  \\[-1ex] \BNFSEP& \mRLX &&\text{{(Relaxed)}}                & \BNFSEP&\sGPU   &&\text{(Processor)}                                   
-  \\[-1ex] \BNFSEP& \mRA &&\text{{(Release/Acquire)}}         & \BNFSEP&\sSYS  &&\text{(System)}                                         
-  \\[-1ex] \BNFSEP& \mSC &&\text{{(Sequentially Consistent)}}    
-\end{align*}
-
-Orders/Relations in model
+\section{Notes}
+GPU stuff:
 \begin{itemize}
-\item $\lestrong$ is the old $\le$ (without coherence stuff from \ref{rf4} and \ref{5b}).
-
-  This provides the NO-TAR axiom.
-\item $\lehb$ is a the \emph{happens-before} suborder, which only includes $\rrf$ when they are morally strong.
-
-  This serves as a cross-location transitive kernel for the per-location order.
-  
-\item $\leloc$ is a per-location order that relates morally strong  and $\rpoloc$ accesses
-
-  This includes $\lehb$ for  morally strong accesses.
-
-  This provides the SC-PER-LOC axiom.
-
-  % \item $\rrmw$ is a per-location relation on actions in an \RMW{}
+\item Vulcan/Alloy
+\item OpenCL
+\item AMD PTX
+\item Matthew Sinclair/Sarita Adve stuff ``Chasing Away RAts- Semantics and
+  Evaluation for Relaxed Atomics on Heterogeneous Systems'' and his thesis
 \end{itemize}
-
-Write $\bEv\conflict\aEv$ if they conflict (ie, read/write or write/write, same location).
-
-Write $\bEv\moral\aEv$ if they conflict and are morally strong
-
-\begin{definition}
-  A \emph{pomset with preconditions} is a tuple
-  $(\Event, \labeling, {\lehb}, {\lestrong}, {\leloc})$ where
-  \begin{description}
-  \item[{\labeltextsc[m1]{(m1)}{m1}}] $\Event$ is a set of \emph{events}
-  \item[{\labeltextsc[m2]{(m2)}{m2}}]
-    $\labeling: \Event \fun (\Formulae\times\Act)$ is a \emph{labeling} from
-    which we derive functions
-    \begin{itemize}
-    \item $\labelingForm:\Event\fun\Formulae$
-      \emph{(formulae)} % include $r{=}v$ $x{=}v$
-    \item $\labelingAct:\Event\fun\Act$
-      \emph{(actions)} %include $\DW{x}{v}$, $\DR{x}{v}$, and $\DSTOP$
-    \end{itemize}
-  \item[{\labeltextsc[m3]{(m3)}{m3}}]
-    ${\lehb} \subseteq (\Event\times\Event)$,
-    ${\lestrong} \subseteq (\Event\times\Event)$, and
-    ${\leloc} \subseteq (\Event\times\Event)$ are partial orders
-  \item[{\labeltextsc[m4]{(m4)}{m-consistency}}] $\bigwedge_{\aEv}\labelingForm(\aEv)$ is satisfiable \emph{(consistency)}
-  \item[{\labeltextsc[m5]{(m5)}{m-causal-strengthening}}] if $\bEv\lestrong\aEv$ then $\labelingForm(\aEv)$ implies $\labelingForm(\bEv)$ \emph{(causal strengthening)} 
-  \item[{\labeltextsc[m6]{(m6)}{m-strong}}] if $\bEv\lehb\aEv$ then $\bEv\lestrong\aEv$
-  \item[{\labeltextsc[m7]{(m7)}{m-loc}}] if $\bEv\lehb\aEv$ and $\bEv$ conflicts with $\aEv$ then $\bEv\leloc\aEv$
-  \end{description}
-\end{definition}
-% It is important that \ref{m-loc} covers all conflicting access.
-% See \ref{pub1sys}.
-
-
-  We say $\bEv\lthb\aEv$ when $\bEv\lehb\aEv$ and $\bEv\neq\aEv$, and similarly
-  for $\ltstrong$ and $\ltloc$.
-
-% \begin{definition}
-%   Define $\leexists$ %and $\ltexists$
-%   as follows:
-% \end{definition}
-
-
-\begin{definition}[Strong fulfillment]
-  We say $\labelingAct(\bEv)=(\DW[]{x}{v})$ \emph{fulfills}
-  $\labelingAct(\aEv)=(\DR[]{x}{v})$ if
-  \begin{description}
-  \item[{\labeltextsc[f3a]{(f3a)}{rf3a}}{\labeltextsc[f3]{}{rf3}}]
-    $\bEv \ltstrong \aEv$
-  \item[{\labeltextsc[f3b]{(f3b)}{rf3b}}]
-    $\bEv \lthb \aEv$ if $\bEv$ is morally strong with $\aEv$
-  \item[{\labeltextsc[f3c]{(f3c)}{rf3c}}]
-    $\bEv \leloc \aEv$ (if $\bEv$ is not morally strong with $\aEv$)
-  \item[{\labeltextsc[f4]{(f4)}{rf4}}]
-    $\forall\labelingAct(\cEv)=(\DW[]{x}{..})$ either $\cEv \leloc \bEv$ or
-    $\aEv \leloc \cEv$,
-  \end{description}  
-\end{definition}
-  
-\begin{definition}[Weak fulfillment]
-  We say $\labelingAct(\bEv)=(\DW[]{x}{v})$ \emph{fulfills}
-  $\labelingAct(\aEv)=(\DR[]{x}{v})$ if
-  \begin{description}
-  \item[{\labeltextsc[f3a]{(f3a)}{rf3a}}{\labeltextsc[f3]{}{rf3}}]
-    $\bEv \ltstrong \aEv$
-  \item[{\labeltextsc[f3b]{(f3b)}{rf3b}}]
-    $\bEv \lthb \aEv$ if $\bEv$ is morally strong with $\aEv$
-  \item[{\labeltextsc[f3c]{(f3c)}{rf3c}}]
-    $\aEv \not\leloc \bEv$ (if $\bEv$ is not morally strong with $\aEv$)
-  \item[{\labeltextsc[f4]{(f4)}{rf4}}]
-    $\forall\labelingAct(\cEv)=(\DW[]{x}{..})$ either $\cEv \leexists \bEv$ or
-    $\aEv \leexists \cEv$,
-    where
-  \begin{align*}
-    \bEv\leexists\aEv &\textwhen                      
-    \begin{cases}
-      \bEv\leloc\aEv &\text{if}\; \bEv \;\text{is morally strong with}\;
-      \aEv %\bEv\moral\aEv
-      \\
-      \aEv\not\ltloc\bEv &\text{otherwise}
-    \end{cases}
-    % \\
-    % \bEv\ltexists\aEv &\textwhen                      
-    % \begin{cases}
-    %   \bEv\ltloc\aEv &\text{if}\; \bEv \;\text{is morally strong with}\;
-    %   \aEv %\bEv\moral\aEv
-    %   \\
-    %   \aEv\not\leloc\bEv &\text{otherwise}
-    % \end{cases}
-  \end{align*}    
-  \end{description}  
-\end{definition}
-
-If all accesses are morally strong with each other, weak fulfillment
-degenerates to
-\begin{description}
-\item[\eqref{rf3}]
-  $\bEv \lthb \aEv$
-\item[\eqref{rf4}]
-  $\forall\labelingAct(\cEv)=(\DW[]{x}{..})$ either
-  $\cEv \leloc \bEv$ or $\aEv \leloc \cEv$
-\end{description}
-
-If no accesses are morally strong with each other, weak fulfillment
-degenerates to
-\begin{description}
-\item[\eqref{rf3}]
-  $\aEv \not\leloc \bEv$
-\item[\eqref{rf4}]
-  $\not\mkern-5mu\exists\labelingAct(\cEv)=(\DW[]{x}{..})$ 
-  both $\bEv \ltloc \cEv$ and $\cEv \ltloc \aEv$
-\end{description}
-
-Note that the difference between strong and weak fulfillment is limited to $\leloc$.
-We sometimes write $\lelocstrong$ for strong fulfillment and
-$\lelocweak$ for weak fulfillment.
-
-Prefixing is as in OOPSLA, using $\lehb$ for order everywhere except
-\ref{5b}, which has $\leloc$.
-\begin{definition}
-  Let $\aPS'\in(\aForm \mid \aAct) \prefix \aPSS$ when
-  $(\exists\aPS\in\aPSS)$ $(\forall\aEv\in\Event)$
-  \begin{description}
-  \item[{\labeltextsc[P1]{(P1)}{1}}] $\Event' = \Event \cup \{\bEv\}$
-  \item[{\labeltextsc[P2]{(P2)}{2}}] ${\lehb'}\supseteq{\lehb}$,
-    ${\lestrong'}\supseteq{\lestrong}$, and ${\leloc'}\supseteq{\leloc}$
-  \item[{\labeltextsc[P3]{(P3a)}{3a}\labeltextsc[P3]{}{3}}]%
-    $\labelingAct'(\aEv) = \labelingAct(\aEv)$
-  \item[{\labeltextsc[P3b]{(P3b)}{3b}}] $\labelingAct'(\bEv) = \aAct$
-  \item[{\labeltextsc[P4a]{(P4a)}{4a}\labeltextsc[P4]{}{4}}]%
-    $\labelingForm'(\bEv)$ implies
-    $\aForm\land(\bEv\not\in\Event\lor\labelingForm(\bEv))$
-  \item[{\labeltextsc[P4b]{(P4b)}{4b}}] if $\bEv\neq(\DR[]{..)}{}\mkern79mu$
-    then $\aEv=\bEv$ or $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)$
-  \item[{\labeltextsc[P4c]{(P4c)}{4c}}] if
-    $\bEv=(\DR[]{\aVal}{\aLoc})\mkern70mu$ then $\aEv=\bEv$ or
-    $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)[\aVal/\aLoc]$
-  \item[{\labeltextsc[P5a]{(P5a)}{5a}\labeltextsc[P5]{}{5}}]%
-    if $\bEv=(\DR[]{..)}{}$, $\aEv=(\DW[]{..)}{}$ then $\aEv=\bEv$ or
-    $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)$ or $\bEv\lehb'\aEv$
-  \item[{\labeltextsc[P5b]{(P5b)}{5b}}] if $\bEv$ conflicts with
-    $\aEv$ %$\bEv\conflict\aEv$
-    then $\bEv\leloc'\aEv$
-  \item[{\labeltextsc[P5c]{(P5c)}{5c}}] if $\bEv$ is an acquire or $\aEv$ is
-    a release then $\bEv \lehb' \aEv$
-  \item[{\labeltextsc[P5d]{(P5d)}{5d}}] if $\bEv$ is an SC write and $\aEv$
-    is an SC read then $\bEv \lehb' \aEv$
-  \item[{\labeltextsc[P5e]{(P5e)}{5e}}] if $\bEv$ reads, and $\aEv$ is an
-    acquiring fence, then
-    $\bEv \lehb' \aEv$
-  \item[{\labeltextsc[P5f]{(P5f)}{5f}}] if $\bEv$ is a releasing fence,
-    and $\aEv$ writes, then
-    $\bEv \lehb' \aEv$
-  \end{description}
-\end{definition}
 
 \section{Anton's recent examples relating IMM and PTX}
 It looks like we cannot prove compilation correctness from IMM to PTX.
@@ -1483,103 +1312,283 @@ exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
 \end{gather*}
 
 
-\section{More Model}
-These definitions need to be updated to include the additional orders.
-\begin{definition}
-  A pomset is \emph{$\aLoc$-closed} if
-  \begin{itemize}
-  \item every $\labelingAct(\aEv)=(\DR{\aLoc}{..})$ is fulfilled
-  \item every $\labelingForm(\aEv)$ is independent of $x$:
-    $\bigl(\forall v.\;\labelingForm(\aEv) \vDash
-    \labelingForm(\aEv)[\aVal/\aLoc] \vDash \labelingForm(\aEv)\bigr)$
-  \end{itemize}
-\end{definition}
+\section{OLD Model}
 
-\begin{definition}
-  Let $\aPS\phantom{'}\in(\nu\aLoc\!\DOT\!\aPSS) \mkern22mu$ when
-  $\phantom{(\exists}\aPS\in\aPSS$ and $\aPS$ is $\aLoc$-closed
-\end{definition}
-\begin{definition}
-  Let $\aPS\phantom{'}\in(\aForm \guard \aPSS)\mkern16mu$ when
-  $\phantom{(\exists}\aPS\in\aPSS$ and $(\forall\aEv\in\Event)$
-  $\labelingForm(\aEv)$ implies $\aForm$
-\end{definition}
-
-\begin{definition}
-  Let $\aPS'\in(\aPSS[M/x])\mkern2mu$ when $(\exists\aPS\in\aPSS$)\\\qquad
-  $\Event' = \Event$, ${\lehb'} = {\lehb}$, $\labelingAct' = \labelingAct$, and
-  $(\forall\aEv\in\Event')$ $\labelingForm'(\aEv) = \labelingForm(\aEv)[M/x]$
-\end{definition}
-\begin{definition}
-  Let $\aPS' \in (\aPSS^1 \parallel \aPSS^2)$ when
-  $(\exists\aPS^1 \in \aPSS^1)$ $(\exists\aPS^2 \in \aPSS^2)$
-  \\% $\aPS^1$ is completed exactly when $\aPS^2$ is completed, there is at most one termination in $\Event'$,
-  \qquad $\Event' = \Event^1 \cup \Event^2$,
-  ${\lehb'}\supseteq{\lehb^1}\cup{\lehb^2}$, and $(\forall\aEv\in\Event')$ either
-  \begin{gather*}
-    \begin{aligned}
-      \aEv \not\in \Event^2,\; \labelingAct'(\aEv) &= \labelingAct^1(\aEv)
-      \textand \labelingForm'(\aEv) \textimplies \labelingForm^1(\aEv),
-      \\[-1ex]
-      \aEv \not\in \Event^1,\; \labelingAct'(\aEv) &= \labelingAct^2(\aEv)
-      \textand \labelingForm'(\aEv) \textimplies
-      \labelingForm^2(\aEv),\textor
-      \\[-1ex]
-      \labelingAct'(\aEv) = \labelingAct^1(\aEv) &= \labelingAct^2(\aEv)
-      \textand \labelingForm'(\aEv) \textimplies \labelingForm^1(\aEv) \lor
-      \labelingForm^2(\aEv)
-    \end{aligned}
-  \end{gather*}
-\end{definition}
-
-Language
-\begin{gather*}
-  % \begin{aligned}
-  %   \aCmd,\,\bCmd
-  %   \BNFDEF& \SKIP
-  %   \BNFSEP \aReg\GETS\aExp\SEMI \aCmd
-  %   \BNFSEP \aReg\GETS\aLoc^{\amode}\SEMI \aCmd 
-  %   \BNFSEP \aLoc^{\amode}\GETS\aExp\SEMI \aCmd
-  %   \\[-.5ex]
-  %   \BNFSEP&\aCmd \PAR[\aThrd][\bThrd] \bCmd
-  %   \BNFSEP \VAR\aLoc\SEMI \aCmd
-  %   \BNFSEP \IF{\aExp} \THEN \aCmd \ELSE \bCmd \FI
-  % \end{aligned}
-  % \\
-  \begin{aligned}
-    \sem[\aThrd]{\SKIP} & \eqdef
-    \{ \DSTOP \}
-    \\
-    \sem[\aThrd]{\aReg\GETS\aExp\SEMI \aCmd} & \eqdef
-    \sem[\aThrd]{\aCmd}[\aExp/\aReg]
-    \\ 
-    \sem{\aReg\GETS\aLoc^{\amode}\SEMI \aCmd} & \eqdef \textstyle\bigcup_\aVal\;
-    (\DR[\amode]\aLoc\aVal)\prefix \sem{\aCmd} [\aLoc/\aReg]
-    \\
-    \sem{\aLoc^{\amode}\GETS\aExp\SEMI \aCmd} & \eqdef
-    \textstyle\bigcup_\aVal\; (\aExp=\aVal \mid \DW[\amode]\aLoc\aVal)\prefix \sem{\aCmd}[\aExp/\aLoc]
-    \\
-    \sem{\FENCE^{\fmode}\SEMI \aCmd} & \eqdef
-    (\DFS{\fmode}) \prefix \sem{\aCmd}
-    \\
-    \sem[\aThrd]{\IF{\aExp} \THEN \aCmd \ELSE \bCmd \FI} & \eqdef
-    \bigl(\aExp \guard \sem[\aThrd]{\aCmd}\bigr) \parallel \bigl(\lnot\aExp \guard \sem[\aThrd]{\bCmd}\bigr) 
-    \\
-    \sem[\aThrd]{\aCmd \PAR[\bThrd][\bThrd'] \bCmd} & \eqdef
-    \sem[\bThrd]{\aCmd} \parallel \sem[\bThrd']{\bCmd} 
-    \\
-    \sem[\aThrd]{\VAR\aLoc\SEMI \aCmd} & \eqdef
-    \nu \aLoc \DOT \sem[\aThrd]{\aCmd}  
-  \end{aligned}
-\end{gather*}
 \begin{align*}
-  \fmode \BNFDEF&\mREL  &&\text{(Release)} &\hbox{$\;\mkern60mu\;$}&
-  \\ \BNFSEP&\mACQ   &&\text{(Acquire)} 
-  \\      \BNFSEP&\mSC  &&\text{(SC)} 
+  \amode \BNFDEF& \mWK &&\text{{(Weak)}}                      &\ascope \BNFDEF& \sCTA &&\text{(Thread group)} &\hbox{$\;\mkern60mu\;$}&
+  \\[-1ex] \BNFSEP& \mRLX &&\text{{(Relaxed)}}                & \BNFSEP&\sGPU   &&\text{(Processor)}                                   
+  \\[-1ex] \BNFSEP& \mRA &&\text{{(Release/Acquire)}}         & \BNFSEP&\sSYS  &&\text{(System)}                                         
+  \\[-1ex] \BNFSEP& \mSC &&\text{{(Sequentially Consistent)}}    
 \end{align*}
 
+Orders/Relations in model
+\begin{itemize}
+\item $\lestrong$ is the old $\le$ (without coherence stuff from \ref{rf4} and \ref{5b}).
 
-A citation: \cite{10.1145/3428262}
+  This provides the NO-TAR axiom.
+\item $\lehb$ is a the \emph{happens-before} suborder, which only includes $\rrf$ when they are morally strong.
+
+  This serves as a cross-location transitive kernel for the per-location order.
+  
+\item $\leloc$ is a per-location order that relates morally strong  and $\rpoloc$ accesses
+
+  This includes $\lehb$ for  morally strong accesses.
+
+  This provides the SC-PER-LOC axiom.
+
+  % \item $\rrmw$ is a per-location relation on actions in an \RMW{}
+\end{itemize}
+
+Write $\bEv\conflict\aEv$ if they conflict (ie, read/write or write/write, same location).
+
+Write $\bEv\moral\aEv$ if they conflict and are morally strong
+
+\begin{definition}
+  A \emph{pomset with preconditions} is a tuple
+  $(\Event, \labeling, {\lehb}, {\lestrong}, {\leloc})$ where
+  \begin{description}
+  \item[{\labeltextsc[m1]{(m1)}{m1}}] $\Event$ is a set of \emph{events}
+  \item[{\labeltextsc[m2]{(m2)}{m2}}]
+    $\labeling: \Event \fun (\Formulae\times\Act)$ is a \emph{labeling} from
+    which we derive functions
+    \begin{itemize}
+    \item $\labelingForm:\Event\fun\Formulae$
+      \emph{(formulae)} % include $r{=}v$ $x{=}v$
+    \item $\labelingAct:\Event\fun\Act$
+      \emph{(actions)} %include $\DW{x}{v}$, $\DR{x}{v}$, and $\DSTOP$
+    \end{itemize}
+  \item[{\labeltextsc[m3]{(m3)}{m3}}]
+    ${\lehb} \subseteq (\Event\times\Event)$,
+    ${\lestrong} \subseteq (\Event\times\Event)$, and
+    ${\leloc} \subseteq (\Event\times\Event)$ are partial orders
+  \item[{\labeltextsc[m4]{(m4)}{m-consistency}}] $\bigwedge_{\aEv}\labelingForm(\aEv)$ is satisfiable \emph{(consistency)}
+  \item[{\labeltextsc[m5]{(m5)}{m-causal-strengthening}}] if $\bEv\lestrong\aEv$ then $\labelingForm(\aEv)$ implies $\labelingForm(\bEv)$ \emph{(causal strengthening)} 
+  \item[{\labeltextsc[m6]{(m6)}{m-strong}}] if $\bEv\lehb\aEv$ then $\bEv\lestrong\aEv$
+  \item[{\labeltextsc[m7]{(m7)}{m-loc}}] if $\bEv\lehb\aEv$ and $\bEv$ conflicts with $\aEv$ then $\bEv\leloc\aEv$
+  \end{description}
+\end{definition}
+% It is important that \ref{m-loc} covers all conflicting access.
+% See \ref{pub1sys}.
+
+
+  We say $\bEv\lthb\aEv$ when $\bEv\lehb\aEv$ and $\bEv\neq\aEv$, and similarly
+  for $\ltstrong$ and $\ltloc$.
+
+% \begin{definition}
+%   Define $\leexists$ %and $\ltexists$
+%   as follows:
+% \end{definition}
+
+
+\begin{definition}[Strong fulfillment]
+  We say $\labelingAct(\bEv)=(\DW[]{x}{v})$ \emph{fulfills}
+  $\labelingAct(\aEv)=(\DR[]{x}{v})$ if
+  \begin{description}
+  \item[{\labeltextsc[f3a]{(f3a)}{rf3a}}{\labeltextsc[f3]{}{rf3}}]
+    $\bEv \ltstrong \aEv$
+  \item[{\labeltextsc[f3b]{(f3b)}{rf3b}}]
+    $\bEv \lthb \aEv$ if $\bEv$ is morally strong with $\aEv$
+  \item[{\labeltextsc[f3c]{(f3c)}{rf3c}}]
+    $\bEv \leloc \aEv$ (if $\bEv$ is not morally strong with $\aEv$)
+  \item[{\labeltextsc[f4]{(f4)}{rf4}}]
+    $\forall\labelingAct(\cEv)=(\DW[]{x}{..})$ either $\cEv \leloc \bEv$ or
+    $\aEv \leloc \cEv$,
+  \end{description}  
+\end{definition}
+  
+\begin{definition}[Weak fulfillment]
+  We say $\labelingAct(\bEv)=(\DW[]{x}{v})$ \emph{fulfills}
+  $\labelingAct(\aEv)=(\DR[]{x}{v})$ if
+  \begin{description}
+  \item[{\labeltextsc[f3a]{(f3a)}{rf3a}}{\labeltextsc[f3]{}{rf3}}]
+    $\bEv \ltstrong \aEv$
+  \item[{\labeltextsc[f3b]{(f3b)}{rf3b}}]
+    $\bEv \lthb \aEv$ if $\bEv$ is morally strong with $\aEv$
+  \item[{\labeltextsc[f3c]{(f3c)}{rf3c}}]
+    $\aEv \not\leloc \bEv$ (if $\bEv$ is not morally strong with $\aEv$)
+  \item[{\labeltextsc[f4]{(f4)}{rf4}}]
+    $\forall\labelingAct(\cEv)=(\DW[]{x}{..})$ either $\cEv \leexists \bEv$ or
+    $\aEv \leexists \cEv$,
+    where
+  \begin{align*}
+    \bEv\leexists\aEv &\textwhen                      
+    \begin{cases}
+      \bEv\leloc\aEv &\text{if}\; \bEv \;\text{is morally strong with}\;
+      \aEv %\bEv\moral\aEv
+      \\
+      \aEv\not\ltloc\bEv &\text{otherwise}
+    \end{cases}
+    % \\
+    % \bEv\ltexists\aEv &\textwhen                      
+    % \begin{cases}
+    %   \bEv\ltloc\aEv &\text{if}\; \bEv \;\text{is morally strong with}\;
+    %   \aEv %\bEv\moral\aEv
+    %   \\
+    %   \aEv\not\leloc\bEv &\text{otherwise}
+    % \end{cases}
+  \end{align*}    
+  \end{description}  
+\end{definition}
+
+If all accesses are morally strong with each other, weak fulfillment
+degenerates to
+\begin{description}
+\item[\eqref{rf3}]
+  $\bEv \lthb \aEv$
+\item[\eqref{rf4}]
+  $\forall\labelingAct(\cEv)=(\DW[]{x}{..})$ either
+  $\cEv \leloc \bEv$ or $\aEv \leloc \cEv$
+\end{description}
+
+If no accesses are morally strong with each other, weak fulfillment
+degenerates to
+\begin{description}
+\item[\eqref{rf3}]
+  $\aEv \not\leloc \bEv$
+\item[\eqref{rf4}]
+  $\not\mkern-5mu\exists\labelingAct(\cEv)=(\DW[]{x}{..})$ 
+  both $\bEv \ltloc \cEv$ and $\cEv \ltloc \aEv$
+\end{description}
+
+Note that the difference between strong and weak fulfillment is limited to $\leloc$.
+We sometimes write $\lelocstrong$ for strong fulfillment and
+$\lelocweak$ for weak fulfillment.
+
+Prefixing is as in OOPSLA, using $\lehb$ for order everywhere except
+\ref{5b}, which has $\leloc$.
+\begin{definition}
+  Let $\aPS'\in(\aForm \mid \aAct) \prefix \aPSS$ when
+  $(\exists\aPS\in\aPSS)$ $(\forall\aEv\in\Event)$
+  \begin{description}
+  \item[{\labeltextsc[P1]{(P1)}{1}}] $\Event' = \Event \cup \{\bEv\}$
+  \item[{\labeltextsc[P2]{(P2)}{2}}] ${\lehb'}\supseteq{\lehb}$,
+    ${\lestrong'}\supseteq{\lestrong}$, and ${\leloc'}\supseteq{\leloc}$
+  \item[{\labeltextsc[P3]{(P3a)}{3a}\labeltextsc[P3]{}{3}}]%
+    $\labelingAct'(\aEv) = \labelingAct(\aEv)$
+  \item[{\labeltextsc[P3b]{(P3b)}{3b}}] $\labelingAct'(\bEv) = \aAct$
+  \item[{\labeltextsc[P4a]{(P4a)}{4a}\labeltextsc[P4]{}{4}}]%
+    $\labelingForm'(\bEv)$ implies
+    $\aForm\land(\bEv\not\in\Event\lor\labelingForm(\bEv))$
+  \item[{\labeltextsc[P4b]{(P4b)}{4b}}] if $\bEv\neq(\DR[]{..)}{}\mkern79mu$
+    then $\aEv=\bEv$ or $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)$
+  \item[{\labeltextsc[P4c]{(P4c)}{4c}}] if
+    $\bEv=(\DR[]{\aVal}{\aLoc})\mkern70mu$ then $\aEv=\bEv$ or
+    $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)[\aVal/\aLoc]$
+  \item[{\labeltextsc[P5a]{(P5a)}{5a}\labeltextsc[P5]{}{5}}]%
+    if $\bEv=(\DR[]{..)}{}$, $\aEv=(\DW[]{..)}{}$ then $\aEv=\bEv$ or
+    $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)$ or $\bEv\lehb'\aEv$
+  \item[{\labeltextsc[P5b]{(P5b)}{5b}}] if $\bEv$ conflicts with
+    $\aEv$ %$\bEv\conflict\aEv$
+    then $\bEv\leloc'\aEv$
+  \item[{\labeltextsc[P5c]{(P5c)}{5c}}] if $\bEv$ is an acquire or $\aEv$ is
+    a release then $\bEv \lehb' \aEv$
+  \item[{\labeltextsc[P5d]{(P5d)}{5d}}] if $\bEv$ is an SC write and $\aEv$
+    is an SC read then $\bEv \lehb' \aEv$
+  \item[{\labeltextsc[P5e]{(P5e)}{5e}}] if $\bEv$ reads, and $\aEv$ is an
+    acquiring fence, then
+    $\bEv \lehb' \aEv$
+  \item[{\labeltextsc[P5f]{(P5f)}{5f}}] if $\bEv$ is a releasing fence,
+    and $\aEv$ writes, then
+    $\bEv \lehb' \aEv$
+  \end{description}
+\end{definition}
+
+% \section{More Model}
+% These definitions need to be updated to include the additional orders.
+% \begin{definition}
+%   A pomset is \emph{$\aLoc$-closed} if
+%   \begin{itemize}
+%   \item every $\labelingAct(\aEv)=(\DR{\aLoc}{..})$ is fulfilled
+%   \item every $\labelingForm(\aEv)$ is independent of $x$:
+%     $\bigl(\forall v.\;\labelingForm(\aEv) \vDash
+%     \labelingForm(\aEv)[\aVal/\aLoc] \vDash \labelingForm(\aEv)\bigr)$
+%   \end{itemize}
+% \end{definition}
+
+% \begin{definition}
+%   Let $\aPS\phantom{'}\in(\nu\aLoc\!\DOT\!\aPSS) \mkern22mu$ when
+%   $\phantom{(\exists}\aPS\in\aPSS$ and $\aPS$ is $\aLoc$-closed
+% \end{definition}
+% \begin{definition}
+%   Let $\aPS\phantom{'}\in(\aForm \guard \aPSS)\mkern16mu$ when
+%   $\phantom{(\exists}\aPS\in\aPSS$ and $(\forall\aEv\in\Event)$
+%   $\labelingForm(\aEv)$ implies $\aForm$
+% \end{definition}
+
+% \begin{definition}
+%   Let $\aPS'\in(\aPSS[M/x])\mkern2mu$ when $(\exists\aPS\in\aPSS$)\\\qquad
+%   $\Event' = \Event$, ${\lehb'} = {\lehb}$, $\labelingAct' = \labelingAct$, and
+%   $(\forall\aEv\in\Event')$ $\labelingForm'(\aEv) = \labelingForm(\aEv)[M/x]$
+% \end{definition}
+% \begin{definition}
+%   Let $\aPS' \in (\aPSS^1 \parallel \aPSS^2)$ when
+%   $(\exists\aPS^1 \in \aPSS^1)$ $(\exists\aPS^2 \in \aPSS^2)$
+%   \\% $\aPS^1$ is completed exactly when $\aPS^2$ is completed, there is at most one termination in $\Event'$,
+%   \qquad $\Event' = \Event^1 \cup \Event^2$,
+%   ${\lehb'}\supseteq{\lehb^1}\cup{\lehb^2}$, and $(\forall\aEv\in\Event')$ either
+%   \begin{gather*}
+%     \begin{aligned}
+%       \aEv \not\in \Event^2,\; \labelingAct'(\aEv) &= \labelingAct^1(\aEv)
+%       \textand \labelingForm'(\aEv) \textimplies \labelingForm^1(\aEv),
+%       \\[-1ex]
+%       \aEv \not\in \Event^1,\; \labelingAct'(\aEv) &= \labelingAct^2(\aEv)
+%       \textand \labelingForm'(\aEv) \textimplies
+%       \labelingForm^2(\aEv),\textor
+%       \\[-1ex]
+%       \labelingAct'(\aEv) = \labelingAct^1(\aEv) &= \labelingAct^2(\aEv)
+%       \textand \labelingForm'(\aEv) \textimplies \labelingForm^1(\aEv) \lor
+%       \labelingForm^2(\aEv)
+%     \end{aligned}
+%   \end{gather*}
+% \end{definition}
+
+% Language
+% \begin{gather*}
+%   % \begin{aligned}
+%   %   \aCmd,\,\bCmd
+%   %   \BNFDEF& \SKIP
+%   %   \BNFSEP \aReg\GETS\aExp\SEMI \aCmd
+%   %   \BNFSEP \aReg\GETS\aLoc^{\amode}\SEMI \aCmd 
+%   %   \BNFSEP \aLoc^{\amode}\GETS\aExp\SEMI \aCmd
+%   %   \\[-.5ex]
+%   %   \BNFSEP&\aCmd \PAR[\aThrd][\bThrd] \bCmd
+%   %   \BNFSEP \VAR\aLoc\SEMI \aCmd
+%   %   \BNFSEP \IF{\aExp} \THEN \aCmd \ELSE \bCmd \FI
+%   % \end{aligned}
+%   % \\
+%   \begin{aligned}
+%     \sem[\aThrd]{\SKIP} & \eqdef
+%     \{ \DSTOP \}
+%     \\
+%     \sem[\aThrd]{\aReg\GETS\aExp\SEMI \aCmd} & \eqdef
+%     \sem[\aThrd]{\aCmd}[\aExp/\aReg]
+%     \\ 
+%     \sem{\aReg\GETS\aLoc^{\amode}\SEMI \aCmd} & \eqdef \textstyle\bigcup_\aVal\;
+%     (\DR[\amode]\aLoc\aVal)\prefix \sem{\aCmd} [\aLoc/\aReg]
+%     \\
+%     \sem{\aLoc^{\amode}\GETS\aExp\SEMI \aCmd} & \eqdef
+%     \textstyle\bigcup_\aVal\; (\aExp=\aVal \mid \DW[\amode]\aLoc\aVal)\prefix \sem{\aCmd}[\aExp/\aLoc]
+%     \\
+%     \sem{\FENCE^{\fmode}\SEMI \aCmd} & \eqdef
+%     (\DFS{\fmode}) \prefix \sem{\aCmd}
+%     \\
+%     \sem[\aThrd]{\IF{\aExp} \THEN \aCmd_1 \ELSE \aCmd_2 \FI} & \eqdef
+%     \bigl(\aExp \guard \sem[\aThrd]{\aCmd_1}\bigr) \parallel \bigl(\lnot\aExp \guard \sem[\aThrd]{\aCmd_2}\bigr) 
+%     \\
+%     \sem[\aThrd]{\aCmd_1 \PAR[\bThrd][\bThrd'] \aCmd_2} & \eqdef
+%     \sem[\bThrd]{\aCmd_1} \parallel \sem[\bThrd']{\aCmd_2} 
+%     \\
+%     \sem[\aThrd]{\VAR\aLoc\SEMI \aCmd} & \eqdef
+%     \nu \aLoc \DOT \sem[\aThrd]{\aCmd}  
+%   \end{aligned}
+% \end{gather*}
+% \begin{align*}
+%   \fmode \BNFDEF&\mREL  &&\text{(Release)} &\hbox{$\;\mkern60mu\;$}&
+%   \\ \BNFSEP&\mACQ   &&\text{(Acquire)} 
+%   \\      \BNFSEP&\mSC  &&\text{(SC)} 
+% \end{align*}
+
+
 
 
 
