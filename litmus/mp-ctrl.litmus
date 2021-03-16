@@ -1,0 +1,24 @@
+AArch64 mp-ctrl  
+{
+0:X1=x; 0:X2=y;
+1:X1=x; 1:X2=y;
+}
+ P0            | P1            ;
+ MOV  X0,#1    | NOP           ;
+ STR  X0,[X1]  | LDR  X2,[X2]  ;
+ MOV  X0,#1    | CBNZ X2,Fake  ;
+ STLR X0,[X2]  | Fake:         ;
+ NOP           | LDR  X3,[X1]  ;
+
+exists (1:X2=1 /\ 1:X3=0)
+
+(*
+States 4
+1:X2=0; 1:X3=0;
+1:X2=0; 1:X3=1;
+1:X2=1; 1:X3=0;
+1:X2=1; 1:X3=1;
+Ok
+Witnesses
+Positive: 1 Negative: 3
+*)

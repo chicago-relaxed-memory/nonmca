@@ -1,0 +1,14 @@
+AArch64 rfi-acq-coe-coe
+{ 
+0:X0=x; 0:X2=x; 0:X4=y; 0:X6=z;
+1:X0=y; 1:X2=x;
+}
+ P0              | P1              ;
+ MOV  W1,#2      | MOV  W1,#2      ;
+ STR  W1,[X0]    | STR  W1,[X0]    ;
+ LDAR W7,[X6]    | NOP             ;
+ LDAR W3,[X2]    | NOP             ;
+ MOV  W5, #1     | MOV  W3, #1     ;
+ STR  W5,[X4]    | STLR W3,[X2]    ;
+exists
+(x=2 /\ y=2 /\ 0:X3=2)

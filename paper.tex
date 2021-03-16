@@ -31,6 +31,14 @@
 % \startPage{1}
 
 \usepackage{macros}
+\makeatletter
+% get ams to ignore tag in spacing
+\renewcommand{\tagform@}[1]{\maketag@@@{\makebox[0pt][r]{(\ignorespaces#1\unskip\@@italiccorr)}}}
+\newcommand{\spacetag}[2][3em]{\makebox[#1]{}\tag{#2}}
+\newcommand{\notagparens}{\renewcommand{\tagform@}[1]{\maketag@@@{\makebox[0pt][r]{\ignorespaces##1\unskip\@@italiccorr}}}}
+\makeatother
+
+
 \begin{document}
 
 \title{Weak Pomsets}

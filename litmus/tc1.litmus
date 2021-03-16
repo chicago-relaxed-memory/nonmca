@@ -1,0 +1,15 @@
+AArch64 tc1
+{ 
+0:X0=x; 0:X1=y;
+1:X0=x; 1:X1=y;
+}
+ P0              | P1          ;
+ NOP             | LDR W2,[X1] ;
+ NOP             | STR W2,[X0] ;
+ LDR  W2,[X0]    |             ;
+ CBNZ W2,Fake    |             ;
+ Fake:           |             ;
+ MOV  W3, #1     |             ;
+ STR  W3,[X1]    |             ;
+exists
+(0:X2=1)

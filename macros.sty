@@ -51,11 +51,28 @@
 \newcommand{\QwREF}[1]{\Qw{\REF{#1}}}
 \newcommand{\SB}[1]{}%_{#1}}
 \newcommand{\limplies}{\Rightarrow}
-% get ams to ignore tag in spacing
-\renewcommand{\tagform@}[1]{\maketag@@@{\makebox[0pt][r]{(\ignorespaces#1\unskip\@@italiccorr)}}}
-\newcommand{\spacetag}[2][3em]{\makebox[#1]{}\tag{#2}}
-\newcommand{\notagparens}{\renewcommand{\tagform@}[1]{\maketag@@@{\makebox[0pt][r]{\ignorespaces##1\unskip\@@italiccorr}}}}
 
+% \begin{wrapfigure}{r}{0mm}%
+%   \centering\rule{3cm}{7cm}
+% \end{wrapfigure}%
+%\wrapfigsafe{r}{0mm}{\centering\rule{1cm}{.5cm}}
+\usepackage{wrapfig}
+\setlength{\intextsep}{0.0pt plus 2.0pt minus 2.0pt}
+\newsavebox\curwrapfig
+\newcommand{\wrapfigsafe}[4][]{%
+  \sbox\curwrapfig{#4}%
+  %\par\penalty-100%
+  \begingroup % preserve \dimen@
+    \dimen@\pagegoal \advance\dimen@-\pagetotal % space left
+    \advance\dimen@-\baselineskip % allow an extra line
+    \ifdim \ht\curwrapfig>\dimen@ % not enough space left
+      \break%
+    \fi%
+  \endgroup%
+  \begin{wrapfigure}[#1]{#2}{#3}%
+    \usebox\curwrapfig%
+  \end{wrapfigure}%
+}
 \usepackage{subcaption}
 \usepackage{pifont}
 \newcommand{\qmark}{{\color{blue!80!black}\text{?}}}
@@ -69,6 +86,9 @@
 %\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{microtype}
+\clubpenalty = 10000
+\widowpenalty = 10000
+\displaywidowpenalty = 10000
 
 % % To get agda, use xelatex or luatex
 % % Translation of unicode to latex: 
@@ -103,6 +123,10 @@
 \newcommand{\hlfancy}[2]{\sethlcolor{#1}\hl{#2}}
 \usepackage{alltt}
 \usepackage{float}
+% \begin{multicols}{2}
+%   \columnbreak
+% \end{multicols}
+\usepackage{multicol}
 % \usepackage{makecell}
 % \usepackage[defblank]{paralist}
 % \usepackage[caption=false]{subfig}
@@ -126,14 +150,15 @@
 \newcommand{\noparagraph}[1]{\stepcounter{mypara}\belowpdfbookmark{#1}{mypara\arabic{mypara}}}
 
 
-\newcommand{\modeRLXquiet}{{}}
+\newcommand{\mRLXquiet}{{}}
 \newcommand{\Rdis}[2]{\mathsf{weaken}_{\mathsf{R}#1#2}}
 \newcommand{\Wdis}[2]{\mathsf{weaken}_{\mathsf{W}#1#2}}
 
+\newcommand{\cmdI}{\aCmd_{\mathrm{I}}}
 \newcommand{\cmdC}{\aCmd_{\mathsf{C}}}
 \newcommand{\cmdR}{\aCmd_{\mathsf{R}}}
 \newcommand{\cmdW}{\aCmd_{\mathsf{W}}}
-\newcommand{\ps}{\textsc{ps}}
+\newcommand{\PS}[1]{\textsc{ps#1}}
 \newcommand{\pc}{\textsc{pc}}
 \newcommand{\pcs}{\textsc{pc}s}
 
@@ -186,6 +211,9 @@
 \newcommand{\SBRbig}[1]{\bigl{[}#1\bigr{]}}
 
 
+% \NewDocumentCommand\DR{O{} O{} m m}{\mathsf{R}^{#1}\ifnotempty{#3}{\mkern1mu#3\ifnotempty{#4}{\mkern1mu#4}}}
+% \NewDocumentCommand\DW{O{} O{} m m}{\mathsf{W}^{#1}\ifnotempty{#3}{\mkern0mu#3\ifnotempty{#4}{\mkern1mu#4}}}
+% \NewDocumentCommand \PAR {O{} O{}}{\,\mathbin{\texttt{\textbf{|}}\mkern-6mu\texttt{\textbf{|}}}\,}
 % \newcommand{\sem}[2][]{\llbracket#2\rrbracket_{#1}}
 % \NewDocumentCommand\DR{O{} O{} m m}{#2\mathsf{R}^{#1}\ifnotempty{#3}{\mkern1mu#3\ifnotempty{#4}{\mkern1mu#4}}}
 % \NewDocumentCommand\DW{O{} O{} m m}{#2\mathsf{W}^{#1}\ifnotempty{#3}{\mkern0mu#3\ifnotempty{#4}{\mkern1mu#4}}}
@@ -231,6 +259,8 @@
 \newcommand{\taglabelpp}[1]{\tag{\textsc{\lowercase{#1}}$''$}\label{#1pp}}
 \newcommand{\ignore}[1]{}
 \newcommand{\todo}[1]{\textcolor{red}{#1}}
+\newcommand{\slt}{\vartriangleleft}
+\newcommand{\sle}{\trianglelefteq}
 \newcommand{\tvalpom}{modal pomset}
 \newcommand{\tsem}[1]{\llbracket#1\rrbracket_{{\bf M}}}
 \newcommand{\tsemsc}[1]{\llbracket#1\rrbracket_{{\bf MSC}}}
@@ -368,9 +398,9 @@
 \newcommand{\drfsc}{{\sc drf-sc}}
 \newcommand{\drfra}{{\sc drf-ra}}
 \newcommand{\drfpf}{{\sc drf-pf}}
-\newcommand{\ldrfsc}[1]{\ifemptyelse{#1}{{\sc l}}{\ensuremath{\{#1\}}{\sc -}}{\sc drf-sc}}
-\newcommand{\ldrfra}[1]{\ifemptyelse{#1}{{\sc l}}{\ensuremath{\{#1\}}{\sc -}}{\sc drf-ra}}
-\newcommand{\ldrfpf}[1]{\ifemptyelse{#1}{{\sc l}}{\ensuremath{\{#1\}}{\sc -}}{\sc drf-pf}}
+\newcommand{\ldrfsc}[1]{\text{\ifemptyelse{#1}{{\sc l}}{\ensuremath{\{#1\}}{\sc -}}{\sc drf-sc}}}
+\newcommand{\ldrfra}[1]{\text{\ifemptyelse{#1}{{\sc l}}{\ensuremath{\{#1\}}{\sc -}}{\sc drf-ra}}}
+\newcommand{\ldrfpf}[1]{\text{\ifemptyelse{#1}{{\sc l}}{\ensuremath{\{#1\}}{\sc -}}{\sc drf-pf}}}
 \newcommand{\rfub}{{\sc rfub}}
 \newcommand{\oota}{{\sc oota}}
 \newcommand{\jmm}{{\sc jmm}}
@@ -457,6 +487,7 @@
 \newcommand{\refapp}[1]{Appendix~\ref{app:#1}}
 
 \newenvironment{noenv}{\ignorespaces}{\ignorespacesafterend}
+\newcommand{\aGrp}{G}
 \newcommand{\aCmd}{S}
 % \newcommand{\bCmd}{D}
 % \newcommand{\eCmd}{E}
@@ -527,6 +558,8 @@
 \newcommand{\Bool}{\mathsf{Bool}}
 \newcommand{\aTr}[3][]{\tau^{#2}_{#1}\ifnotempty{#3}{(#3)}}
 \newcommand{\trd}[2]{\tau_{#1}\ifnotempty{#2}{(#2)}}
+
+\newcommand{\aTerm}[1][]{\checkmark\ifnotempty{#1}{\!_{#1}}}
 
 \newcommand{\Int}{\mathsf{SilentAct}}
 \newcommand{\Ext}{\mathsf{Ext}}
@@ -604,6 +637,8 @@
 \newcommand{\ltstrong}{\vartriangleleft}
 \newcommand{\leloc}{\sqsubseteq}
 \newcommand{\ltloc}{\sqsubset}
+\newcommand{\geloc}{\sqsupseteq}
+\newcommand{\gtloc}{\sqsupset}
 \newcommand{\leexists}{\sqsubsetsim}
 \newcommand{\lelocweak}{\mathrel{\sqsubseteq\mkern-6mu\makebox[0pt][r]{\raisebox{2pt}{\small$\scriptscriptstyle\mathsf{w}$}}\mkern2mu}}
 \newcommand{\lelocstrong}{\mathrel{\sqsubseteq\mkern-8mu\makebox[0pt][r]{\raisebox{2pt}{$\scriptscriptstyle\mathsf{s}$}}\mkern4mu}}
@@ -747,9 +782,9 @@
 \newcommand{\sTOP}[1]{\textnormal{\textit{TOP}}\ifnotempty{#1}{\allowbreak(#1)}}
 \NewDocumentCommand\sLOAD{O{} m O{} m}{\textnormal{\textit{LOAD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{,\,\allowbreak#3})}}
 \NewDocumentCommand\sSTORE{O{} m O{} m}{\textnormal{\textit{STORE}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{,\,\allowbreak#3})}}
-% \newcommand{\sSTOREtight}[3][]{\textnormal{\textit{STORE}}\ifnotempty{#2}{\allowbreak(#2,#3\ifnotempty{#1}{,#1})}}
-% \newcommand{\sLOADPRE}[4][]{\textnormal{\textit{LD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
-% \newcommand{\sSTOREPRE}[4][]{\textnormal{\textit{ST}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
+\newcommand{\sSTOREtight}[3][]{\textnormal{\textit{STORE}}\ifnotempty{#2}{\allowbreak(#2,#3\ifnotempty{#1}{,#1})}}
+\newcommand{\sLOADPRE}[4][]{\textnormal{\textit{LD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
+\newcommand{\sSTOREPRE}[4][]{\textnormal{\textit{ST}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
 \newcommand{\sSKIPPRE}{\textnormal{\textit{SKIPPRE}}}
 \newcommand{\sSKIP}{\textnormal{\textit{SKIP}}}
 \newcommand{\sSTOP}{\textnormal{\textit{STOP}}}
@@ -778,6 +813,8 @@
 \newcommand{\reorderDepForm}{xxx}
 \newcommand{\reorderIndForm}{\rho}
 
+\newcommand{\aChan}{\alpha}
+\newcommand{\bChan}{\beta}
 
 %% \wk[out=-30,in=-70,transform canvas={xshift=-1ex}]{wx0}{wx1}
 \usepackage{tikz}
@@ -829,7 +866,6 @@
 \newcommand{\bgellipse}[3][gray!10]{\begin{pgfonlayer}{background}\node[ellipse= 4pt, minimum width=8cm, fill=#1, fit=#2, label=$#3$]{};\end{pgfonlayer}}
 \newcommand{\bgellipsesmaller}[3][gray!10]{\begin{pgfonlayer}{background}\node[ellipse= 4pt, minimum width=7cm, fill=#1, fit=#2, label=$#3$]{};\end{pgfonlayer}}
 \newcommand{\bgovalright}[3][gray!10]{\begin{pgfonlayer}{background}\node[oval= 4pt, fill=#1, fit=#2, label={right:$#3$}]{};\end{pgfonlayer}}
-
 
 %\tikzset{baselinecenter/.style= {baseline=([yshift=-1ex]current bounding box.west)} }
 \tikzstyle{baselinecenter} = [baseline={([yshift=-.5ex]current bounding box.west)}]

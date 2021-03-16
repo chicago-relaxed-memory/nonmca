@@ -1,0 +1,14 @@
+AArch64 Exchg
+{ 
+0:X0=x; 0:X1=y;
+1:X0=x; 1:X1=y;
+}
+ P0              | P1              ;
+ LDXR W3,[X0]    | LDR W3,[X1]     ;
+ MOV  W4,#2      | STR W3,[X0]     ;
+ STXR W7,W4,[X0] | NOP             ;
+ LDR  W5,[X0]    | NOP             ;
+ ADD  W6,W5,#-1  | NOP             ;
+ STR  W6,[X1]    | NOP             ;
+exists
+(0:X3=1)
