@@ -173,7 +173,7 @@
 \NewDocumentCommand\PRF{O{} m m O{} m}{\ifnotempty{#5}{{#5} \GETS}{#2.#3}^{#1}_{#4}}
 \NewDocumentCommand\PWF{O{} m m O{} m}{{#2.#3}^{#1}_{#4} \GETS #5}
 
-\newcommand{\sem}[2][]{\llbracket#2\rrbracket_{#1}}
+\newcommand{\sem}[2][]{\llbracket#2\rrbracket\ifshowSCOPE_{#1}\fi}
 \NewDocumentCommand\PF{O{} m}{\texttt{F}^{#2}_{\ifshowSCOPE#1\fi}}
 \NewDocumentCommand\DF{O{} m O{}}{\mathsf{F}^{#2}_{\ifshowSCOPE#1\fi}}
 \NewDocumentCommand\DFP{O{} m O{}}{\PBR{\DF[#1]{#2}}}
@@ -182,20 +182,20 @@
 
 \NewDocumentCommand\PR{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{#2}^{#1}_{\ifshowSCOPE#3\fi}}
 \NewDocumentCommand\PRP{O{} m O{} m}{\PBR{\PR[#1]{#2}[#3]{#4}}}
-\NewDocumentCommand\DR{O{} m O{} m O{}}{#5\mathsf{R}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DR{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{R}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DRP{O{} m O{} m O{}}{\PBR{\DR[#1]{#2}[#3]{#4}[#5]}}
 
 \NewDocumentCommand\PW{O{} m O{} m}{{#2}^{#1}_{\ifshowSCOPE#3\fi} \GETS #4}
 \NewDocumentCommand\PWP{O{} m O{} m}{\PBR{\PW[#1]{#2}[#3]{#4}}}
-\NewDocumentCommand\DW{O{} m O{} m O{}}{#5\mathsf{W}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern0mu#2\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DW{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{W}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern0mu#2\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DWP{O{} m O{} m O{}}{\PBR{\DW[#1]{#2}[#3]{#4}[#5]}}
 
 \NewDocumentCommand\PRREF{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{\REF{#2}}^{#1}_{\ifshowSCOPE#3\fi}}
-\NewDocumentCommand\DRREF{O{} m O{} m O{}}{#5\mathsf{R}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern1mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DRREF{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{R}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern1mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DRREFP{O{} m O{} m O{}}{\PBR{\DRREF[#1]{#2}[#3]{#4}[#5]}}
 
 \NewDocumentCommand\PWREF{O{} m O{} m}{{\REF{#2}}^{#1}_{\ifshowSCOPE#3\fi} \GETS #4}
-\NewDocumentCommand\DWREF{O{} m O{} m O{}}{#5\mathsf{W}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern0mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DWREF{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{W}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern0mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DWREFP{O{} m O{} m O{}}{\PBR{\DWREF[#1]{#2}[#3]{#4}[#5]}}
 
 \NewDocumentCommand\PA{m m}{\texttt{await}\,#1\,\EQ\,#2}
@@ -783,16 +783,20 @@
 \newcommand{\sELSE}{\allowbreak,\,}
 \newcommand{\sFI}{)}
 \NewDocumentCommand\sIFTHEN{m m m O{}}{\textnormal{\textit{IF}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2,\,\allowbreak#3)_{#4}}}
-\NewDocumentCommand\sSEMI{m m O{}}{\textnormal{\textit{SEQ}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2)_{#3}}}
-\NewDocumentCommand\sPAR{m O{} m O{}}{\sRPAR{#1}[#2]{#3}[#4]}
-\NewDocumentCommand\sRPAR{m O{} m O{}}{\textnormal{\textit{PAR}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak\ifnotempty{#2}{#2,\,\allowbreak}#3)_{#4}}}
+\NewDocumentCommand\sSEMI{m m O{}}{#1\SEMI#2}
+\NewDocumentCommand\sPAR{m O{} m O{}}{#1\PAR#3}
+\NewDocumentCommand\sRPAR{m O{} m O{}}{#1\RPAR#3}
+% \NewDocumentCommand\sSEMI{m m O{}}{\textnormal{\textit{SEQ}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2)_{#3}}}
+% \NewDocumentCommand\sPAR{m O{} m O{}}{\sRPAR{#1}[#2]{#3}[#4]}
+% \NewDocumentCommand\sRPAR{m O{} m O{}}{\textnormal{\textit{PAR}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak\ifnotempty{#2}{#2,\,\allowbreak}#3)_{#4}}}
 \NewDocumentCommand\sLET{m m O{}}{\textnormal{\textit{LET}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2)_{#3}}}
 \newcommand{\sFORK}[1]{\textnormal{\textit{FORK}}\ifnotempty{#1}{\allowbreak(#1)}}
 \newcommand{\sFORKJOIN}[1]{\textnormal{\textit{FORKJOIN}}\ifnotempty{#1}{\allowbreak(#1)}}
 \newcommand{\sTHREAD}[1]{\textnormal{\textit{THRD}}\ifnotempty{#1}{\allowbreak(#1)}}
 \newcommand{\sTOP}[1]{\textnormal{\textit{TOP}}\ifnotempty{#1}{\allowbreak(#1)}}
-\NewDocumentCommand\sLOAD{O{} m O{} m O{}}{\textnormal{\textit{LOAD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{\ifshowSCOPE,\,\allowbreak#3\fi}) _{#5}}}
-\NewDocumentCommand\sSTORE{O{} m O{} m O{}}{\textnormal{\textit{STORE}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{\ifshowSCOPE,\,\allowbreak#3\fi})_{#5}}}
+\NewDocumentCommand{\sLOAD}{O{} m O{} m O{}}{\textnormal{\textit{LOAD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{\ifshowSCOPE,\,\allowbreak#3\fi})\ifshowSCOPE_{#5}\fi}}
+\NewDocumentCommand{\sSTORE}{O{} m O{} m O{}}{\textnormal{\textit{STORE}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{\ifshowSCOPE,\,\allowbreak#3\fi})\ifshowSCOPE_{#5}\fi}}
+\NewDocumentCommand{\sFENCE}{O{} m O{}}{\textnormal{\textit{FENCE}}\ifnotempty{#2}{\allowbreak(#2\ifnotempty{#1}{\ifshowSCOPE,\,\allowbreak#1\fi})\ifshowSCOPE_{#3}\fi}}
 \newcommand{\sSTOREtight}[3][]{\textnormal{\textit{STORE}}\ifnotempty{#2}{\allowbreak(#2,#3\ifnotempty{#1}{,#1})}}
 \newcommand{\sLOADPRE}[4][]{\textnormal{\textit{LD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
 \newcommand{\sSTOREPRE}[4][]{\textnormal{\textit{ST}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
@@ -800,7 +804,6 @@
 \newcommand{\sSKIP}{\textnormal{\textit{SKIP}}}
 \newcommand{\sSTOP}{\textnormal{\textit{STOP}}}
 \newcommand{\sABORT}{\textnormal{\textit{ABORT}}}
-\NewDocumentCommand{\sFENCE}{O{} m O{}}{\textnormal{\textit{FENCE}}\ifnotempty{#2}{\allowbreak(#2\ifnotempty{#1}{\ifshowSCOPE,\,\allowbreak#1\fi})_{#3}}}
 \newcommand{\sNIL}{\textnormal{\textit{NIL}}}
 
 \newcommand{\init}[1]{\mathsf{init}\,#1}
