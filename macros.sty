@@ -1,3 +1,5 @@
+\newcommand{\topThrd}{0}
+\newcommand{\Cdown}[1]{\smash{\downarrow}#1}
 \newcommand{\lubmode}{\sqcup}
 \newcommand{\ltmode}{\sqsubset}
 \newcommand{\lemode}{\sqsubseteq}
@@ -127,6 +129,8 @@
 %   \columnbreak
 % \end{multicols}
 \usepackage{multicol}
+\setlength{\multicolsep}{0.0pt plus 2.0pt minus 2.0pt}
+
 % \usepackage{makecell}
 % \usepackage[defblank]{paralist}
 % \usepackage[caption=false]{subfig}
@@ -137,7 +141,7 @@
 \newcommand{\fthrd}{\mathsf{thread}}
 \newcommand{\Thrd}{\mathcal{T}}
 \newcommand{\aThrd}{\alpha}
-\newcommand{\bThrd}{\kappa}%\upsilon}
+\newcommand{\bThrd}{\gamma}
 
 \newcommand{\mathhl}[1]{\!\!\smash{\colorbox{gray!20!white}{$\displaystyle \mathstrut\smash{#1}$}}\!\!}
 \newcommand{\mathhlscript}[1]{\!\!\smash{\colorbox{gray!20!white}{$\scriptstyle {#1}$}}\!\!}
@@ -164,40 +168,46 @@
 
 \newif\ifshowRA
 \showRAtrue
+\newif\ifshowSCOPE
+\showSCOPEtrue
 \NewDocumentCommand\PRF{O{} m m O{} m}{\ifnotempty{#5}{{#5} \GETS}{#2.#3}^{#1}_{#4}}
 \NewDocumentCommand\PWF{O{} m m O{} m}{{#2.#3}^{#1}_{#4} \GETS #5}
 
+\newcommand{\sem}[2][]{\llbracket#2\rrbracket_{#1}}
+\NewDocumentCommand\PF{O{} m}{\texttt{F}^{#2}_{\ifshowSCOPE#1\fi}}
+\NewDocumentCommand\DF{O{} m O{}}{\mathsf{F}^{#2}_{\ifshowSCOPE#1\fi}}
+\NewDocumentCommand\DFP{O{} m O{}}{\PBR{\DF[#1]{#2}}}
+\NewDocumentCommand\DG{O{} m m O{}}{\mathsf{F}^{#2}_{\ifshowSCOPE#1\fi}\,#3}
+\NewDocumentCommand\DGP{O{} m m O{}}{\PBR{\DG[#1]{#2}{#3}}}
 
-\newcommand{\sem}[2][]{\llbracket#2\rrbracket}
-\NewDocumentCommand\PF{O{} m}{\texttt{F}^{#2}_{#1}}
-\NewDocumentCommand\DF{O{} m}{\mathsf{F}^{#2}_{#1}}
-\NewDocumentCommand\DFP{O{} m}{\PBR{\DF[#1]{#2}}}
-\NewDocumentCommand\DG{O{} m m}{\mathsf{F}^{#2}_{#1}\,#3}
-\NewDocumentCommand\DGP{O{} m m}{\PBR{\DG[#1]{#2}{#3}}}
-
-\NewDocumentCommand\PR{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{#2}^{#1}_{#3}}
-\NewDocumentCommand\DR{O{} m O{} m}{\mathsf{R}^{\ifshowRA#1\fi}_{#3}\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
-\NewDocumentCommand\DRP{O{} m O{} m}{\PBR{\DR[#1]{#2}[#3]{#4}}}
+\NewDocumentCommand\PR{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{#2}^{#1}_{\ifshowSCOPE#3\fi}}
 \NewDocumentCommand\PRP{O{} m O{} m}{\PBR{\PR[#1]{#2}[#3]{#4}}}
+\NewDocumentCommand\DR{O{} m O{} m O{}}{#5\mathsf{R}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DRP{O{} m O{} m O{}}{\PBR{\DR[#1]{#2}[#3]{#4}[#5]}}
 
-\NewDocumentCommand\PW{O{} m O{} m}{{#2}^{#1}_{#3} \GETS #4}
-\NewDocumentCommand\DW{O{} m O{} m}{\mathsf{W}^{\ifshowRA#1\fi}_{#3}\ifnotempty{#2}{\mkern0mu#2\ifnotempty{#4}{\mkern1mu#4}}}
-\NewDocumentCommand\DWP{O{} m O{} m}{\PBR{\DW[#1]{#2}[#3]{#4}}}
+\NewDocumentCommand\PW{O{} m O{} m}{{#2}^{#1}_{\ifshowSCOPE#3\fi} \GETS #4}
 \NewDocumentCommand\PWP{O{} m O{} m}{\PBR{\PW[#1]{#2}[#3]{#4}}}
+\NewDocumentCommand\DW{O{} m O{} m O{}}{#5\mathsf{W}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern0mu#2\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DWP{O{} m O{} m O{}}{\PBR{\DW[#1]{#2}[#3]{#4}[#5]}}
 
-\NewDocumentCommand\PRREF{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{\REF{#2}}^{#1}_{#3}}
-\NewDocumentCommand\DRREF{O{} m O{} m}{\mathsf{R}^{#1}_{#3}\ifnotempty{#2}{\mkern1mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
-\NewDocumentCommand\DRREFP{O{} m O{} m}{\PBR{\DRREF[#1]{#2}[#3]{#4}}}
+\NewDocumentCommand\PRREF{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{\REF{#2}}^{#1}_{\ifshowSCOPE#3\fi}}
+\NewDocumentCommand\DRREF{O{} m O{} m O{}}{#5\mathsf{R}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern1mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DRREFP{O{} m O{} m O{}}{\PBR{\DRREF[#1]{#2}[#3]{#4}[#5]}}
 
-\NewDocumentCommand\PWREF{O{} m O{} m}{{\REF{#2}}^{#1}_{#3} \GETS #4}
-\NewDocumentCommand\DWREF{O{} m O{} m}{\mathsf{W}^{#1}_{#3}\ifnotempty{#2}{\mkern0mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
-\NewDocumentCommand\DWREFP{O{} m O{} m}{\PBR{\DWREF[#1]{#2}[#3]{#4}}}
+\NewDocumentCommand\PWREF{O{} m O{} m}{{\REF{#2}}^{#1}_{\ifshowSCOPE#3\fi} \GETS #4}
+\NewDocumentCommand\DWREF{O{} m O{} m O{}}{#5\mathsf{W}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern0mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DWREFP{O{} m O{} m O{}}{\PBR{\DWREF[#1]{#2}[#3]{#4}[#5]}}
 
 \NewDocumentCommand\PA{m m}{\texttt{await}\,#1\,\EQ\,#2}
 \NewDocumentCommand\DA{m m}{\mathsf{A}\ifnotempty{#1}{\mkern1mu#1\ifnotempty{#2}{\mkern1mu#2}}}
 \NewDocumentCommand\DAP{m m}{\PBR{\DA{#1}{#2}}}
 
-\NewDocumentCommand\PAR{O{} O{}}{\,\mathbin{\texttt{\textbf{|}}\mkern-6mu\texttt{\textbf{|}}}\,}
+% \NewDocumentCommand\PAR{O{} O{}}{\mathrel{\ifnotempty{#1}{{}_{#1}}\texttt{\textbf{|}}\mkern-6mu\texttt{\textbf{|}}\ifnotempty{#2}{_{#2}}}}
+\NewDocumentCommand\RPAR{O{} O{}}{\mathrel{\ifnotempty{#1}{{}_{#1}}\makebox[0pt][l]{$\PAR$}\mkern-8mu\rightarrow\ifnotempty{#2}{_{#2}}}}
+\NewDocumentCommand\PAR{O{} O{}}{\mathrel{\ifnotempty{#1}{{}_{#1}}\parallel\ifnotempty{#2}{_{#2}}}}
+%\NewDocumentCommand\sRPAR{O{} O{}}{\mathrel{\ifnotempty{#1}{{}_{#1}}\makebox[0pt][l]{$\sPAR$}\mkern-9mu\rightarrow\ifnotempty{#2}{_{#2}}}}
+% \newcommand{\RPAR}{\,\mathbin{\texttt{\textbf{|}}\mkern-6mu\texttt{\textbf{|}}\mkern-5mu\raisebox{.7ex}{\texttt{\textbf{-}}}\mkern-3mu}\,}
+
 \newcommand{\LET}[2]{#1\GETS#2}
 \newcommand{\PRED}[2][\aForm]{#2 \mid #1}
 \newcommand{\PREDP}[2][\aForm]{\ABR{\PRED[#1]{#2}}}
@@ -338,7 +348,7 @@
 \newcommand{\mACQ}{{\mathsf{acq}}}
 \newcommand{\mFSC}{{\mathsf{fsc}}}
 
-\newcommand{\ascope}{\varsigma}
+\newcommand{\ascope}{\sigma}
 \newcommand{\sCTA}{{\mathsf{cta}}}
 \newcommand{\sGPU}{{\mathsf{gpu}}}
 \newcommand{\sSYS}{{\mathsf{sys}}}
@@ -631,8 +641,8 @@
 \newcommand{\gtNsp}{\mathrel{\,\mid\!\!\!>}}
 \newcommand{\ltNsp}{\mathrel{\,\mid\!\!\!<}}
 \newcommand{\geN}{<}
-\newcommand{\lehb}{\le}
-\newcommand{\lthb}{<}
+\newcommand{\lesw}{\le}
+\newcommand{\ltsw}{<}
 \newcommand{\lestrong}{\trianglelefteq}
 \newcommand{\ltstrong}{\vartriangleleft}
 \newcommand{\leloc}{\sqsubseteq}
@@ -702,6 +712,7 @@
 \newcommand{\FENCE}{\texttt{F}}
 \newcommand{\FADD}{\texttt{FADD}}
 \newcommand{\CAS}{\texttt{CAS}}
+\newcommand{\EXCHG}{\texttt{EXCHG}}
 \newcommand{\BEGIN}{\texttt{begin}}
 \newcommand{\COMMIT}{\texttt{commit}}
 \newcommand{\RECOVERY}{\texttt{onabort}\texttt{\{}}
@@ -737,8 +748,6 @@
 \newcommand{\brELSE}{\texttt{\}}\\\texttt{else}\,\texttt{\{}}
 \newcommand{\brELIF}[1]{\texttt{\}}\\\texttt{else}\,\IF{#1}}
 \newcommand{\FI}{\texttt{\}}}
-\newcommand{\RPAR}{\mathrel{\makebox[0pt][l]{$\PAR$}\mkern-5mu\rightarrow}}
-% \newcommand{\RPAR}{\,\mathbin{\texttt{\textbf{|}}\mkern-6mu\texttt{\textbf{|}}\mkern-5mu\raisebox{.7ex}{\texttt{\textbf{-}}}\mkern-3mu}\,}
 \newcommand{\LPAR}{\,\mathbin{\rrceil}\,}
 \newcommand{\VAR}{\texttt{var}\,}
 \newcommand{\TOUCHED}{\texttt{touched}\,}
@@ -759,10 +768,8 @@
 \newcommand{\CLANG}{\ensuremath{\texttt{clang}}}
 
 %\newcommand{\sSEMI}{\mathbin{\dot{\rule{0em}{1.15ex};}}}
-\newcommand{\sSEMI}{\mathbin{;}}
-\newcommand{\sRPAR}{\mathrel{\makebox[0pt][l]{$\sPAR$}\mkern-9mu\rightarrow}}
+% \newcommand{\sSEMI}{\mathbin{;}}
 \newcommand{\sLPAR}{\mathbin{\rrceil}}
-\newcommand{\sPAR}{\mathbin{\parallel}}
 \newcommand{\sSEND}[2]{#1!\ifnotempty{#2}{\langle#2\rangle}}
 \newcommand{\sRECV}[2]{#1?\ifnotempty{#2}{(#2)}}
 \newcommand{\sSET}[1]{\set{#1}}
@@ -771,17 +778,21 @@
 \newcommand{\sGUARD}{\guard}
 \newcommand{\sPREFIX}[1][]{\mathbin{\displaystyle\mathop{\ifx\relax#1\relax\rightarrow\else\longrightarrow\fi}^{#1}}}
 \newcommand{\wSEMI}{\mathbin{;}}
+\newcommand{\sIF}[1]{\textnormal{\textit{IF}}\ifnotempty{#1}{\allowbreak(#1}}
 \newcommand{\sTHEN}{\allowbreak,\,}
 \newcommand{\sELSE}{\allowbreak,\,}
 \newcommand{\sFI}{)}
-\newcommand{\sIF}[1]{\textnormal{\textit{IF}}\ifnotempty{#1}{\allowbreak(#1}}
-\newcommand{\sLET}[2]{\textnormal{\textit{LET}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2)}}
+\NewDocumentCommand\sIFTHEN{m m m O{}}{\textnormal{\textit{IF}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2,\,\allowbreak#3)_{#4}}}
+\NewDocumentCommand\sSEMI{m m O{}}{\textnormal{\textit{SEQ}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2)_{#3}}}
+\NewDocumentCommand\sPAR{m O{} m O{}}{\sRPAR{#1}[#2]{#3}[#4]}
+\NewDocumentCommand\sRPAR{m O{} m O{}}{\textnormal{\textit{PAR}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak\ifnotempty{#2}{#2,\,\allowbreak}#3)_{#4}}}
+\NewDocumentCommand\sLET{m m O{}}{\textnormal{\textit{LET}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2)_{#3}}}
 \newcommand{\sFORK}[1]{\textnormal{\textit{FORK}}\ifnotempty{#1}{\allowbreak(#1)}}
 \newcommand{\sFORKJOIN}[1]{\textnormal{\textit{FORKJOIN}}\ifnotempty{#1}{\allowbreak(#1)}}
 \newcommand{\sTHREAD}[1]{\textnormal{\textit{THRD}}\ifnotempty{#1}{\allowbreak(#1)}}
 \newcommand{\sTOP}[1]{\textnormal{\textit{TOP}}\ifnotempty{#1}{\allowbreak(#1)}}
-\NewDocumentCommand\sLOAD{O{} m O{} m}{\textnormal{\textit{LOAD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{,\,\allowbreak#3})}}
-\NewDocumentCommand\sSTORE{O{} m O{} m}{\textnormal{\textit{STORE}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{,\,\allowbreak#3})}}
+\NewDocumentCommand\sLOAD{O{} m O{} m O{}}{\textnormal{\textit{LOAD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{\ifshowSCOPE,\,\allowbreak#3\fi}) _{#5}}}
+\NewDocumentCommand\sSTORE{O{} m O{} m O{}}{\textnormal{\textit{STORE}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{\ifshowSCOPE,\,\allowbreak#3\fi})_{#5}}}
 \newcommand{\sSTOREtight}[3][]{\textnormal{\textit{STORE}}\ifnotempty{#2}{\allowbreak(#2,#3\ifnotempty{#1}{,#1})}}
 \newcommand{\sLOADPRE}[4][]{\textnormal{\textit{LD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
 \newcommand{\sSTOREPRE}[4][]{\textnormal{\textit{ST}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
@@ -789,7 +800,7 @@
 \newcommand{\sSKIP}{\textnormal{\textit{SKIP}}}
 \newcommand{\sSTOP}{\textnormal{\textit{STOP}}}
 \newcommand{\sABORT}{\textnormal{\textit{ABORT}}}
-\newcommand{\sFENCE}[2][]{\textnormal{\textit{FENCE}}\ifnotempty{#2}{\allowbreak(#2\ifnotempty{#1}{,\,\allowbreak#1})}}
+\NewDocumentCommand{\sFENCE}{O{} m O{}}{\textnormal{\textit{FENCE}}\ifnotempty{#2}{\allowbreak(#2\ifnotempty{#1}{\ifshowSCOPE,\,\allowbreak#1\fi})_{#3}}}
 \newcommand{\sNIL}{\textnormal{\textit{NIL}}}
 
 \newcommand{\init}[1]{\mathsf{init}\,#1}
@@ -804,6 +815,7 @@
 \newcommand{\wait}[1]{\mathsf{wait}\,#1}
 \newcommand{\reorder}{\mathrel{\bowtie}}
 \newcommand{\reorderlt}{\mathrel{\ltimes}}%\xleftrightarrow{}}%\mathrel\leftrightarrow}
+\newcommand{\reorderca}{\mathrel{\ltimes}_{\mathsf{ca}}}%\xleftrightarrow{\mathsf{co}}}
 \newcommand{\reorderco}{\mathrel{\ltimes}_{\mathsf{co}}}%\xleftrightarrow{\mathsf{co}}}
 \newcommand{\reorderra}{\mathrel{\ltimes}_{\mathsf{sync}}}%\xleftrightarrow{\mathsf{sync}}}%\mathrel{\smash{\overset{\mathsf{ra}}{\leftrightarrow}}}}
 \newcommand{\reorderRLX}{\mathrel{\smash{\overset{\mRLX}{\leftrightarrow}}}}
@@ -940,113 +952,112 @@
 \newcommand{\xo}[3][]{\draw[xo,xright,#1](#2)to(#3);}
 \newcommand{\xxo}{\xarrowtikz{xo}{\;\;}}%
 \newcommand{\xos}[3][]{\draw[xo,#1](#2)to(#3);}
+\tikzstyle{lift} = [-latex,double]
+\newcommand{\lift}[3][]{\draw[lift,#1](#2)to(#3);}
+
 \tikzstyle{po} = [-latex,color=blue,]
 \newcommand{\po}[3][]{\draw[po,#1](#2)to(#3);}
 \newcommand{\xpo}{\xarrowtikz{po}{\;\;}}%
+\NewDocumentCommand \addr {O{} m O{} m} {\draw[po,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{addr}$}  (#4);}
+\newcommand{\raddr}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{addr}}}}}%
+\newcommand{\xaddr}{\xarrowtikz{po}{addr}}%
+\NewDocumentCommand \ctrl {O{} m O{} m} {\draw[po,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{ctrl}$}  (#4);}
+\newcommand{\rctrl}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{ctrl}}}}}%
+\newcommand{\xctrl}{\xarrowtikz{po}{ctrl}}%
+\NewDocumentCommand \data {O{} m O{} m} {\draw[po,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{data}$}  (#4);}
+\newcommand{\rdata}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{data}}}}}%
+\newcommand{\xdata}{\xarrowtikz{po}{data}}%
+\NewDocumentCommand \dob {O{} m O{} m} {\draw[po,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{dob}$}  (#4);}
+\newcommand{\rdob}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{dob}}}}}%
+\newcommand{\xdob}{\xarrowtikz{po}{dob}}%
+\NewDocumentCommand \deps {O{} m O{} m} {\draw[po,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{deps}$}  (#4);}
+\newcommand{\rdeps}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{deps}}}}}%
+\newcommand{\xdeps}{\xarrowtikz{po}{deps}}%
+\NewDocumentCommand \dobi {O{} m O{} m} {\draw[po,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{dob'}$}  (#4);}
+\newcommand{\rdobi}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{dob'}}}}}%
+\newcommand{\xdobi}{\xarrowtikz{po}{dob'}}%
+
 \tikzstyle{sync} = [-latex,color=red!40!black,double]
 \newcommand{\sync}[3][]{\draw[sync,#1](#2)to(#3);}
 \newcommand{\xsync}{\xarrowtikz{sync}{\;\;}}%
-\tikzstyle{lift} = [-latex,double]
-\newcommand{\lift}[3][]{\draw[lift,#1](#2)to(#3);}
-\tikzstyle{wk} = [-stealth,dashed,thick,color=cyan!80!black,]
-\newcommand{\wk}[3][]{\draw[wk,#1](#2)to(#3);}
-\newcommand{\xwk}{\xarrowtikz{wk}{\;\;}}%
-\tikzstyle{wkx} = [->,dashed,thick,color=red!70!black,]
-\newcommand{\wkx}[3][]{\draw[wkx,#1](#2)to(#3);}
-\newcommand{\xwkx}{\xarrowtikz{wkx}{\;\;}}%
-\tikzstyle{wky} = [->,dotted,thick,color=red!70!black,]
-\newcommand{\wky}[3][]{\draw[wky,#1](#2)to(#3);}
-\newcommand{\xwky}{\xarrowtikz{wky}{\;\;}}%
-\tikzstyle{wkz} = [->,dashdotted,thick,color=red!70!black,]
-\newcommand{\wkz}[3][]{\draw[wkz,#1](#2)to(#3);}
-\newcommand{\xwkz}{\xarrowtikz{wkz}{\;\;}}%
+\NewDocumentCommand \bob {O{} m O{} m} {\draw[sync,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{bob}$}  (#4);}
+\newcommand{\rbob}{\ensuremath{\mathrel{\textcolor{red!40!black}{\mathsf{bob}}}}}%
+\newcommand{\xbob}{\xarrowtikz{sync}{bob}}%
 
 \tikzstyle{rmw} = [-latex,thick]
 \NewDocumentCommand \rmw {O{} m O{} m} {\draw[rmw,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{rmw}$}  (#4);}
 \newcommand{\rrmw}{\ensuremath{\mathrel{\mathsf{rmw}}}}%
 \newcommand{\xrmw}{\xarrowtikz{rmw}{rmw}}%
-\tikzstyle{si} = [-latex,thick]
-\NewDocumentCommand \si {O{} m O{} m} {\draw[si,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{si}$}  (#4);}
-\newcommand{\rsi}{\ensuremath{\mathrel{\mathsf{si}}}}%
-\newcommand{\xsi}{\xarrowtikz{si}{si}}%
+\NewDocumentCommand \aob {O{} m O{} m} {\draw[rmw,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{aob}$}  (#4);}
+\newcommand{\raob}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{aob}}}}}%
+\newcommand{\xaob}{\xarrowtikz{rmw}{aob}}%
 
-\tikzstyle{eco} = [-latex,color=red!50!black,thick,dashed]
-\NewDocumentCommand \eco {O{} m O{} m} {\draw[eco,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{eco}$}  (#4);}
-\newcommand{\reco}{\ensuremath{\mathrel{\textcolor{red!50!black}{\mathsf{eco}}}}}%
-\newcommand{\recop}{\ensuremath{\mathrel{\textcolor{red!50!black}{\mathsf{eco'}}}}}%
-\newcommand{\xeco}{\xarrowtikz{eco}{eco}}%
-\newcommand{\xecop}{\xarrowtikz{eco}{eco'}}%
-\tikzstyle{co} = [-latex,color=red!50!black,thick,dashed]
-\NewDocumentCommand \co {O{} m O{} m} {\draw[co,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{co}$}  (#4);}
-\newcommand{\rco}{\ensuremath{\mathrel{\textcolor{red!50!black}{\mathsf{co}}}}}%
-\newcommand{\xco}{\xarrowtikz{co}{co}}%
-\newcommand{\xcoinv}{\xarrowtikzrev{co}{co}}%
-\tikzstyle{ca} = [-latex,color=red!50!black,thick,dashed]
-\NewDocumentCommand \ca {O{} m O{} m} {\draw[ca,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{ca}$}  (#4);}
-\newcommand{\rca}{\ensuremath{\mathrel{\textcolor{red!50!black}{\mathsf{ca}}}}}%
-\newcommand{\xca}{\xarrowtikz{ca}{ca}}%
-\tikzstyle{coi} = [-latex,color=red!50!black,thick,dashed]
-\NewDocumentCommand \coi {O{} m O{} m} {\draw[coi,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{coi}$}  (#4);}
-\newcommand{\rcoi}{\ensuremath{\mathrel{\textcolor{red!50!black}{\mathsf{coi}}}}}%
-\newcommand{\xcoi}{\xarrowtikz{coi}{coi}}%
-\tikzstyle{coe} = [-latex,color=red!50!black,thick,dashed]
-\NewDocumentCommand \coe {O{} m O{} m} {\draw[coe,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{coe}$}  (#4);}
-\newcommand{\rcoe}{\ensuremath{\mathrel{\textcolor{red!50!black}{\mathsf{coe}}}}}%
-\newcommand{\xcoe}{\xarrowtikz{coe}{coe}}%
-
-\tikzstyle{fr} = [-latex,color=red!90!black,thick,dashed]
-\NewDocumentCommand \fr {O{} m O{} m} {\draw[fr,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{fr}$}  (#4);}
-\newcommand{\rfr}{\ensuremath{\mathrel{\textcolor{red!90!black}{\mathsf{fr}}}}}%
-\newcommand{\xfr}{\xarrowtikz{fr}{fr}}%
-\newcommand{\xfrinv}{\xarrowtikzrev{fr}{fr}}%
-\tikzstyle{fre} = [-latex,color=red!90!black,thick,dashed]
-\NewDocumentCommand \fre {O{} m O{} m} {\draw[fre,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{fre}$}  (#4);}
-\newcommand{\rfre}{\ensuremath{\mathrel{\textcolor{red!90!black}{\mathsf{fre}}}}}%
-\newcommand{\xfre}{\xarrowtikz{fre}{fre}}%
-\tikzstyle{fri} = [-latex,color=red!90!black,thick,dashed]
-\NewDocumentCommand \fri {O{} m O{} m} {\draw[fri,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{fri}$}  (#4);}
-\newcommand{\rfri}{\ensuremath{\mathrel{\textcolor{red!90!black}{\mathsf{fri}}}}}%
-\newcommand{\xfri}{\xarrowtikz{fri}{fri}}%
-%\tikzstyle{rb} = [-latex,thick,dotted,color=red!90!black,]
-\NewDocumentCommand \rb {O{} m O{} m} {\draw[fr,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{fr}$}  (#4);}
-\newcommand{\rrb}{\ensuremath{\mathrel{\textcolor{red!90!black}{\mathsf{fr}}}}}%
-\newcommand{\xrb}{\xarrowtikz{rb}{fr}}%
-
-\tikzstyle{xw} = [-latex,color=red!50!black,thick,dashed]
-\NewDocumentCommand \xw {O{} m O{} m} {\draw[xw,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{xw}$}  (#4);}
-\newcommand{\rxw}{\ensuremath{\mathrel{\textcolor{red!50!black}{\mathsf{xw}}}}}%
-\newcommand{\xxw}{\xarrowtikz{xw}{xw}}%
+\tikzstyle{rfint} = [-latex,thick,color=green!50!black,dotted]
+\newcommand{\rfint}[3][]{\draw[rfint,#1](#2)to(#3);}
+\newcommand{\rrfint}{\ensuremath{\mathrel{\textcolor{green!50!black}{\mathsf{rfi}}}}}%
+\newcommand{\xrfint}{\xarrowtikz{rfint}{\;\;}}%
+\NewDocumentCommand \rfi {O{} m O{} m} {\draw[rfint,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{rfi}$}  (#4);}
+\newcommand{\rrfi}{\ensuremath{\mathrel{\textcolor{green!50!black}{\mathsf{rfi}}}}}%
+\newcommand{\xrfi}{\xarrowtikz{rfint}{rfi}}%
 
 \tikzstyle{rf} = [-latex,thick,color=green!50!black,]
 \newcommand{\rf}[3][]{\draw[rf,#1](#2)to(#3);}
 \newcommand{\rrf}{\ensuremath{\mathrel{\textcolor{green!50!black}{\mathsf{rf}}}}}%
 \newcommand{\xrf}{\xarrowtikz{rf}{\;\;}}%
-\tikzstyle{rfx} = [-latex,thick,color=green!50!black,]
 \NewDocumentCommand \rfx {O{} m O{} m} {\draw[rf,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{rf}$}  (#4);}
 \newcommand{\rrfx}{\ensuremath{\mathrel{\textcolor{green!50!black}{\mathsf{rf}}}}}%
 \newcommand{\xrfx}{\xarrowtikz{rf}{rf}}%
 \newcommand{\xrfxinv}{\xarrowtikzrev{rf}{rf}}%
-\tikzstyle{rfe} = [-latex,color=green!50!black,thick]
-\NewDocumentCommand \rfe {O{} m O{} m} {\draw[rfe,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{rfe}$}  (#4);}
+\NewDocumentCommand \rfe {O{} m O{} m} {\draw[rf,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{rfe}$}  (#4);}
 \newcommand{\rrfe}{\ensuremath{\mathrel{\textcolor{green!50!black}{\mathsf{rfe}}}}}%
-\newcommand{\xrfe}{\xarrowtikz{rfe}{rfe}}%
-\tikzstyle{rfex} = [-latex,color=green!50!black,thick]
-\NewDocumentCommand \rfex {O{} m O{} m} {\draw[rfe,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{rfe}$}  (#4);}
-\newcommand{\rrfex}{\ensuremath{\mathrel{\textcolor{green!50!black}{\mathsf{rfe}}}}}%
-\newcommand{\xrfex}{\xarrowtikz{rfe}{rfe}}%
-\tikzstyle{rfi} = [-latex,color=green!50!black,thick]
-\NewDocumentCommand \rfi {O{} m O{} m} {\draw[rfi,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{rfi}$}  (#4);}
-\newcommand{\rrfi}{\ensuremath{\mathrel{\textcolor{green!50!black}{\mathsf{rfi}}}}}%
-\newcommand{\xrfi}{\xarrowtikz{rfi}{rfi}}%
+\newcommand{\xrfe}{\xarrowtikz{rf}{rfe}}%
 
-\tikzstyle{sw} = [-latex,color=blue,thick]
-\NewDocumentCommand \sw {O{} m O{} m} {\draw[sw,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{sw}$}  (#4);}
-\newcommand{\rsw}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{sw}}}}}%
-\newcommand{\xsw}{\xarrowtikz{sw}{sw}}%
-\tikzstyle{obs} = [-latex,color=blue,thick]
-\NewDocumentCommand \obs {O{} m O{} m} {\draw[obs,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{obs}$}  (#4);}
-\newcommand{\robs}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{obs}}}}}%
-\newcommand{\xobs}{\xarrowtikz{obs}{obs}}%
+\tikzstyle{wk} = [-stealth,dashed,color=cyan!80!black,]
+\newcommand{\wk}[3][]{\draw[wk,#1](#2)to(#3);}
+\newcommand{\xwk}{\xarrowtikz{wk}{\;\;}}%
+\tikzstyle{wkx} = [-stealth,dashed,thick,color=cyan!80!black,]
+\newcommand{\wkx}[3][]{\draw[wkx,#1](#2)to(#3);}
+\newcommand{\xwkx}{\xarrowtikz{wkx}{\;\;}}%
+\tikzstyle{wky} = [-stealth,dotted,thick,color=cyan!80!black,]
+\newcommand{\wky}[3][]{\draw[wky,#1](#2)to(#3);}
+\newcommand{\xwky}{\xarrowtikz{wky}{\;\;}}%
+\tikzstyle{wkz} = [-stealth,dashdotted,thick,color=cyan!80!black,]
+\newcommand{\wkz}[3][]{\draw[wkz,#1](#2)to(#3);}
+\newcommand{\xwkz}{\xarrowtikz{wkz}{\;\;}}%
+\NewDocumentCommand \eco {O{} m O{} m} {\draw[wk,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{eco}$}  (#4);}
+\newcommand{\reco}{\ensuremath{\mathrel{\textcolor{cyan!80!black}{\mathsf{eco}}}}}%
+\newcommand{\recop}{\ensuremath{\mathrel{\textcolor{cyan!80!black}{\mathsf{eco'}}}}}%
+\newcommand{\xeco}{\xarrowtikz{wk}{eco}}%
+\newcommand{\xecop}{\xarrowtikz{wk}{eco'}}%
+\NewDocumentCommand \co {O{} m O{} m} {\draw[wk,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{co}$}  (#4);}
+\newcommand{\rco}{\ensuremath{\mathrel{\textcolor{cyan!80!black}{\mathsf{co}}}}}%
+\newcommand{\xco}{\xarrowtikz{wk}{co}}%
+\newcommand{\xcoinv}{\xarrowtikzrev{co}{co}}%
+\NewDocumentCommand \ca {O{} m O{} m} {\draw[wk,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{ca}$}  (#4);}
+\newcommand{\rca}{\ensuremath{\mathrel{\textcolor{cyan!80!black}{\mathsf{ca}}}}}%
+\newcommand{\xca}{\xarrowtikz{wk}{ca}}%
+\NewDocumentCommand \coi {O{} m O{} m} {\draw[wk,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{coi}$}  (#4);}
+\newcommand{\rcoi}{\ensuremath{\mathrel{\textcolor{cyan!80!black}{\mathsf{coi}}}}}%
+\newcommand{\xcoi}{\xarrowtikz{wk}{coi}}%
+\NewDocumentCommand \coe {O{} m O{} m} {\draw[wk,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{coe}$}  (#4);}
+\newcommand{\rcoe}{\ensuremath{\mathrel{\textcolor{cyan!80!black}{\mathsf{coe}}}}}%
+\newcommand{\xcoe}{\xarrowtikz{wk}{coe}}%
+\NewDocumentCommand \xw {O{} m O{} m} {\draw[wk,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{xw}$}  (#4);}
+\newcommand{\rxw}{\ensuremath{\mathrel{\textcolor{cyan!80!black}{\mathsf{xw}}}}}%
+\newcommand{\xxw}{\xarrowtikz{wk}{xw}}%
+\NewDocumentCommand \fr {O{} m O{} m} {\draw[wk,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{fr}$}  (#4);}
+\newcommand{\rfr}{\ensuremath{\mathrel{\textcolor{cyan!80!black}{\mathsf{fr}}}}}%
+\newcommand{\xfr}{\xarrowtikz{wk}{fr}}%
+\newcommand{\xfrinv}{\xarrowtikzrev{wk}{fr}}%
+\NewDocumentCommand \fre {O{} m O{} m} {\draw[wk,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{fre}$}  (#4);}
+\newcommand{\rfre}{\ensuremath{\mathrel{\textcolor{cyan!80!black}{\mathsf{fre}}}}}%
+\newcommand{\xfre}{\xarrowtikz{wk}{fre}}%
+\NewDocumentCommand \fri {O{} m O{} m} {\draw[wk,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{fri}$}  (#4);}
+\newcommand{\rfri}{\ensuremath{\mathrel{\textcolor{cyan!80!black}{\mathsf{fri}}}}}%
+\newcommand{\xfri}{\xarrowtikz{wk}{fri}}%
+\NewDocumentCommand \rb {O{} m O{} m} {\draw[wk,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{fr}$}  (#4);}
+\newcommand{\rrb}{\ensuremath{\mathrel{\textcolor{cyan!80!black}{\mathsf{fr}}}}}%
+\newcommand{\xrb}{\xarrowtikz{wk}{rb}}%
 
 \tikzstyle{hb} = [-latex,color=blue,thick]
 \NewDocumentCommand \hb {O{} m O{} m} {\draw[hb,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{hb}$}  (#4);}
@@ -1054,14 +1065,19 @@
 \newcommand{\rhbp}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{hb'}}}}}%
 \newcommand{\xhb}{\xarrowtikz{hb}{hb}}%
 \newcommand{\xhbp}{\xarrowtikz{hb}{hb'}}%
-\tikzstyle{ob} = [-latex,color=blue,thick]
-\NewDocumentCommand \ob {O{} m O{} m} {\draw[ob,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{ob}$}  (#4);}
+\NewDocumentCommand \ob {O{} m O{} m} {\draw[hb,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{ob}$}  (#4);}
 \newcommand{\rob}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{ob}}}}}%
-\newcommand{\xob}{\xarrowtikz{ob}{ob}}%
-\tikzstyle{obi} = [-latex,color=blue,thick]
-\NewDocumentCommand \obi {O{} m O{} m} {\draw[obi,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{ob'}$}  (#4);}
+\newcommand{\xob}{\xarrowtikz{hb}{ob}}%
+\NewDocumentCommand \obi {O{} m O{} m} {\draw[hb,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{ob'}$}  (#4);}
 \newcommand{\robi}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{ob'}}}}}%
-\newcommand{\xobi}{\xarrowtikz{obi}{ob'}}%
+\newcommand{\xobi}{\xarrowtikz{hb}{ob'}}%
+\NewDocumentCommand \sw {O{} m O{} m} {\draw[hb,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{sw}$}  (#4);}
+\newcommand{\rsw}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{sw}}}}}%
+\newcommand{\xsw}{\xarrowtikz{hb}{sw}}%
+\NewDocumentCommand \obs {O{} m O{} m} {\draw[hb,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{obs}$}  (#4);}
+\newcommand{\robs}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{obs}}}}}%
+\newcommand{\xobs}{\xarrowtikz{hb}{obs}}%
+
 
 % \tikzstyle{ird} = [-latex,thick,color=green!50!black,]
 % \NewDocumentCommand \ird {O{} m O{} m} {\draw[ird,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{ird}$}  (#4);}
@@ -1071,50 +1087,23 @@
 \NewDocumentCommand \pox {O{} m O{} m} {\draw[pox,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{po}$}  (#4);}
 \newcommand{\rpox}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{po}}}}}%
 \newcommand{\xpox}{\xarrowtikz{pox}{po}}%
-\tikzstyle{poloc} = [-latex,thick,dotted,color=cyan!90!black,]
-\NewDocumentCommand \poloc {O{} m O{} m} {\draw[poloc,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{poloc}$}  (#4);}
+\NewDocumentCommand \poloc {O{} m O{} m} {\draw[pox,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{poloc}$}  (#4);}
 \newcommand{\rpoloc}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{poloc}}}}}%
-\newcommand{\xpoloc}{\xarrowtikz{poloc}{poloc}}%
+\newcommand{\xpoloc}{\xarrowtikz{pox}{poloc}}%
+
 \tikzstyle{ppo} = [-latex,thick,color=cyan!90!black,]
 \NewDocumentCommand \ppo {O{} m O{} m} {\draw[ppo,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{ppo}$}  (#4);}
 \newcommand{\rppo}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{ppo}}}}}%
 \newcommand{\xppo}{\xarrowtikz{ppo}{ppo}}%
-\tikzstyle{addr} = [-latex,color=cyan!90!black,thick]
-\NewDocumentCommand \addr {O{} m O{} m} {\draw[addr,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{addr}$}  (#4);}
-\newcommand{\raddr}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{addr}}}}}%
-\newcommand{\xaddr}{\xarrowtikz{addr}{addr}}%
-\tikzstyle{ctrl} = [-latex,color=cyan!90!black,thick]
-\NewDocumentCommand \ctrl {O{} m O{} m} {\draw[ctrl,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{ctrl}$}  (#4);}
-\newcommand{\rctrl}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{ctrl}}}}}%
-\newcommand{\xctrl}{\xarrowtikz{ctrl}{ctrl}}%
-\tikzstyle{data} = [-latex,color=cyan!90!black,thick]
-\NewDocumentCommand \data {O{} m O{} m} {\draw[data,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{data}$}  (#4);}
-\newcommand{\rdata}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{data}}}}}%
-\newcommand{\xdata}{\xarrowtikz{data}{data}}%
-\tikzstyle{dob} = [-latex,thick,color=cyan!90!black,]
-\NewDocumentCommand \dob {O{} m O{} m} {\draw[dob,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{dob}$}  (#4);}
-\newcommand{\rdob}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{dob}}}}}%
-\newcommand{\xdob}{\xarrowtikz{dob}{dob}}%
-\tikzstyle{deps} = [-latex,thick,color=cyan!90!black,]
-\NewDocumentCommand \deps {O{} m O{} m} {\draw[deps,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{deps}$}  (#4);}
-\newcommand{\rdeps}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{deps}}}}}%
-\newcommand{\xdeps}{\xarrowtikz{deps}{deps}}%
-\tikzstyle{bob} = [-latex,thick,color=cyan!90!black,]
-\NewDocumentCommand \bob {O{} m O{} m} {\draw[bob,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{bob}$}  (#4);}
-\newcommand{\rbob}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{bob}}}}}%
-\newcommand{\xbob}{\xarrowtikz{bob}{bob}}%
-\tikzstyle{lob} = [-latex,thick,color=cyan!90!black,]
-\NewDocumentCommand \lob {O{} m O{} m} {\draw[lob,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{lob}$}  (#4);}
+\NewDocumentCommand \lob {O{} m O{} m} {\draw[ppo,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{lob}$}  (#4);}
 \newcommand{\rlob}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{lob}}}}}%
-\newcommand{\xlob}{\xarrowtikz{lob}{lob}}%
-\tikzstyle{dobi} = [-latex,thick,color=cyan!90!black,]
-\NewDocumentCommand \dobi {O{} m O{} m} {\draw[dobi,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{dob'}$}  (#4);}
-\newcommand{\rdobi}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{dob'}}}}}%
-\newcommand{\xdobi}{\xarrowtikz{dobi}{dob'}}%
-\tikzstyle{aob} = [-latex,thick,color=cyan!90!black,]
-\NewDocumentCommand \aob {O{} m O{} m} {\draw[aob,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{aob}$}  (#4);}
-\newcommand{\raob}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{aob}}}}}%
-\newcommand{\xaob}{\xarrowtikz{aob}{aob}}%
+\newcommand{\xlob}{\xarrowtikz{ppo}{lob}}%
+
+
+\tikzstyle{si} = [-latex,thick]
+\NewDocumentCommand \si {O{} m O{} m} {\draw[si,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{si}$}  (#4);}
+\newcommand{\rsi}{\ensuremath{\mathrel{\mathsf{si}}}}%
+\newcommand{\xsi}{\xarrowtikz{si}{si}}%
 
 \newsavebox{\mytempbox}
 \newcommand{\xarrowtikz}[3][above=-0.45ex]{\sbox{\mytempbox}{\hbox{\( \scriptstyle\mathsf{#3}\mkern17mu \)}}%
