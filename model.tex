@@ -583,6 +583,55 @@ Bad example:
       \dob{e}{f}
       \rfe[out=-165,in=-15]{f}{a}
     \end{tikzinline}}
+  \\
+  \tag{$\lestrong$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{1}}{}
+      \event{b}{\DW{x}{2}}{right=of a}
+      \event{c}{\DR{x}{2}}{right=of b}
+      \event{d}{\DW{y}{1}}{right=of c}
+      \event{e}{\DR{y}{1}}{right=3em of d}
+      \event{f}{\DW{x}{1}}{right=of e}
+      %\rmw{a}{b}
+      \rf{b}{c}
+      \po{c}{d}
+      \rf{d}{e}
+      \po{e}{f}
+      \rf[out=-165,in=-15]{f}{a}
+    \end{tikzinline}}
+  \\
+  \tag{${\lesw}$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{1}}{}
+      \event{b}{\DW{x}{2}}{right=of a}
+      \event{c}{\DR{x}{2}}{right=of b}
+      \event{d}{\DW{y}{1}}{right=of c}
+      \event{e}{\DR{y}{1}}{right=3em of d}
+      \event{f}{\DW{x}{1}}{right=of e}
+      \rmw{a}{b}
+      % \rf{b}{c}
+      % \po{c}{d}
+      % \rf{d}{e}
+      % \po{e}{f}
+      % \rf[out=-165,in=-15]{f}{a}
+    \end{tikzinline}}
+  \\
+  \tag{$\leloc$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{1}}{}
+      \event{b}{\DW{x}{2}}{right=of a}
+      \event{c}{\DR{x}{2}}{right=of b}
+      \event{d}{\DW{y}{1}}{right=of c}
+      \event{e}{\DR{y}{1}}{right=3em of d}
+      \event{f}{\DW{x}{1}}{right=of e}
+      \wk{a}{b}
+      \rf{b}{c}
+      % \po{c}{d}
+      \rf{d}{e}
+      % \po{e}{f}
+      \rf[out=-165,in=-15]{f}{a}
+      % \wk[out=15,in=165]{c}{f}
+    \end{tikzinline}}
 \end{gather*}
 \begin{gather*}
   \PR{x}{r}\SEMI 
