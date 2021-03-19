@@ -170,32 +170,36 @@
 \showRAtrue
 \newif\ifshowSCOPE
 \showSCOPEtrue
-\NewDocumentCommand\PRF{O{} m m O{} m}{\ifnotempty{#5}{{#5} \GETS}{#2.#3}^{#1}_{#4}}
-\NewDocumentCommand\PWF{O{} m m O{} m}{{#2.#3}^{#1}_{#4} \GETS #5}
+\NewDocumentCommand\PRField{O{} m m O{} m}{\ifnotempty{#5}{{#5} \GETS}{#2.#3}^{#1}_{#4}}
+\NewDocumentCommand\PWField{O{} m m O{} m}{{#2.#3}^{#1}_{#4} \GETS #5}
 
 \newcommand{\sem}[2][]{\llbracket#2\rrbracket\ifshowSCOPE_{#1}\fi}
-\NewDocumentCommand\PF{O{} m}{\texttt{F}^{#2}_{\ifshowSCOPE#1\fi}}
-\NewDocumentCommand\DF{O{} m O{}}{\mathsf{F}^{#2}_{\ifshowSCOPE#1\fi}}
+\NewDocumentCommand\PF{O{} m}{\texttt{F}^{#2}\ifshowSCOPE_{#1}\fi}
+\NewDocumentCommand\DF{O{} m O{}}{\mathsf{F}^{#2}\ifshowSCOPE_{#1}\fi}
 \NewDocumentCommand\DFP{O{} m O{}}{\PBR{\DF[#1]{#2}}}
-\NewDocumentCommand\DG{O{} m m O{}}{\mathsf{F}^{#2}_{\ifshowSCOPE#1\fi}\,#3}
+\NewDocumentCommand\DG{O{} m m O{}}{\mathsf{F}^{#2}\ifshowSCOPE_{#1}\fi\,#3}
 \NewDocumentCommand\DGP{O{} m m O{}}{\PBR{\DG[#1]{#2}{#3}}}
 
-\NewDocumentCommand\PR{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{#2}^{#1}_{\ifshowSCOPE#3\fi}}
+\NewDocumentCommand\PCAS{O{} O{} m O{} m m m}{\ifnotempty{#5}{{#5} \GETS}\CAS \texttt{(}#3^{#1\ifnotempty{#2}{,#2}}\ifshowSCOPE_{#4}\fi,#6,#7\texttt{)}}
+\NewDocumentCommand\PFADD{O{} O{} m O{} m m}{\ifnotempty{#5}{{#5} \GETS}\FADD \texttt{(}#3^{#1\ifnotempty{#2}{,#2}}\ifshowSCOPE_{#4}\fi,#6\texttt{)}}
+\NewDocumentCommand\PEXCHG{O{} O{} m O{} m m}{\ifnotempty{#5}{{#5} \GETS}\EXCHG \texttt{(}#3^{#1\ifnotempty{#2}{,#2}}\ifshowSCOPE_{#4}\fi,#6\texttt{)}}
+
+\NewDocumentCommand\PR{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{#2}^{#1}\ifshowSCOPE_{#3}\fi}
 \NewDocumentCommand\PRP{O{} m O{} m}{\PBR{\PR[#1]{#2}[#3]{#4}}}
-\NewDocumentCommand\DR{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{R}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DR{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{R}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DRP{O{} m O{} m O{}}{\PBR{\DR[#1]{#2}[#3]{#4}[#5]}}
 
-\NewDocumentCommand\PW{O{} m O{} m}{{#2}^{#1}_{\ifshowSCOPE#3\fi} \GETS #4}
+\NewDocumentCommand\PW{O{} m O{} m}{{#2}^{#1}\ifshowSCOPE_{#3}\fi \GETS #4}
 \NewDocumentCommand\PWP{O{} m O{} m}{\PBR{\PW[#1]{#2}[#3]{#4}}}
-\NewDocumentCommand\DW{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{W}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern0mu#2\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DW{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{W}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern0mu#2\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DWP{O{} m O{} m O{}}{\PBR{\DW[#1]{#2}[#3]{#4}[#5]}}
 
-\NewDocumentCommand\PRREF{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{\REF{#2}}^{#1}_{\ifshowSCOPE#3\fi}}
-\NewDocumentCommand\DRREF{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{R}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern1mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\PRREF{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{\REF{#2}}^{#1}\ifshowSCOPE_{#3}\fi}
+\NewDocumentCommand\DRREF{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{R}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern1mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DRREFP{O{} m O{} m O{}}{\PBR{\DRREF[#1]{#2}[#3]{#4}[#5]}}
 
-\NewDocumentCommand\PWREF{O{} m O{} m}{{\REF{#2}}^{#1}_{\ifshowSCOPE#3\fi} \GETS #4}
-\NewDocumentCommand\DWREF{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{W}^{\ifshowRA#1\fi}_{\ifshowSCOPE#3\fi}\ifnotempty{#2}{\mkern0mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\PWREF{O{} m O{} m}{{\REF{#2}}^{#1}\ifshowSCOPE_{#3}\fi \GETS #4}
+\NewDocumentCommand\DWREF{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{W}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern0mu\REF{#2}\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DWREFP{O{} m O{} m O{}}{\PBR{\DWREF[#1]{#2}[#3]{#4}[#5]}}
 
 \NewDocumentCommand\PA{m m}{\texttt{await}\,#1\,\EQ\,#2}
