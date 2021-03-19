@@ -1197,7 +1197,7 @@ This is not allowed with a data dependency instead of a control dependency \text
 
 \section{SC Examples}
 
-\ref{IRIW-aqc-sc} is allowed by trailing-sync compilation to power
+\ref{IRIW-acq-sc} is allowed by trailing-sync compilation to power
 \cite[\textsection 1]{DBLP:conf/pldi/LahavVKHD17}.
 \begin{gather*}
   \PW[\mSC]{x}{1}
@@ -1207,32 +1207,59 @@ This is not allowed with a data dependency instead of a control dependency \text
   \PR[\mRA]{x}{r}\SEMI \PR[\mSC]{y}{s}
   \PAR
   \PR[\mRA]{y}{r}\SEMI \PR[\mSC]{x}{s}
-  \taglabel{IRIW-aqc-sc}
+  \taglabel{IRIW-acq-sc}
   \\
   \tag{\cmark\ppc,\rcXI}
   \hbox{\begin{tikzinline}[node distance=1.5em]
-      % \event{wx0}{\DW{x}{0}}{}
-      % \event{wx1}{\DW{x}{1}}{right=of wx0}
-      % \event{wy0}{\DW{y}{0}}{below=4ex of wx0}
-      % \event{wy1}{\DW{y}{1}}{right=of wy0}
       \scevent{wx1}{\DW[\mSC]{x}{1}}{}
-      \scevent{wy1}{\DW[\mSC]{y}{1}}{below=4ex of wx1}
+      \raevent{rx1}{\DR[\mRA]{x}{1}}{right=2.5em of wx1}
+      \scevent{ry0}{\DR[\mSC]{y}{0}}{right=of rx1}
+      \scevent{wy1}{\DW[\mSC]{y}{1}}{right=2.5em of ry0}
       \raevent{ry1}{\DR[\mRA]{y}{1}}{right=2.5em of wy1}
       \scevent{rx0}{\DR[\mSC]{x}{0}}{right=of ry1}
-      \raevent{rx1}{\DR[\mRA]{x}{1}}{right=2.5 em of wx1}
-      \scevent{ry0}{\DR[\mSC]{y}{0}}{right=of rx1}
-      % \wk{wx0}{wx1}
-      % \wk{wy0}{wy1}
-      % \rf[bend left]{wy0}{ry0}
-      % \rf[bend right]{wx0}{rx0}
       \sync{rx1}{ry0}
       \sync{ry1}{rx0}
       \rf{wx1}{rx1}
       \rf{wy1}{ry1}
-      \wk{rx0}{wx1}
+      \wk[out=-165,in=-15]{rx0}{wx1}
       \wk{ry0}{wy1}
     \end{tikzinline}}
 \end{gather*}
+With the obvious semantics, we disallow this.  This example is hard to get
+right for power because it must be allowed with $\mRA$ reads, but disallowed
+with $\mSC$ reads.  This seems unsolvable: To allow the version with $\mRA$,
+we would need to weaken the order between the reads in each thread for the
+$\mRA$ case, and that would break publication.
+
+Consider the variant with all $\mRA$ access:
+\begin{gather*}
+  \PW[\mRA]{x}{1}
+  \PAR
+  \PW[\mRA]{y}{1}
+  \PAR
+  \PR[\mRA]{x}{r}\SEMI \PR[\mRA]{y}{s}
+  \PAR
+  \PR[\mRA]{y}{r}\SEMI \PR[\mRA]{x}{s}
+  \taglabel{IRIW-acq-acq}
+  \\
+  \tag{\cmark\ppc,\rcXI}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \raevent{wx1}{\DW[\mRA]{x}{1}}{}
+      \raevent{rx1}{\DR[\mRA]{x}{1}}{right=2.5em of wx1}
+      \raevent{ry0}{\DR[\mRA]{y}{0}}{right=of rx1}
+      \raevent{wy1}{\DW[\mRA]{y}{1}}{right=2.5em of ry0}
+      \raevent{ry1}{\DR[\mRA]{y}{1}}{right=2.5em of wy1}
+      \raevent{rx0}{\DR[\mRA]{x}{0}}{right=of ry1}
+      \sync{rx1}{ry0}
+      \sync{ry1}{rx0}
+      \rf{wx1}{rx1}
+      \rf{wy1}{ry1}
+      \wk[out=-165,in=-15]{rx0}{wx1}
+      \wk{ry0}{wy1}
+    \end{tikzinline}}
+\end{gather*}
+
+
 Leading sync is also unsound in \cXI{} with \RMW{}
 \cite[\textsection 2.1]{DBLP:conf/pldi/LahavVKHD17}.
 \begin{gather*}
@@ -1310,7 +1337,7 @@ or
   \xwk
   (\DW[\mRA]{x}{1}).
 \end{math}
-Isct's interesting that in the pomset, $(\DR[\mSC]{x}{1})$ is not needed to get
+It's interesting that in the pomset, $(\DR[\mSC]{x}{1})$ is not needed to get
 a cycle.
 
 There is a long discussion of this in \cite[\textsection 5.2,
