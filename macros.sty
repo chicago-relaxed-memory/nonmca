@@ -1,3 +1,10 @@
+\newcommand{\rms}{\mathrel{\mathsf{ms}}}
+\newcommand{\xms}{\mathrel{\smash{\xrightarrow{\mathsf{ms}}}}}
+\newcommand{\xmseq}{\mathrel{\smash{\xleftrightarrow{\mathsf{ms}}}}}
+\newcommand{\rcta}{\mathrel{\mathsf{cta}}}
+\newcommand{\xcta}{\mathrel{\smash{\xleftrightarrow{\mathsf{cta}}}}}
+\newcommand{\rgpu}{\mathrel{\mathsf{gpu}}}
+\newcommand{\xgpu}{\mathrel{\smash{\xleftrightarrow{\mathsf{gpu}}}}}
 \newcommand{\topThrd}{0}
 \newcommand{\Cdown}[1]{\smash{\downarrow}#1}
 \newcommand{\lubmode}{\sqcup}
@@ -163,9 +170,9 @@
 \newcommand{\cmdC}{\aCmd_{\mathsf{C}}}
 \newcommand{\cmdR}{\aCmd_{\mathsf{R}}}
 \newcommand{\cmdW}{\aCmd_{\mathsf{W}}}
-\newcommand{\PS}[1]{\textsc{ps#1}}
-\newcommand{\pc}{\textsc{pc}}
-\newcommand{\pcs}{\textsc{pc}s}
+\newcommand{\PS}[1]{\textnormal{\textsc{ps#1}}}
+\newcommand{\pc}{\textnormal{\textsc{pc}}}
+\newcommand{\pcs}{\textnormal{\textsc{pc}s}}
 
 \newif\ifshowRA
 \showRAtrue
@@ -189,6 +196,9 @@
 \NewDocumentCommand\PRP{O{} m O{} m}{\PBR{\PR[#1]{#2}[#3]{#4}}}
 \NewDocumentCommand\DR{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{R}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DRP{O{} m O{} m O{}}{\PBR{\DR[#1]{#2}[#3]{#4}[#5]}}
+
+\NewDocumentCommand\DX{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DXP{O{} m O{} m O{}}{\PBR{\DX[#1]{#2}[#3]{#4}[#5]}}
 
 \NewDocumentCommand\PW{O{} m O{} m}{{#2}^{#1}\ifshowSCOPE_{#3}\fi \GETS #4}
 \NewDocumentCommand\PWP{O{} m O{} m}{\PBR{\PW[#1]{#2}[#3]{#4}}}
@@ -242,7 +252,7 @@
     \def\tst{#1}%
     \def\labelmarkup##1{\textnormal{\textsc{\lowercase{##1}}}}% How to markup the label itself
     %\def\refmarkup{\labelmarkup}% How to markup the reference
-    \def\refmarkup##1{\textsc{\lowercase{##1}}}% How to markup the label itself
+    \def\refmarkup##1{\textnormal{\textsc{\lowercase{##1}}}}% How to markup the label itself
     \ifx\tst\empty\def\@currentlabel{\refmarkup{#2}}{\label{#3}}%
     \else\def\@currentlabel{\refmarkup{#1}}{\label{#3}}\fi%
     \@esphack%
@@ -269,7 +279,7 @@
 
 \newcommand{\DSTOP}[1][]{\checkmark_{#1}} 
 \newcommand{\stopPS}{\textsf{SKIP}}
-\newcommand{\taglabel}[2][]{\tag{$\textsc{\lowercase{#2}}_{\textsc{\lowercase{#1}}}$}\label{#2#1}}
+\newcommand{\taglabel}[2][]{\tag{$\textnormal{\textsc{\lowercase{#2}}}_{\textnormal{\textsc{\lowercase{#1}}}}$}\label{#2#1}}
 \newcommand{\taglabelp}[1]{\tag{\textsc{\lowercase{#1}}$'$}\label{#1p}}
 \newcommand{\taglabelpp}[1]{\tag{\textsc{\lowercase{#1}}$''$}\label{#1pp}}
 \newcommand{\ignore}[1]{}
@@ -287,7 +297,7 @@
 \newcommand{\coverEnd}{\mathsf{endCover}\guard}
 \newcommand{\aSubC}{\aSub}
 \newcommand{\notonce}{}
-\newcommand{\weakestmo}{\textsc{weak\-est\-mo}}
+\newcommand{\weakestmo}{\textnormal{\textsc{weak\-est\-mo}}}
 \newcommand{\semold}[1]{\mathsf{old}\ifnotempty{#1}{\sem{#1}}}
 \newcommand{\aCtxt}{\mathbb{C}}
 \newcommand{\bCtxt}{\mathbb{D}}
@@ -325,16 +335,16 @@
 \newcommand{\external}{}
 \newcommand{\externally}{}
 
-\newcommand{\xLIR}{{\textsc{lir}}}
-\newcommand{\xRecycle}{{\textsc{alpha}}}
-\newcommand{\xDGR}{{\textsc{dgr}}}
-\newcommand{\xRRD}{{\textsc{rrd}}}
-\newcommand{\xRMW}{{\textsc{rmw}}}
-\newcommand{\xFENCE}{{\textsc{fence}}}
-\newcommand{\xIF}{{\textsc{if}}}
-\newcommand{\xADDR}{{\textsc{addr}}}
-\newcommand{\xCO}{{\textsc{co}}}
-\newcommand{\xRASC}{{\textsc{sync}}}
+\newcommand{\xLIR}{\textnormal{\textsc{lir}}}
+\newcommand{\xRecycle}{\textnormal{\textsc{alpha}}}
+\newcommand{\xDGR}{\textnormal{\textsc{dgr}}}
+\newcommand{\xRRD}{\textnormal{\textsc{rrd}}}
+\newcommand{\xRMW}{\textnormal{\textsc{rmw}}}
+\newcommand{\xFENCE}{\textnormal{\textsc{fence}}}
+\newcommand{\xIF}{\textnormal{\textsc{if}}}
+\newcommand{\xADDR}{\textnormal{\textsc{addr}}}
+\newcommand{\xCO}{\textnormal{\textsc{co}}}
+\newcommand{\xRASC}{\textnormal{\textsc{sync}}}
 % \newcommand{\xDGR}{{\text{DGR}}}
 % \newcommand{\xRRD}{{\text{RRD}}}
 % \newcommand{\xIF}{{\text{If}}}
@@ -354,6 +364,7 @@
 \newcommand{\mFSC}{{\mathsf{fsc}}}
 
 \newcommand{\ascope}{\sigma}
+\newcommand{\bscope}{\rho}
 \newcommand{\sCTA}{{\mathsf{cta}}}
 \newcommand{\sGPU}{{\mathsf{gpu}}}
 \newcommand{\sSYS}{{\mathsf{sys}}}
