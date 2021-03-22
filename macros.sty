@@ -122,7 +122,7 @@
 %\usepackage{anyfontsize}
 \usepackage{mathtools}
 \usepackage{enumitem}
-\setlist[enumerate,2]{label = (\theenumi\alph*), ref = (\theenumi\alph*)}
+\setlist[enumerate,2]{label=(\theenumi\alph*),ref=\theenumi\alph*}
 % \setlist[enumerate,1]{leftmargin = 1.6\parindent, topsep = 0.2\baselineskip}
 % \setlist[itemize,1]{leftmargin = 1.6\parindent, topsep = 0.2\baselineskip}
 \usepackage{amsmath}
@@ -200,8 +200,8 @@
 \NewDocumentCommand\DR{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{R}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DRP{O{} m O{} m O{}}{\PBR{\DR[#1]{#2}[#3]{#4}[#5]}}
 
-\NewDocumentCommand\DX{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
-\NewDocumentCommand\DXP{O{} m O{} m O{}}{\PBR{\DX[#1]{#2}[#3]{#4}[#5]}}
+\NewDocumentCommand\DE{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{E}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DEP{O{} m O{} m O{}}{\PBR{\DE[#1]{#2}[#3]{#4}[#5]}}
 
 \NewDocumentCommand\PW{O{} m O{} m}{{#2}^{#1}\ifshowSCOPE_{#3}\fi \GETS #4}
 \NewDocumentCommand\PWP{O{} m O{} m}{\PBR{\PW[#1]{#2}[#3]{#4}}}
@@ -660,10 +660,10 @@
 \newcommand{\gtNsp}{\mathrel{\,\mid\!\!\!>}}
 \newcommand{\ltNsp}{\mathrel{\,\mid\!\!\!<}}
 \newcommand{\geN}{<}
-\newcommand{\lesw}{\le}
-\newcommand{\ltsw}{<}
-\newcommand{\lestrong}{\trianglelefteq}
-\newcommand{\ltstrong}{\vartriangleleft}
+\newcommand{\lesync}{\le}
+\newcommand{\ltsync}{<}
+\newcommand{\ledep}{\trianglelefteq}
+\newcommand{\ltdep}{\vartriangleleft}
 \newcommand{\leloc}{\sqsubseteq}
 \newcommand{\ltloc}{\sqsubset}
 \newcommand{\geloc}{\sqsupseteq}
@@ -813,12 +813,12 @@
 \newcommand{\sFORKJOIN}[1]{\textnormal{\textit{FORKJOIN}}\ifnotempty{#1}{\allowbreak(#1)}}
 \newcommand{\sTHREAD}[1]{\textnormal{\textit{THRD}}\ifnotempty{#1}{\allowbreak(#1)}}
 \newcommand{\sTOP}[1]{\textnormal{\textit{TOP}}\ifnotempty{#1}{\allowbreak(#1)}}
-\NewDocumentCommand{\sLOAD}{O{} m O{} m O{}}{\textnormal{\textit{LOAD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{\ifshowSCOPE,\,\allowbreak#3\fi})\ifshowSCOPE_{#5}\fi}}
-\NewDocumentCommand{\sSTORE}{O{} m O{} m O{}}{\textnormal{\textit{STORE}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{\ifshowSCOPE,\,\allowbreak#3\fi})\ifshowSCOPE_{#5}\fi}}
+\NewDocumentCommand{\sLOAD}{O{} m O{} m O{}}{\textnormal{\textit{READ}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{\ifshowSCOPE,\,\allowbreak#3\fi})\ifshowSCOPE_{#5}\fi}}
+\NewDocumentCommand{\sSTORE}{O{} m O{} m O{}}{\textnormal{\textit{WRITE}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#4\ifnotempty{#1}{,\,\allowbreak#1}\ifnotempty{#3}{\ifshowSCOPE,\,\allowbreak#3\fi})\ifshowSCOPE_{#5}\fi}}
 \NewDocumentCommand{\sFENCE}{O{} m O{}}{\textnormal{\textit{FENCE}}\ifnotempty{#2}{\allowbreak(#2\ifnotempty{#1}{\ifshowSCOPE,\,\allowbreak#1\fi})\ifshowSCOPE_{#3}\fi}}
-\newcommand{\sSTOREtight}[3][]{\textnormal{\textit{STORE}}\ifnotempty{#2}{\allowbreak(#2,#3\ifnotempty{#1}{,#1})}}
-\newcommand{\sLOADPRE}[4][]{\textnormal{\textit{LD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
-\newcommand{\sSTOREPRE}[4][]{\textnormal{\textit{ST}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
+\newcommand{\sSTOREtight}[3][]{\textnormal{\textit{WRITE}}\ifnotempty{#2}{\allowbreak(#2,#3\ifnotempty{#1}{,#1})}}
+\newcommand{\sLOADPRE}[4][]{\textnormal{\textit{RD}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
+\newcommand{\sSTOREPRE}[4][]{\textnormal{\textit{WR}}\ifnotempty{#2}{\allowbreak(#2,\,\allowbreak#3\ifnotempty{#1}{,\,\allowbreak#1},\,\allowbreak#4)}}
 \newcommand{\sSKIPPRE}{\textnormal{\textit{SKIPPRE}}}
 \newcommand{\sSKIP}{\textnormal{\textit{SKIP}}}
 \newcommand{\sSTOP}{\textnormal{\textit{STOP}}}
@@ -838,7 +838,8 @@
 \newcommand{\reorder}{\mathrel{\bowtie}}
 \newcommand{\reorderlt}{\mathrel{\ltimes}}%\xleftrightarrow{}}%\mathrel\leftrightarrow}
 \newcommand{\reorderca}{\mathrel{\ltimes}_{\mathsf{ca}}}%\xleftrightarrow{\mathsf{co}}}
-\newcommand{\reorderco}{\mathrel{\ltimes}_{\mathsf{co}}}%\xleftrightarrow{\mathsf{co}}}
+\newcommand{\reordersc}{\mathrel{\ltimes}_{\mathsf{sc}}}%\xleftrightarrow{\mathsf{co}}}
+\newcommand{\reorderco}{\mathrel{\ltimes}_{\mathsf{loc}}}%\xleftrightarrow{\mathsf{co}}}
 \newcommand{\reorderra}{\mathrel{\ltimes}_{\mathsf{sync}}}%\xleftrightarrow{\mathsf{sync}}}%\mathrel{\smash{\overset{\mathsf{ra}}{\leftrightarrow}}}}
 \newcommand{\reorderRLX}{\mathrel{\smash{\overset{\mRLX}{\leftrightarrow}}}}
 \newcommand{\reorderSC}{\mathrel{\smash{\overset{\mSC}{\leftrightarrow}}}}

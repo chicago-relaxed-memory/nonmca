@@ -66,12 +66,12 @@ Another oddity: PTX includes the $\rbob$ edge below; IMM does not.
 
 \section{Thin Air}
 
-Need $\lestrong$ to prevent thin air on $\mRLX$:
+Need $\ledep$ to prevent thin air on $\mRLX$:
 \begin{gather*}
   \PW{y}{\PR{x}{}}\PAR
   \PW{x}{\PR{y}{}}
   \\
-  \tag{$\lestrong$}
+  \tag{$\ledep$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{1}}{}
       \event{b}{\DW{y}{1}}{right=of a}
@@ -83,7 +83,7 @@ Need $\lestrong$ to prevent thin air on $\mRLX$:
       \rf[out=-165,in=-15]{d}{a}
     \end{tikzinline}}
   \\
-  \tag{$\lesw$}
+  \tag{$\lesync$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{1}}{}
       \event{b}{\DW{y}{1}}{right=of a}
@@ -134,7 +134,7 @@ Disallowed by \IMM{}:
       \coe[out=-165,in=-15]{d}{a}
     \end{tikzinline}}
   \\
-  \tag{${\lestrong}={\lesw}$}
+  \tag{${\ledep}={\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
       \raevent{b}{\DW[\mRA]{y}{1}}{right=of a}
@@ -180,7 +180,7 @@ Allowed by \IMM, but not by Power/ARMv7/ARMv8/TSO:
       \coe[out=-165,in=-15]{d}{a}
     \end{tikzinline}}
   \\
-  \tag{$\lestrong$}
+  \tag{$\ledep$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
       \raevent{b}{\DW[\mRA]{y}{1}}{right=of a}
@@ -192,7 +192,7 @@ Allowed by \IMM, but not by Power/ARMv7/ARMv8/TSO:
       %\wk[out=-165,in=-15]{d}{a}
     \end{tikzinline}}
   \\
-  \tag{$\lesw$}
+  \tag{$\lesync$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
       \raevent{b}{\DW[\mRA]{y}{1}}{right=of a}
@@ -227,7 +227,7 @@ Example from talk:
   \PAR
   x\GETS y 
   \\[-1.2ex]
-  \tag{$\lestrong$}
+  \tag{$\ledep$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{1}}{}
       \event{b}{d:\DW{x}{1}}{right=of a}
@@ -243,7 +243,7 @@ Example from talk:
       \rf[out=172,in=8]{f}{a}
     \end{tikzinline}}
   \\
-  \tag{$\lesw$}
+  \tag{$\lesync$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{1}}{}
       \event{b}{d:\DW{x}{1}}{right=of a}
@@ -297,7 +297,7 @@ Example from talk:
 \section{Two order idea}
 The two order idea from OOPSLA talk is:
 \begin{itemize}
-\item Require: $\bEv\leloc\aEv$ when $\bEv\lestrong\aEv$ and they conflict
+\item Require: $\bEv\leloc\aEv$ when $\bEv\ledep\aEv$ and they conflict
 \end{itemize}
 This does not work for the \IMM{} or ARMv7, but it may work for Power, TSO,
 ARMv8.  That would be nice.  Let's write $\leloctwo$ for this notion, with
@@ -357,7 +357,7 @@ Before fulfilling the read:
   \PR[\mRA]{y}[\sSYS]{r}\SEMI
   \PR{x}{s}
   \\
-  \tag{${\lestrong}={\lesw}$}
+  \tag{${\ledep}={\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{wx0}{\DW{x}{0}}{}
       \event{wx1}{\DW{x}{1}}{right=of wx0}
@@ -393,7 +393,7 @@ $(\DR{x}{0})$ must be allowed:
   \PR[\mRA]{y}{r}\SEMI
   \PR{x}{s}
   \\
-  \tag{${\lestrong}$}
+  \tag{${\ledep}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{wx0}{\DW{x}{0}}{}
       \event{wx1}{\DW{x}{1}}{right=of wx0}
@@ -406,7 +406,7 @@ $(\DR{x}{0})$ must be allowed:
       \rf{wy1}{ry1}
     \end{tikzinline}}
   \\
-  \tag{${\lesw}$}
+  \tag{${\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{wx0}{\DW{x}{0}}{}
       \event{wx1}{\DW{x}{1}}{right=of wx0}
@@ -431,7 +431,7 @@ $(\DR{x}{0})$ must be allowed:
       % \wk[out=-15,in=-165]{wx1}{rx}
     \end{tikzinline}}
 \end{gather*}
-We do not have $(\DW[\mRA]{y}{1})\lesw (\DR[\mRA]{y}{1})$ since \ref{rf3} only
+We do not have $(\DW[\mRA]{y}{1})\lesync (\DR[\mRA]{y}{1})$ since \ref{rf3} only
 requires order for things that are morally strong.  
 
 Another example that may be of interest (nothing morally strong).  Can this $(\DR{x}{0})$?
@@ -445,7 +445,7 @@ Another example that may be of interest (nothing morally strong).  Can this $(\D
 
 \PTX{} allows TC16 for events that are not mutually strong (\ref{tc16wk}),
 but disallows it when events are mutually strong (\ref{tc16sys}).  Note that
-$\lesw$ imposes no requirements here.  Fulfillment imposes no order.  This
+$\lesync$ imposes no requirements here.  Fulfillment imposes no order.  This
 example shows that \ref{rf3c} cannot be strengthened to require that
 $\bEv\leloc\aEv$.
 \begin{gather*}
@@ -454,7 +454,7 @@ $\bEv\leloc\aEv$.
   \PAR
   \PR{x}{s} \SEMI \PW{x}{2}
   \\
-  \tag{$\lestrong$}
+  \tag{$\ledep$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a1}{\DR{x}{2}}{}
       \event{a2}{\DW{x}{1}}{right=of a1}
@@ -464,7 +464,7 @@ $\bEv\leloc\aEv$.
       \rf[out=-165,in=-15]{b2}{a1}
     \end{tikzinline}}
   \\
-  \tag{$\lesw$}
+  \tag{$\lesync$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a1}{\DR{x}{2}}{}
       \event{a2}{\DW{x}{1}}{right=of a1}
@@ -490,7 +490,7 @@ $\bEv\leloc\aEv$.
   \PAR                                              
   \PR[\mRLX]{x}[\sSYS]{s} \SEMI \PW[\mRLX]{x}[\sSYS]{2}
   \\
-  \tag{${\lestrong}={\lesw}$}
+  \tag{${\ledep}={\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a1}{\DR[\mRLX]{x}[\sSYS]{2}}{}
       \event{a2}{\DW[\mRLX]{x}[\sSYS]{1}}{right=of a1}
@@ -523,7 +523,7 @@ in the case that only fulfill relaxed reads.
   \PAR                                             
   \PR[\mRLX]{y}[\sSYS]{s} \SEMI \PW[\mRA]{x}[\sSYS]{1}
   \\
-  \tag{${\lestrong}={\lesw}$}
+  \tag{${\ledep}={\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a1}{\DR[\mRLX]{x}[\sSYS]{1}}{}
       \raevent{a2}{\DW[\mRA]{y}[\sSYS]{1}}{right=of a1}
@@ -544,7 +544,7 @@ include synchronization in the no-tar axiom, only in coherence and causality.
   \PAR                                             
   \PR[\mRLX]{y}[\sSYS]{s} \SEMI \PW[\mRA]{x}[\sSYS]{1}
   \\
-  \tag{${\lestrong}={\lesw}$}
+  \tag{${\ledep}={\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a1}{\DR[\mRLX]{x}[\sSYS]{1}}{}
       \event{a2}{\DW[\mRLX]{y}[\sSYS]{1}}{right=of a1}
@@ -584,7 +584,7 @@ Bad example:
       \rfe[out=-165,in=-15]{f}{a}
     \end{tikzinline}}
   \\
-  \tag{$\lestrong$}
+  \tag{$\ledep$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{1}}{}
       \event{b}{\DW{x}{2}}{right=of a}
@@ -600,7 +600,7 @@ Bad example:
       \rf[out=-165,in=-15]{f}{a}
     \end{tikzinline}}
   \\
-  \tag{${\lesw}$}
+  \tag{${\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{1}}{}
       \event{b}{\DW{x}{2}}{right=of a}
@@ -641,7 +641,7 @@ Bad example:
   \PR{y}{r}\SEMI
   \PW{x}{r}
   \\
-  \tag{${\lestrong}$}
+  \tag{${\ledep}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{1}}{}
       \event{b}{\DW{x}{2}}{right=of a}
@@ -657,7 +657,7 @@ Bad example:
       \rf[out=-165,in=-15]{f}{a}
     \end{tikzinline}}
   \\
-  \tag{${\lesw}$}
+  \tag{${\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{1}}{}
       \event{b}{\DW{x}{2}}{right=of a}
@@ -715,7 +715,7 @@ Anton example 1 (Allowed by ARM) \texttt{[rfi-coe-coe]}
       \coe[out=-165,in=-15]{e}{a}
     \end{tikzinline}}
   \\
-  \tag{$\lestrong$}
+  \tag{$\ledep$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
       \raevent{b}{\DR[\mRA]{x}{2}}{right=of a}
@@ -729,7 +729,7 @@ Anton example 1 (Allowed by ARM) \texttt{[rfi-coe-coe]}
       %\wk[out=-165,in=-15]{e}{a}
     \end{tikzinline}}
   \\
-  \tag{$\lesw$}
+  \tag{$\lesync$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
       \raevent{b}{\DR[\mRA]{x}{2}}{right=of a}
@@ -1202,9 +1202,9 @@ This is not allowed with a data dependency instead of a control dependency \text
 \begin{gather*}
   \PW[\mSC]{x}{1}
   \PAR
-  \PW[\mSC]{y}{1}
-  \PAR
   \PR[\mRA]{x}{r}\SEMI \PR[\mSC]{y}{s}
+  \PAR
+  \PW[\mSC]{y}{1}
   \PAR
   \PR[\mRA]{y}{r}\SEMI \PR[\mSC]{x}{s}
   \taglabel{IRIW-acq-sc}
@@ -1225,39 +1225,11 @@ This is not allowed with a data dependency instead of a control dependency \text
       \wk{ry0}{wy1}
     \end{tikzinline}}
 \end{gather*}
-With the obvious semantics, we disallow this.  This example is hard to get
-right for power because it must be allowed with $\mRA$ reads, but disallowed
-with $\mSC$ reads.  This seems unsolvable: To allow the version with $\mRA$,
-we would need to weaken the order between the reads in each thread for the
-$\mRA$ case, and that would break publication.
+This example is hard to get right for power because it must be allowed with
+$\mRA$ reads, but disallowed with $\mSC$ reads.  This seems unsolvable: To
+allow the version with $\mRA$, we would need to weaken the order between the
+reads in each thread for the $\mRA$ case, and that would break publication.
 
-Consider the variant with all $\mRA$ access:
-\begin{gather*}
-  \PW[\mRA]{x}{1}
-  \PAR
-  \PW[\mRA]{y}{1}
-  \PAR
-  \PR[\mRA]{x}{r}\SEMI \PR[\mRA]{y}{s}
-  \PAR
-  \PR[\mRA]{y}{r}\SEMI \PR[\mRA]{x}{s}
-  \taglabel{IRIW-acq-acq}
-  \\
-  \tag{\cmark\ppc,\rcXI}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \raevent{wx1}{\DW[\mRA]{x}{1}}{}
-      \raevent{rx1}{\DR[\mRA]{x}{1}}{right=2.5em of wx1}
-      \raevent{ry0}{\DR[\mRA]{y}{0}}{right=of rx1}
-      \raevent{wy1}{\DW[\mRA]{y}{1}}{right=2.5em of ry0}
-      \raevent{ry1}{\DR[\mRA]{y}{1}}{right=2.5em of wy1}
-      \raevent{rx0}{\DR[\mRA]{x}{0}}{right=of ry1}
-      \sync{rx1}{ry0}
-      \sync{ry1}{rx0}
-      \rf{wx1}{rx1}
-      \rf{wy1}{ry1}
-      \wk[out=-165,in=-15]{rx0}{wx1}
-      \wk{ry0}{wy1}
-    \end{tikzinline}}
-\end{gather*}
 
 
 Leading sync is also unsound in \cXI{} with \RMW{}
@@ -1524,16 +1496,16 @@ exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
 
 Orders/Relations in model
 \begin{itemize}
-\item $\lestrong$ is the old $\le$ (without coherence stuff from \ref{rf4} and \ref{5b}).
+\item $\ledep$ is the old $\le$ (without coherence stuff from \ref{rf4} and \ref{5b}).
 
   This provides the NO-TAR axiom.
-\item $\lesw$ is a the \emph{happens-before} suborder, which only includes $\rrf$ when they are morally strong.
+\item $\lesync$ is a the \emph{happens-before} suborder, which only includes $\rrf$ when they are morally strong.
 
   This serves as a cross-location transitive kernel for the per-location order.
   
 \item $\leloc$ is a per-location order that relates morally strong  and $\rpoloc$ accesses
 
-  This includes $\lesw$ for  morally strong accesses.
+  This includes $\lesync$ for  morally strong accesses.
 
   This provides the SC-PER-LOC axiom.
 
@@ -1546,7 +1518,7 @@ Write $\bEv\moral\aEv$ if they conflict and are morally strong
 
 \begin{definition}
   A \emph{pomset with preconditions} is a tuple
-  $(\Event, \labeling, {\lesw}, {\lestrong}, {\leloc})$ where
+  $(\Event, \labeling, {\lesync}, {\ledep}, {\leloc})$ where
   \begin{description}
   \item[{\labeltextsc[m1]{(m1)}{m1}}] $\Event$ is a set of \emph{events}
   \item[{\labeltextsc[m2]{(m2)}{m2}}]
@@ -1559,21 +1531,21 @@ Write $\bEv\moral\aEv$ if they conflict and are morally strong
       \emph{(actions)} %include $\DW{x}{v}$, $\DR{x}{v}$, and $\DSTOP$
     \end{itemize}
   \item[{\labeltextsc[m3]{(m3)}{m3}}]
-    ${\lesw} \subseteq (\Event\times\Event)$,
-    ${\lestrong} \subseteq (\Event\times\Event)$, and
+    ${\lesync} \subseteq (\Event\times\Event)$,
+    ${\ledep} \subseteq (\Event\times\Event)$, and
     ${\leloc} \subseteq (\Event\times\Event)$ are partial orders
   \item[{\labeltextsc[m4]{(m4)}{m-consistency}}] $\bigwedge_{\aEv}\labelingForm(\aEv)$ is satisfiable \emph{(consistency)}
-  \item[{\labeltextsc[m5]{(m5)}{m-causal-strengthening}}] if $\bEv\lestrong\aEv$ then $\labelingForm(\aEv)$ implies $\labelingForm(\bEv)$ \emph{(causal strengthening)} 
-  \item[{\labeltextsc[m6]{(m6)}{m-strong}}] if $\bEv\lesw\aEv$ then $\bEv\lestrong\aEv$
-  \item[{\labeltextsc[m7]{(m7)}{m-loc}}] if $\bEv\lesw\aEv$ and $\bEv$ conflicts with $\aEv$ then $\bEv\leloc\aEv$
+  \item[{\labeltextsc[m5]{(m5)}{m-causal-strengthening}}] if $\bEv\ledep\aEv$ then $\labelingForm(\aEv)$ implies $\labelingForm(\bEv)$ \emph{(causal strengthening)} 
+  \item[{\labeltextsc[m6]{(m6)}{m-strong}}] if $\bEv\lesync\aEv$ then $\bEv\ledep\aEv$
+  \item[{\labeltextsc[m7]{(m7)}{m-loc}}] if $\bEv\lesync\aEv$ and $\bEv$ conflicts with $\aEv$ then $\bEv\leloc\aEv$
   \end{description}
 \end{definition}
 % It is important that \ref{m-loc} covers all conflicting access.
 % See \ref{pub1sys}.
 
 
-  % We say $\bEv\ltsw\aEv$ when $\bEv\lesw\aEv$ and $\bEv\neq\aEv$, and similarly
-  % for $\ltstrong$ and $\ltloc$.
+  % We say $\bEv\ltsync\aEv$ when $\bEv\lesync\aEv$ and $\bEv\neq\aEv$, and similarly
+  % for $\ltdep$ and $\ltloc$.
 
 % \begin{definition}
 %   Define $\leexists$ %and $\ltexists$
@@ -1586,9 +1558,9 @@ Write $\bEv\moral\aEv$ if they conflict and are morally strong
   $\labelingAct(\aEv)=(\DR[]{x}{v})$ if
   \begin{description}
   \item[{\labeltextsc[f3a]{(f3a)}{rf3a}}{\labeltextsc[f3]{}{rf3}}]
-    $\bEv \ltstrong \aEv$
+    $\bEv \ltdep \aEv$
   \item[{\labeltextsc[f3b]{(f3b)}{rf3b}}]
-    $\bEv \ltsw \aEv$ if $\bEv$ is morally strong with $\aEv$
+    $\bEv \ltsync \aEv$ if $\bEv$ is morally strong with $\aEv$
   \item[{\labeltextsc[f3c]{(f3c)}{rf3c}}]
     $\bEv \leloc \aEv$ (if $\bEv$ is not morally strong with $\aEv$)
   \item[{\labeltextsc[f4]{(f4)}{rf4}}]
@@ -1602,9 +1574,9 @@ Write $\bEv\moral\aEv$ if they conflict and are morally strong
   $\labelingAct(\aEv)=(\DR[]{x}{v})$ if
   \begin{description}
   \item[{\labeltextsc[f3a]{(f3a)}{rf3a}}{\labeltextsc[f3]{}{rf3}}]
-    $\bEv \ltstrong \aEv$
+    $\bEv \ltdep \aEv$
   \item[{\labeltextsc[f3b]{(f3b)}{rf3b}}]
-    $\bEv \ltsw \aEv$ if $\bEv$ is morally strong with $\aEv$
+    $\bEv \ltsync \aEv$ if $\bEv$ is morally strong with $\aEv$
   \item[{\labeltextsc[f3c]{(f3c)}{rf3c}}]
     $\aEv \not\leloc \bEv$ (if $\bEv$ is not morally strong with $\aEv$)
   \item[{\labeltextsc[f4]{(f4)}{rf4}}]
@@ -1635,7 +1607,7 @@ If all accesses are morally strong with each other, weak fulfillment
 degenerates to
 \begin{description}
 \item[\eqref{rf3}]
-  $\bEv \ltsw \aEv$
+  $\bEv \ltsync \aEv$
 \item[\eqref{rf4}]
   $\forall\labelingAct(\cEv)=(\DW[]{x}{..})$ either
   $\cEv \leloc \bEv$ or $\aEv \leloc \cEv$
@@ -1655,15 +1627,15 @@ Note that the difference between strong and weak fulfillment is limited to $\lel
 We sometimes write $\lelocstrong$ for strong fulfillment and
 $\lelocweak$ for weak fulfillment.
 
-Prefixing is as in OOPSLA, using $\lesw$ for order everywhere except
+Prefixing is as in OOPSLA, using $\lesync$ for order everywhere except
 \ref{5b}, which has $\leloc$.
 \begin{definition}
   Let $\aPS'\in(\aForm \mid \aAct) \prefix \aPSS$ when
   $(\exists\aPS\in\aPSS)$ $(\forall\aEv\in\Event)$
   \begin{description}
   \item[{\labeltextsc[P1]{(P1)}{1}}] $\Event' = \Event \cup \{\bEv\}$
-  \item[{\labeltextsc[P2]{(P2)}{2}}] ${\lesw'}\supseteq{\lesw}$,
-    ${\lestrong'}\supseteq{\lestrong}$, and ${\leloc'}\supseteq{\leloc}$
+  \item[{\labeltextsc[P2]{(P2)}{2}}] ${\lesync'}\supseteq{\lesync}$,
+    ${\ledep'}\supseteq{\ledep}$, and ${\leloc'}\supseteq{\leloc}$
   \item[{\labeltextsc[P3]{(P3a)}{3a}\labeltextsc[P3]{}{3}}]%
     $\labelingAct'(\aEv) = \labelingAct(\aEv)$
   \item[{\labeltextsc[P3b]{(P3b)}{3b}}] $\labelingAct'(\bEv) = \aAct$
@@ -1677,20 +1649,20 @@ Prefixing is as in OOPSLA, using $\lesw$ for order everywhere except
     $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)[\aVal/\aLoc]$
   \item[{\labeltextsc[P5a]{(P5a)}{5a}\labeltextsc[P5]{}{5}}]%
     if $\bEv=(\DR[]{..)}{}$, $\aEv=(\DW[]{..)}{}$ then $\aEv=\bEv$ or
-    $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)$ or $\bEv\lesw'\aEv$
+    $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)$ or $\bEv\lesync'\aEv$
   \item[{\labeltextsc[P5b]{(P5b)}{5b}}] if $\bEv$ conflicts with
     $\aEv$ %$\bEv\conflict\aEv$
     then $\bEv\leloc'\aEv$
   \item[{\labeltextsc[P5c]{(P5c)}{5c}}] if $\bEv$ is an acquire or $\aEv$ is
-    a release then $\bEv \lesw' \aEv$
+    a release then $\bEv \lesync' \aEv$
   \item[{\labeltextsc[P5d]{(P5d)}{5d}}] if $\bEv$ is an SC write and $\aEv$
-    is an SC read then $\bEv \lesw' \aEv$
+    is an SC read then $\bEv \lesync' \aEv$
   \item[{\labeltextsc[P5e]{(P5e)}{5e}}] if $\bEv$ reads, and $\aEv$ is an
     acquiring fence, then
-    $\bEv \lesw' \aEv$
+    $\bEv \lesync' \aEv$
   \item[{\labeltextsc[P5f]{(P5f)}{5f}}] if $\bEv$ is a releasing fence,
     and $\aEv$ writes, then
-    $\bEv \lesw' \aEv$
+    $\bEv \lesync' \aEv$
   \end{description}
 \end{definition}
 
@@ -1718,7 +1690,7 @@ Prefixing is as in OOPSLA, using $\lesw$ for order everywhere except
 
 % \begin{definition}
 %   Let $\aPS'\in(\aPSS[M/x])\mkern2mu$ when $(\exists\aPS\in\aPSS$)\\\qquad
-%   $\Event' = \Event$, ${\lesw'} = {\lesw}$, $\labelingAct' = \labelingAct$, and
+%   $\Event' = \Event$, ${\lesync'} = {\lesync}$, $\labelingAct' = \labelingAct$, and
 %   $(\forall\aEv\in\Event')$ $\labelingForm'(\aEv) = \labelingForm(\aEv)[M/x]$
 % \end{definition}
 % \begin{definition}
@@ -1726,7 +1698,7 @@ Prefixing is as in OOPSLA, using $\lesw$ for order everywhere except
 %   $(\exists\aPS^1 \in \aPSS^1)$ $(\exists\aPS^2 \in \aPSS^2)$
 %   \\% $\aPS^1$ is completed exactly when $\aPS^2$ is completed, there is at most one termination in $\Event'$,
 %   \qquad $\Event' = \Event^1 \cup \Event^2$,
-%   ${\lesw'}\supseteq{\lesw^1}\cup{\lesw^2}$, and $(\forall\aEv\in\Event')$ either
+%   ${\lesync'}\supseteq{\lesync^1}\cup{\lesync^2}$, and $(\forall\aEv\in\Event')$ either
 %   \begin{gather*}
 %     \begin{aligned}
 %       \aEv \not\in \Event^2,\; \labelingAct'(\aEv) &= \labelingAct^1(\aEv)
