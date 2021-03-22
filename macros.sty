@@ -122,6 +122,7 @@
 %\usepackage{anyfontsize}
 \usepackage{mathtools}
 \usepackage{enumitem}
+\setlist[1]{labelindent=\parindent} % < Usually a good idea
 \setlist[enumerate,2]{label=(\theenumi\alph*),ref=\theenumi\alph*}
 % \setlist[enumerate,1]{leftmargin = 1.6\parindent, topsep = 0.2\baselineskip}
 % \setlist[itemize,1]{leftmargin = 1.6\parindent, topsep = 0.2\baselineskip}
@@ -200,8 +201,8 @@
 \NewDocumentCommand\DR{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{R}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
 \NewDocumentCommand\DRP{O{} m O{} m O{}}{\PBR{\DR[#1]{#2}[#3]{#4}[#5]}}
 
-\NewDocumentCommand\DE{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{E}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
-\NewDocumentCommand\DEP{O{} m O{} m O{}}{\PBR{\DE[#1]{#2}[#3]{#4}[#5]}}
+\NewDocumentCommand\DX{O{} m O{} m O{}}{\ifshowSCOPE#5\fi\mathsf{}^{\ifshowRA#1\fi}\ifshowSCOPE_{#3}\fi\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#4}{\mkern1mu#4}}}
+\NewDocumentCommand\DXP{O{} m O{} m O{}}{\PBR{\DX[#1]{#2}[#3]{#4}[#5]}}
 
 \NewDocumentCommand\PW{O{} m O{} m}{{#2}^{#1}\ifshowSCOPE_{#3}\fi \GETS #4}
 \NewDocumentCommand\PWP{O{} m O{} m}{\PBR{\PW[#1]{#2}[#3]{#4}}}
