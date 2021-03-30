@@ -21,13 +21,13 @@ a := [x]  || b := [y]
   \PW{y}{r}
   \PAR
   \PR{y}{s}\SEMI
-  \PW[\mRA]{x}{1}
+  \PW[\mREL]{x}{1}
   \\
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{1}}{}
       \event{b}{\DW{y}{1}}{right=of a}
       \event{c}{\DR{y}{1}}{right=3em of b}
-      \raevent{d}{\DW[\mRA]{x}{1}}{right=of c}
+      \raevent{d}{\DW[\mREL]{x}{1}}{right=of c}
       \data{a}{b}
       \rfe{b}{c}
       \bob{c}{d}
@@ -46,17 +46,17 @@ if the Pomset model mixes release/acquire induced order with dependencies in the
 
 Another oddity: PTX includes the $\rbob$ edge below; IMM does not.
 \begin{gather*}
-  \PW[\mRA]{x}{1}
+  \PW[\mREL]{x}{1}
   \PAR
   \PR{x}{r}\SEMI
   \PW{x}{1}\SEMI
-  \PR[\mRA]{x}{1}
+  \PR[\mACQ]{x}{1}
   \\
   \hbox{\begin{tikzinline}[node distance=1.5em]
-      \raevent{a}{\DW[\mRA]{x}{1}}{}
+      \raevent{a}{\DW[\mREL]{x}{1}}{}
       \event{b}{\DR{x}{1}}{right=3em of a}
       \event{c}{\DW{x}{1}}{right=of b}
-      \raevent{d}{\DR[\mRA]{x}{1}}{right=of c}
+      \raevent{d}{\DR[\mACQ]{x}{1}}{right=of c}
       \rfe{a}{b}
       \wk{b}{c}
       \rfi{c}{d}
@@ -118,15 +118,15 @@ Disallowed by \IMM{}:
 \begin{gather*}
   \taglabel{pub-rel-acq-coe}
   \PW{x}{2}\SEMI 
-  \PW[\mRA]{y}{1} \PAR
-  \PR[\mRA]{y}{r}\SEMI
+  \PW[\mREL]{y}{1} \PAR
+  \PR[\mACQ]{y}{r}\SEMI
   \PW{x}{1}
   \\
   \tag{\xmark\IMM}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DW[\mRA]{y}{1}}{right=of a}
-      \raevent{c}{\DR[\mRA]{y}{1}}{right=2.5em of b}
+      \raevent{b}{\DW[\mREL]{y}{1}}{right=of a}
+      \raevent{c}{\DR[\mACQ]{y}{1}}{right=2.5em of b}
       \event{d}{\DW{x}{1}}{right=of c}
       \bob{a}{b}
       \rfe{b}{c}
@@ -137,8 +137,8 @@ Disallowed by \IMM{}:
   \tag{${\ledep}={\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DW[\mRA]{y}{1}}{right=of a}
-      \raevent{c}{\DR[\mRA]{y}{1}}{right=2.5em of b}
+      \raevent{b}{\DW[\mREL]{y}{1}}{right=of a}
+      \raevent{c}{\DR[\mACQ]{y}{1}}{right=2.5em of b}
       \event{d}{\DW{x}{1}}{right=of c}
       \sync{a}{b}
       \rf{b}{c}
@@ -149,8 +149,8 @@ Disallowed by \IMM{}:
   \tag{$\lelocstrong$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DW[\mRA]{y}{1}}{right=of a}
-      \raevent{c}{\DR[\mRA]{y}{1}}{right=2.5em of b}
+      \raevent{b}{\DW[\mREL]{y}{1}}{right=of a}
+      \raevent{c}{\DR[\mACQ]{y}{1}}{right=2.5em of b}
       \event{d}{\DW{x}{1}}{right=of c}
       %\sync{a}{b}
       \rf{b}{c}
@@ -164,14 +164,14 @@ Allowed by \IMM, but not by Power/ARMv7/ARMv8/TSO:
 \begin{gather*}
   \taglabel{pub-rel-rlx-coe}
   \PW{x}{2}\SEMI 
-  \PW[\mRA]{y}{1} \PAR
+  \PW[\mREL]{y}{1} \PAR
   \PR{y}{r}\SEMI
   \PW{x}{1}
   \\
   \tag{\cmark\IMM}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DW[\mRA]{y}{1}}{right=of a}
+      \raevent{b}{\DW[\mREL]{y}{1}}{right=of a}
       \event{c}{\DR{y}{1}}{right=2.5em of b}
       \event{d}{\DW{x}{1}}{right=of c}
       \bob{a}{b}
@@ -183,7 +183,7 @@ Allowed by \IMM, but not by Power/ARMv7/ARMv8/TSO:
   \tag{$\ledep$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DW[\mRA]{y}{1}}{right=of a}
+      \raevent{b}{\DW[\mREL]{y}{1}}{right=of a}
       \event{c}{\DR{y}{1}}{right=2.5em of b}
       \event{d}{\DW{x}{1}}{right=of c}
       \sync{a}{b}
@@ -195,7 +195,7 @@ Allowed by \IMM, but not by Power/ARMv7/ARMv8/TSO:
   \tag{$\lesync$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DW[\mRA]{y}{1}}{right=of a}
+      \raevent{b}{\DW[\mREL]{y}{1}}{right=of a}
       \event{c}{\DR{y}{1}}{right=2.5em of b}
       \event{d}{\DW{x}{1}}{right=of c}
       \sync{a}{b}
@@ -207,7 +207,7 @@ Allowed by \IMM, but not by Power/ARMv7/ARMv8/TSO:
   \tag{$\lelocstrong$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DW[\mRA]{y}{1}}{right=of a}
+      \raevent{b}{\DW[\mREL]{y}{1}}{right=of a}
       \event{c}{\DR{y}{1}}{right=2.5em of b}
       \event{d}{\DW{x}{1}}{right=of c}
       %\sync{a}{b}
@@ -221,11 +221,11 @@ Allowed by \IMM, but not by Power/ARMv7/ARMv8/TSO:
 Example from talk:
 \begin{gather*}
   \taglabel{arm7-weak}
-  r\GETS x\SEMI x\GETS 1
+  \PR{x}{r}\SEMI \PW{x}{1}
   \PAR
-  y\GETS x 
+  \PW{y}{x} 
   \PAR
-  x\GETS y 
+  \PW{x}{y} 
   \\[-1.2ex]
   \tag{$\ledep$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
@@ -330,8 +330,8 @@ Power/ARMv7 models in this regard. They disallow the behavior (as well as
 ARMv8 and TSO), so we can in principle strengthen \IMM{} to forbid it as
 well.  For that, we may add axiom to \IMM{} forbidding cycles in
 \begin{math}
-  \rco \cup ([\mathsf{W}]; \rrfe^?; ([\mathsf{R}^{\mACQ}] \cup \rpox;
-  [\mathsf{FW}^{\mREL}]); \rar^{*}; [\mathsf{W}]).
+  \rco \cup ([\mathsf{W}]; \rrfe^?; ([\mathsf{R}^{\fACQ}] \cup \rpox;
+  [\mathsf{FW}^{\fREL}]); \rar^{*}; [\mathsf{W}]).
 \end{math}
 This works if we have acquire/release accesses on the path
 since they are compiled with fences to Power.
@@ -353,16 +353,16 @@ Before fulfilling the read:
   \taglabel[sys]{pub1}
   \PW{x}{0}\SEMI 
   \PW{x}{1}\SEMI
-  \PW[\mRA]{y}[\sSYS]{1} \PAR
-  \PR[\mRA]{y}[\sSYS]{r}\SEMI
+  \PW[\mREL]{y}[\sSYS]{1} \PAR
+  \PR[\mACQ]{y}[\sSYS]{r}\SEMI
   \PR{x}{s}
   \\
   \tag{${\ledep}={\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{wx0}{\DW{x}{0}}{}
       \event{wx1}{\DW{x}{1}}{right=of wx0}
-      \raevent{wy1}{\DW[\mRA]{y}[\sSYS]{1}}{right=of wx1}
-      \raevent{ry1}{\DR[\mRA]{y}[\sSYS]{1}}{right=2.5em of wy1}
+      \raevent{wy1}{\DW[\mREL]{y}[\sSYS]{1}}{right=of wx1}
+      \raevent{ry1}{\DR[\mACQ]{y}[\sSYS]{1}}{right=2.5em of wy1}
       \event{rx}{\DR{x}{}}{right=of ry1}
       \sync[out=-15,in=-165]{wx0}{wy1}
       \sync{wx1}{wy1}
@@ -374,8 +374,8 @@ Before fulfilling the read:
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{wx0}{\DW{x}{0}}{}
       \event{wx1}{\DW{x}{1}}{right=of wx0}
-      \raevent{wy1}{\DW[\mRA]{y}[\sSYS]{1}}{right=of wx1}
-      \raevent{ry1}{\DR[\mRA]{y}[\sSYS]{1}}{right=2.5em of wy1}
+      \raevent{wy1}{\DW[\mREL]{y}[\sSYS]{1}}{right=of wx1}
+      \raevent{ry1}{\DR[\mACQ]{y}[\sSYS]{1}}{right=2.5em of wy1}
       \event{rx}{\DR{x}{}}{right=of ry1}
       \rf{wy1}{ry1}
       \wk{wx0}{wx1}
@@ -389,16 +389,16 @@ $(\DR{x}{0})$ must be allowed:
   \taglabel[cta]{pub1}
   \PW{x}{0}\SEMI 
   \PW{x}{1}\SEMI
-  \PW[\mRA]{y}{1} \PAR
-  \PR[\mRA]{y}{r}\SEMI
+  \PW[\mREL]{y}{1} \PAR
+  \PR[\mACQ]{y}{r}\SEMI
   \PR{x}{s}
   \\
   \tag{${\ledep}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{wx0}{\DW{x}{0}}{}
       \event{wx1}{\DW{x}{1}}{right=of wx0}
-      \raevent{wy1}{\DW[\mRA]{y}{1}}{right=of wx1}
-      \raevent{ry1}{\DR[\mRA]{y}{1}}{right=2.5em of wy1}
+      \raevent{wy1}{\DW[\mREL]{y}{1}}{right=of wx1}
+      \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
       \event{rx}{\DR{x}{}}{right=of ry1}
       \sync[out=-15,in=-165]{wx0}{wy1}
       \sync{wx1}{wy1}
@@ -410,8 +410,8 @@ $(\DR{x}{0})$ must be allowed:
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{wx0}{\DW{x}{0}}{}
       \event{wx1}{\DW{x}{1}}{right=of wx0}
-      \raevent{wy1}{\DW[\mRA]{y}{1}}{right=of wx1}
-      \raevent{ry1}{\DR[\mRA]{y}{1}}{right=2.5em of wy1}
+      \raevent{wy1}{\DW[\mREL]{y}{1}}{right=of wx1}
+      \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
       \event{rx}{\DR{x}{}}{right=of ry1}
       \sync[out=-15,in=-165]{wx0}{wy1}
       \sync{wx1}{wy1}
@@ -423,15 +423,15 @@ $(\DR{x}{0})$ must be allowed:
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{wx0}{\DW{x}{0}}{}
       \event{wx1}{\DW{x}{1}}{right=of wx0}
-      \raevent{wy1}{\DW[\mRA]{y}{1}}{right=of wx1}
-      \raevent{ry1}{\DR[\mRA]{y}{1}}{right=2.5em of wy1}
+      \raevent{wy1}{\DW[\mREL]{y}{1}}{right=of wx1}
+      \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
       \event{rx}{\DR{x}{}}{right=of ry1}
       % \rf{wy1}{ry1}
       \wk{wx0}{wx1}
       % \wk[out=-15,in=-165]{wx1}{rx}
     \end{tikzinline}}
 \end{gather*}
-We do not have $(\DW[\mRA]{y}{1})\lesync (\DR[\mRA]{y}{1})$ since \ref{rf3} only
+We do not have $(\DW[\mREL]{y}{1})\lesync (\DR[\mACQ]{y}{1})$ since \ref{rf3} only
 requires order for things that are morally strong.  
 
 Another example that may be of interest (nothing morally strong).  Can this $(\DR{x}{0})$?
@@ -519,16 +519,16 @@ C11 with the intention to allow releasing writes to be downgraded to relaxed
 in the case that only fulfill relaxed reads.
 \begin{gather*}
   \taglabel{LB-REL}
-  \PR[\mRLX]{x}[\sSYS]{r} \SEMI \PW[\mRA]{y}[\sSYS]{1}
+  \PR[\mRLX]{x}[\sSYS]{r} \SEMI \PW[\mREL]{y}[\sSYS]{1}
   \PAR                                             
-  \PR[\mRLX]{y}[\sSYS]{s} \SEMI \PW[\mRA]{x}[\sSYS]{1}
+  \PR[\mRLX]{y}[\sSYS]{s} \SEMI \PW[\mREL]{x}[\sSYS]{1}
   \\
   \tag{${\ledep}={\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a1}{\DR[\mRLX]{x}[\sSYS]{1}}{}
-      \raevent{a2}{\DW[\mRA]{y}[\sSYS]{1}}{right=of a1}
+      \raevent{a2}{\DW[\mREL]{y}[\sSYS]{1}}{right=of a1}
       \event{b1}{\DR[\mRLX]{y}[\sSYS]{1}}{right=3em of a2}
-      \raevent{b2}{\DW[\mRA]{x}[\sSYS]{1}}{right=of b1}
+      \raevent{b2}{\DW[\mREL]{x}[\sSYS]{1}}{right=of b1}
       \rf{a2}{b1}
       \rf[out=-165,in=-15]{b2}{a1}
       \sync{a1}{a2}
@@ -542,14 +542,14 @@ include synchronization in the no-tar axiom, only in coherence and causality.
   \taglabel{LB-data-rel}
   \PR[\mRLX]{x}[\sSYS]{r} \SEMI \PW[\mRLX]{y}[\sSYS]{r}
   \PAR                                             
-  \PR[\mRLX]{y}[\sSYS]{s} \SEMI \PW[\mRA]{x}[\sSYS]{1}
+  \PR[\mRLX]{y}[\sSYS]{s} \SEMI \PW[\mREL]{x}[\sSYS]{1}
   \\
   \tag{${\ledep}={\lesync}$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a1}{\DR[\mRLX]{x}[\sSYS]{1}}{}
       \event{a2}{\DW[\mRLX]{y}[\sSYS]{1}}{right=of a1}
       \event{b1}{\DR[\mRLX]{y}[\sSYS]{1}}{right=3em of a2}
-      \raevent{b2}{\DW[\mRA]{x}[\sSYS]{1}}{right=of b1}
+      \raevent{b2}{\DW[\mREL]{x}[\sSYS]{1}}{right=of b1}
       \rf{a2}{b1}
       \rf[out=-165,in=-15]{b2}{a1}
       \po{a1}{a2}
@@ -562,7 +562,7 @@ include synchronization in the no-tar axiom, only in coherence and causality.
 
 Bad example:
 \begin{gather*}
-  r\GETS\EXCHG(x,2)\SEMI 
+  \PEXCHG{x}{r}{2}\SEMI 
   \PR{x}{s}\SEMI
   \PW{y}{s{-}1} \PAR
   \PR{y}{r}\SEMI
@@ -696,18 +696,18 @@ Anton example 1 (Allowed by ARM) \texttt{[rfi-coe-coe]}
 \begin{gather*}
   \taglabel{rfi-coe-coe}
   \PW{x}{2}\SEMI 
-  \PR[\mRA]{x}{r}\SEMI
+  \PR[\mACQ]{x}{r}\SEMI
   \PW{y}{1} \PAR
   \PW{y}{2}\SEMI
-  \PW[\mRA]{x}{1}
+  \PW[\mREL]{x}{1}
   \\
   \tag{\cmark\armeight}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DR[\mRA]{x}{2}}{right=of a}
+      \raevent{b}{\DR[\mACQ]{x}{2}}{right=of a}
       \event{c}{\DW{y}{1}}{right=of b}
       \event{d}{\DW{y}{2}}{right=2.5em of c}
-      \raevent{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \raevent{e}{\DW[\mREL]{x}{1}}{right=of d}
       \rfi{a}{b}
       \bob{b}{c}
       \coe{c}{d}
@@ -718,10 +718,10 @@ Anton example 1 (Allowed by ARM) \texttt{[rfi-coe-coe]}
   \tag{$\ledep$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DR[\mRA]{x}{2}}{right=of a}
+      \raevent{b}{\DR[\mACQ]{x}{2}}{right=of a}
       \event{c}{\DW{y}{1}}{right=of b}
       \event{d}{\DW{y}{2}}{right=2.5em of c}
-      \raevent{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \raevent{e}{\DW[\mREL]{x}{1}}{right=of d}
       \rf{a}{b}
       %\sync{b}{c}
       %\wk{c}{d}
@@ -732,10 +732,10 @@ Anton example 1 (Allowed by ARM) \texttt{[rfi-coe-coe]}
   \tag{$\lesync$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DR[\mRA]{x}{2}}{right=of a}
+      \raevent{b}{\DR[\mACQ]{x}{2}}{right=of a}
       \event{c}{\DW{y}{1}}{right=of b}
       \event{d}{\DW{y}{2}}{right=2.5em of c}
-      \raevent{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \raevent{e}{\DW[\mREL]{x}{1}}{right=of d}
       %\rf{a}{b}
       \sync{b}{c}
       %\wk{c}{d}
@@ -746,10 +746,10 @@ Anton example 1 (Allowed by ARM) \texttt{[rfi-coe-coe]}
   \tag{$\leloc$}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DR[\mRA]{x}{2}}{right=of a}
+      \raevent{b}{\DR[\mACQ]{x}{2}}{right=of a}
       \event{c}{\DW{y}{1}}{right=of b}
       \event{d}{\DW{y}{2}}{right=2.5em of c}
-      \raevent{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \raevent{e}{\DW[\mREL]{x}{1}}{right=of d}
       \rf{a}{b}
       %\sync{b}{c}
       \wk{c}{d}
@@ -766,7 +766,7 @@ Internal reads survive acquires \texttt{[rfi-acq-coe-coe]} (where SC read =
   \PR[\mSC]{x}{r}\SEMI
   \PW{y}{1} \PAR
   \PW{y}{2}\SEMI
-  \PW[\mRA]{x}{1}
+  \PW[\mREL]{x}{1}
   \\
   \tag{\cmark\armeight}
   \hbox{\begin{tikzinline}[node distance=1.5em]
@@ -775,7 +775,7 @@ Internal reads survive acquires \texttt{[rfi-acq-coe-coe]} (where SC read =
       \scevent{b}{\DR[\mSC]{x}{2}}{right=of b0}
       \event{c}{\DW{y}{1}}{right=of b}
       \event{d}{\DW{y}{2}}{right=2.5em of c}
-      \raevent{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \raevent{e}{\DW[\mREL]{x}{1}}{right=of d}
       \rfi[out=20,in=160]{a}{b}
       %\bob[out=20,in=160]{b0}{c}
       \bob{b0}{b}
@@ -790,13 +790,13 @@ And release-acquire pairs \texttt{[rfi-ra-coe-coe]} (where acquiring read
 \begin{gather*}
   \taglabel{rfi-ra-coe-coe2}
   \PW{x}{2}\SEMI 
-  \PW[\mRA]{w}{1}\SEMI
-  \PR[\mRA]{z}{s}\SEMI
-  \PR[\mRA]{x}{r}\SEMI
+  \PW[\mREL]{w}{1}\SEMI
+  \PR[\mACQ]{z}{s}\SEMI
+  \PR[\mACQ]{x}{r}\SEMI
   \PW{y}{1}
   \\[-1ex]\PAR
   \PW{y}{2}\SEMI
-  \PW[\mRA]{x}{1}
+  \PW[\mREL]{x}{1}
   \PAR
   \PR{r}{w}\SEMI
   \PW{r}{1}\SEMI
@@ -804,12 +804,12 @@ And release-acquire pairs \texttt{[rfi-ra-coe-coe]} (where acquiring read
   \tag{\cmark\armeight}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b1}{\DW[\mRA]{w}{1}}{right=of a}
-      \raevent{b0}{\DR[\mRA]{z}{1}}{right=of b1}
-      \raevent{b}{\DR[\mRA]{x}{2}}{right=of b0}
+      \raevent{b1}{\DW[\mREL]{w}{1}}{right=of a}
+      \raevent{b0}{\DR[\mACQ]{z}{1}}{right=of b1}
+      \raevent{b}{\DR[\mACQ]{x}{2}}{right=of b0}
       \event{c}{\DW{y}{1}}{right=of b}
       \event{d}{\DW{y}{2}}{right=2.5em of c}
-      \raevent{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \raevent{e}{\DW[\mREL]{x}{1}}{right=of d}
       \rfi[out=20,in=160]{a}{b}
       %\bob[out=20,in=160]{b0}{c}
       \bob{a}{b1}
@@ -829,22 +829,22 @@ And release-acquire pairs \texttt{[rfi-ra-coe-coe]} (where acquiring read
 % \begin{gather*}
 %   \taglabel{rfi-ra-coe-coe}
 %   \PW{x}{2}\SEMI 
-%   \PW[\mRA]{w}{1}\SEMI
-%   \PR[\mRA]{z}{s}\SEMI
-%   \PR[\mRA]{x}{r}\SEMI
+%   \PW[\mREL]{w}{1}\SEMI
+%   \PR[\mACQ]{z}{s}\SEMI
+%   \PR[\mACQ]{x}{r}\SEMI
 %   \PW{y}{1} \PAR
 %   \PW{y}{2}\SEMI
-%   \PW[\mRA]{x}{1}
+%   \PW[\mREL]{x}{1}
 %   \\
 %   \tag{\cmark\armeight}
 %   \hbox{\begin{tikzinline}[node distance=1.5em]
 %       \event{a}{\DW{x}{2}}{}
-%       \raevent{b1}{\DW[\mRA]{w}{1}}{right=of a}
-%       \raevent{b0}{\DR[\mRA]{z}{0}}{right=of b1}
-%       \raevent{b}{\DR[\mRA]{x}{2}}{right=of b0}
+%       \raevent{b1}{\DW[\mREL]{w}{1}}{right=of a}
+%       \raevent{b0}{\DR[\mACQ]{z}{0}}{right=of b1}
+%       \raevent{b}{\DR[\mACQ]{x}{2}}{right=of b0}
 %       \event{c}{\DW{y}{1}}{right=of b}
 %       \event{d}{\DW{y}{2}}{right=2.5em of c}
-%       \raevent{e}{\DW[\mRA]{x}{1}}{right=of d}
+%       \raevent{e}{\DW[\mREL]{x}{1}}{right=of d}
 %       \rfi[out=20,in=160]{a}{b}
 %       %\bob[out=20,in=160]{b0}{c}
 %       \bob{a}{b1}
@@ -862,13 +862,13 @@ places order between the $\mRA$ accesses:
 \begin{gather*}
   \taglabel{rfi-ra-data-coe-coe}
   \PW{x}{2}\SEMI 
-  \PW[\mRA]{w}{1}\SEMI
-  \PR[\mRA]{z}{s}\SEMI
-  \PR[\mRA]{x}{r}\SEMI
+  \PW[\mREL]{w}{1}\SEMI
+  \PR[\mACQ]{z}{s}\SEMI
+  \PR[\mACQ]{x}{r}\SEMI
   \PW{y}{1}
   \\[-1ex]\PAR
   \PW{y}{2}\SEMI
-  \PW[\mRA]{x}{1}
+  \PW[\mREL]{x}{1}
   \PAR
   \PR{r}{w}\SEMI
   \PW{r}{z}\SEMI
@@ -876,12 +876,12 @@ places order between the $\mRA$ accesses:
   \tag{\xmark\armeight}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b1}{\DW[\mRA]{w}{1}}{right=of a}
-      \raevent{b0}{\DR[\mRA]{z}{1}}{right=of b1}
-      \raevent{b}{\DR[\mRA]{x}{2}}{right=of b0}
+      \raevent{b1}{\DW[\mREL]{w}{1}}{right=of a}
+      \raevent{b0}{\DR[\mACQ]{z}{1}}{right=of b1}
+      \raevent{b}{\DR[\mACQ]{x}{2}}{right=of b0}
       \event{c}{\DW{y}{1}}{right=of b}
       \event{d}{\DW{y}{2}}{right=2.5em of c}
-      \raevent{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \raevent{e}{\DW[\mREL]{x}{1}}{right=of d}
       \rfi[out=20,in=160]{a}{b}
       %\bob[out=20,in=160]{b0}{c}
       \bob{a}{b1}
@@ -903,17 +903,17 @@ To allow this, weaken $\mRA$ to $\mRLX$ when read fulfilled by relaxed write
 of same thread (don't need to allow this when the write is part of an \RMW{}).
 \begin{gather*}
   \PW{x}{2}\SEMI 
-  \PR[\mRA]{x}{r}\SEMI
+  \PR[\mACQ]{x}{r}\SEMI
   \PW{y}{1} \PAR
   \PW{y}{2}\SEMI
-  \PW[\mRA]{x}{1}
+  \PW[\mREL]{x}{1}
   \\
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
       \event{b}{\DR{x}{2}}{right=of a}
       \event{c}{\DW{y}{1}}{right=of b}
       \event{d}{\DW{y}{2}}{right=2.5em of c}
-      \raevent{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \raevent{e}{\DW[\mREL]{x}{1}}{right=of d}
       \rf{a}{b}
       %\sync{b}{c}
       \wk{c}{d}
@@ -926,18 +926,18 @@ RF variant \texttt{[rfi-rfe-coe]}:
 \begin{gather*}
   \taglabel{rfi-rfe-coe}
   \PW{x}{2}\SEMI 
-  \PR[\mRA]{x}{r}\SEMI
+  \PR[\mACQ]{x}{r}\SEMI
   \PW{y}{1} \PAR
   \PR{y}{s}\SEMI
-  \PW[\mRA]{x}{1}
+  \PW[\mREL]{x}{1}
   \\
   \tag{\cmark\armeight}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DR[\mRA]{x}{2}}{right=of a}
+      \raevent{b}{\DR[\mACQ]{x}{2}}{right=of a}
       \event{c}{\DW{y}{1}}{right=of b}
       \event{d}{\DR{y}{1}}{right=2.5em of c}
-      \raevent{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \raevent{e}{\DW[\mREL]{x}{1}}{right=of d}
       \rfi{a}{b}
       \bob{b}{c}
       \rfe{c}{d}
@@ -950,18 +950,18 @@ RF variant \texttt{[rfi-rfe-coe]}:
 \begin{gather*}
   \taglabel{rfi-coe-coe}
   \PW{x}{2}\SEMI 
-  \PR[\mRA]{x}{r}\SEMI
+  \PR[\mACQ]{x}{r}\SEMI
   \PR{y}{s} \PAR
   \PW{y}{2}\SEMI
-  \PW[\mRA]{x}{1}
+  \PW[\mREL]{x}{1}
   \\
   \tag{\cmark\armeight}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DR[\mRA]{x}{2}}{right=of a}
+      \raevent{b}{\DR[\mACQ]{x}{2}}{right=of a}
       \event{c}{\DR{y}{0}}{right=of b}
       \event{d}{\DW{y}{2}}{right=2.5em of c}
-      \raevent{e}{\DW[\mRA]{x}{1}}{right=of d}
+      \raevent{e}{\DW[\mREL]{x}{1}}{right=of d}
       \rfi{a}{b}
       \bob{b}{c}
       \fre{c}{d}
@@ -1040,7 +1040,7 @@ Double FRE variant \texttt{[rfi-fre-fre]}:
 \begin{gather*}
   \taglabel{rfi-fre-fre}
   \PW{x}{2}\SEMI 
-  \PR[\mRA]{x}{r}\SEMI
+  \PR[\mACQ]{x}{r}\SEMI
   \PR{y}{s} \PAR
   \PW{y}{2}\SEMI
   \PF{}\SEMI
@@ -1049,7 +1049,7 @@ Double FRE variant \texttt{[rfi-fre-fre]}:
   \tag{\cmark\armeight}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DW{x}{2}}{}
-      \raevent{b}{\DR[\mRA]{x}{2}}{right=of a}
+      \raevent{b}{\DR[\mACQ]{x}{2}}{right=of a}
       \event{c}{\DR{y}{0}}{right=of b}
       \event{d}{\DW{y}{2}}{right=2.5em of c}
       \event{e}{\DF{}}{right=of d}
@@ -1068,7 +1068,7 @@ ARM disallows this \texttt{[data-rfi-rfe-rfe]}:
 \begin{gather*}
   \taglabel{data-rfi-rfe-rfe}
   \PW{x}{\PR{z}{}} \SEMI
-  \PR[\mRA]{x}{r}\SEMI
+  \PR[\mACQ]{x}{r}\SEMI
   \PW{y}{1} \PAR
   \PW{z}{\PR{y}{}}
   \\
@@ -1076,7 +1076,7 @@ ARM disallows this \texttt{[data-rfi-rfe-rfe]}:
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{z}{1}}{}
       \event{b}{\DW{x}{1}}{right=of a}
-      \raevent{c}{\DR[\mRA]{x}{1}}{right=of b}
+      \raevent{c}{\DR[\mACQ]{x}{1}}{right=of b}
       \event{d}{\DW{y}{1}}{right=of c}
       \event{e}{\DW{y}{1}}{right=2.5em of d}
       \event{f}{\DW{z}{1}}{right=of e}
@@ -1094,7 +1094,7 @@ It also disallows \texttt{[ctrl-rfi-rfe-rfe]}:
   \taglabel{ctrl-rfi-rfe-rfe}
   \IF{\PR{z}{}}\THEN\FI \SEMI
   \PW{x}{1} \SEMI
-  \PR[\mRA]{x}{r}\SEMI
+  \PR[\mACQ]{x}{r}\SEMI
   \PW{y}{1}
   \PAR
   \PW{z}{\PR{y}{}}
@@ -1103,7 +1103,7 @@ It also disallows \texttt{[ctrl-rfi-rfe-rfe]}:
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{z}{1}}{}
       \event{b}{\DW{x}{1}}{right=of a}
-      \raevent{c}{\DR[\mRA]{x}{1}}{right=of b}
+      \raevent{c}{\DR[\mACQ]{x}{1}}{right=of b}
       \event{d}{\DW{y}{1}}{right=of c}
       \event{e}{\DW{y}{1}}{right=2.5em of d}
       \event{f}{\DW{z}{1}}{right=of e}
@@ -1202,20 +1202,20 @@ This is not allowed with a data dependency instead of a control dependency \text
 \begin{gather*}
   \PW[\mSC]{x}{1}
   \PAR
-  \PR[\mRA]{x}{r}\SEMI \PR[\mSC]{y}{s}
+  \PR[\mACQ]{x}{r}\SEMI \PR[\mSC]{y}{s}
   \PAR
   \PW[\mSC]{y}{1}
   \PAR
-  \PR[\mRA]{y}{r}\SEMI \PR[\mSC]{x}{s}
+  \PR[\mACQ]{y}{r}\SEMI \PR[\mSC]{x}{s}
   \taglabel{IRIW-acq-sc}
   \\
   \tag{\cmark\ppc,\rcXI}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \scevent{wx1}{\DW[\mSC]{x}{1}}{}
-      \raevent{rx1}{\DR[\mRA]{x}{1}}{right=2.5em of wx1}
+      \raevent{rx1}{\DR[\mACQ]{x}{1}}{right=2.5em of wx1}
       \scevent{ry0}{\DR[\mSC]{y}{0}}{right=of rx1}
       \scevent{wy1}{\DW[\mSC]{y}{1}}{right=2.5em of ry0}
-      \raevent{ry1}{\DR[\mRA]{y}{1}}{right=2.5em of wy1}
+      \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
       \scevent{rx0}{\DR[\mSC]{x}{0}}{right=of ry1}
       \sync{rx1}{ry0}
       \sync{ry1}{rx0}
@@ -1235,7 +1235,7 @@ reads in each thread for the $\mRA$ case, and that would break publication.
 Leading sync is also unsound in \cXI{} with \RMW{}
 \cite[\textsection 2.1]{DBLP:conf/pldi/LahavVKHD17}.
 \begin{gather*}
-  \PW[\mSC]{x}{1} \SEMI \PW[\mRA]{y}{1}
+  \PW[\mSC]{x}{1} \SEMI \PW[\mREL]{y}{1}
   \PAR
   \FADD^{\mSC,\mSC}(y,1) \SEMI \PR{y}{s}
   \PAR
@@ -1245,7 +1245,7 @@ Leading sync is also unsound in \cXI{} with \RMW{}
   \tag{\cmark\ppc,\rcXI}
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \scevent{a}{\DW[\mSC]{x}{1}}{}
-      \raevent{b}{\DW[\mRA]{y}{1}}{right=of a}
+      \raevent{b}{\DW[\mREL]{y}{1}}{right=of a}
       \scevent{c1}{\DR[\mSC]{y}{1}}{right=2.5em of b}
       \scevent{c2}{\DW[\mSC]{y}{2}}{right=of c1}
       \event{d}{\DR{y}{3}}{right=of c2}
@@ -1270,7 +1270,7 @@ Leading sync is also unsound in \cXI{} with SC fences
   \PAR
   \PW[\mSC]{y}{1}
   \PAR
-  \PR[\mRA]{y}{r} \SEMI \PW[\mRA]{x}{1}  \SEMI \PR{x}{s}
+  \PR[\mACQ]{y}{r} \SEMI \PW[\mREL]{x}{1}  \SEMI \PR{x}{s}
   \PAR
   \PR[\mSC]{x}{r}
    \taglabel{rsync+rsc}
@@ -1281,8 +1281,8 @@ Leading sync is also unsound in \cXI{} with SC fences
       \event{b}{\DF{\mSC}}{right=of a}
       \event{c}{\DR{y}{0}}{right=of b}
       \scevent{d}{\DW[\mSC]{y}{1}}{right=2.5em of c}
-      \raevent{e}{\DR[\mRA]{y}{1}}{right=2.5em of d}
-      \raevent{f}{\DW[\mRA]{x}{1}}{right=of e}
+      \raevent{e}{\DR[\mACQ]{y}{1}}{right=2.5em of d}
+      \raevent{f}{\DW[\mREL]{x}{1}}{right=of e}
       \event{g}{\DR{x}{2}}{right=of f}
       \scevent{h}{\DR[\mSC]{x}{1}}{right=2.5em of g}
       \sync{a}{b}
@@ -1299,7 +1299,7 @@ Leading sync is also unsound in \cXI{} with SC fences
 \end{gather*}
 Fulfillment of $(\DR{x}{2})$ requires that either
 \begin{math}
-  (\DW[\mRA]{x}{1})
+  (\DW[\mREL]{x}{1})
   \xwk
   (\DW{x}{2})
 \end{math}
@@ -1307,7 +1307,7 @@ or
 \begin{math}
   (\DR{x}{2})
   \xwk
-  (\DW[\mRA]{x}{1}).
+  (\DW[\mREL]{x}{1}).
 \end{math}
 It's interesting that in the pomset, $(\DR[\mSC]{x}{1})$ is not needed to get
 a cycle.
@@ -1319,9 +1319,9 @@ Fig.~17]{DBLP:journals/pacmpl/BenderP19}, where they also discuss this example:
   \PAR
   \PW[\mSC]{y}{1}\SEMI \PW{y}{2}
   \PAR
-  \PR[\mRA]{x}{r}\SEMI \PR[\mSC]{y}{s}
+  \PR[\mACQ]{x}{r}\SEMI \PR[\mSC]{y}{s}
   \PAR
-  \PR[\mRA]{y}{r}\SEMI \PR[\mSC]{x}{s}
+  \PR[\mACQ]{y}{r}\SEMI \PR[\mSC]{x}{s}
   \taglabel{IRIW-sc-rlx-acq}
   \\
   \tag{\cmark\rcXI}
@@ -1330,9 +1330,9 @@ Fig.~17]{DBLP:journals/pacmpl/BenderP19}, where they also discuss this example:
       \event{wx2}{\DW{x}{2}}{right=of wx1}
       \scevent{wy1}{\DW[\mSC]{y}{1}}{below=4ex of wx1}
       \event{wy2}{\DW{y}{2}}{right=of wy1}
-      \raevent{ry1}{\DR[\mRA]{y}{2}}{right=2.5em of wy2}
+      \raevent{ry1}{\DR[\mACQ]{y}{2}}{right=2.5em of wy2}
       \scevent{rx0}{\DR[\mSC]{x}{0}}{right=of ry1}
-      \raevent{rx1}{\DR[\mRA]{x}{2}}{right=2.5 em of wx2}
+      \raevent{rx1}{\DR[\mACQ]{x}{2}}{right=2.5 em of wx2}
       \scevent{ry0}{\DR[\mSC]{y}{0}}{right=of rx1}
       \sync{rx1}{ry0}
       \sync{ry1}{rx0}
@@ -1362,7 +1362,7 @@ Reason: they are citing the flowing/pop model
   \taglabel{rwc+acq+sc}
   \PW[\mSC]{x}{1} \PAR
   \PR{x}{r}\SEMI
-  \PF{\mACQ}\SEMI
+  \PF{\fACQ}\SEMI
   \PR[\mSC]{y}{s} \PAR
   \PW[\mSC]{y}{1}\SEMI
   \PR[\mSC]{x}{r}
@@ -1371,7 +1371,7 @@ Reason: they are citing the flowing/pop model
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \scevent{a}{\DW[\mSC]{x}{1}}{}
       \event{b}{\DR{x}{1}}{right=2.5em of a}
-      \event{c}{\DF{\mACQ}}{right=of b}
+      \event{c}{\DF{\fACQ}}{right=of b}
       \scevent{d}{\DR[\mSC]{y}{0}}{right=of c}
       \scevent{e}{\DW[\mSC]{y}{1}}{right=2.5em of d}
       \scevent{f}{\DR[\mSC]{x}{0}}{right=of e}
@@ -1416,10 +1416,10 @@ exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
   \PR{x}{r}\SEMI
   \PW{x}{1}
   \PAR
-  \PR[\mRA]{x}{r}\SEMI
+  \PR[\mACQ]{x}{r}\SEMI
   \PW{x}{1}
   \PAR
-  \PR[\mRA]{y}{r}\SEMI
+  \PR[\mACQ]{y}{r}\SEMI
   \PW{x}{2}
   \taglabel{Total-CO}
   \\
@@ -1427,9 +1427,9 @@ exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{2}}{}
       \event{b}{\DW{x}{1}}{right=of a}
-      \event{c}{\DR[\mACQ]{x}{1}}{right=2.5em of b}
+      \event{c}{\DR[\fACQ]{x}{1}}{right=2.5em of b}
       \event{d}{\DW{y}{1}}{right=of c}
-      \event{e}{\DR[\mACQ]{y}{1}}{right=2.5em of d}
+      \event{e}{\DR[\fACQ]{y}{1}}{right=2.5em of d}
       \event{f}{\DW{x}{2}}{right=of e}
       \wk{a}{b}
       \sync{c}{d}
@@ -1443,9 +1443,9 @@ exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
   % \hbox{\begin{tikzinline}[node distance=1.5em]
   %     \event{a}{\DR{x}{2}}{}
   %     \event{b}{\DW{x}{1}}{right=of a}
-  %     \event{c}{\DR[\mACQ]{x}{1}}{right=2.5em of b}
+  %     \event{c}{\DR[\fACQ]{x}{1}}{right=2.5em of b}
   %     \event{d}{\DW{y}{1}}{right=of c}
-  %     \event{e}{\DR[\mACQ]{y}{1}}{right=2.5em of d}
+  %     \event{e}{\DR[\fACQ]{y}{1}}{right=2.5em of d}
   %     \event{f}{\DW{x}{2}}{right=of e}
   %     \poloc{a}{b}
   %     \co[out=15,in=165]{b}{f}
@@ -1456,9 +1456,9 @@ exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{2}}{}
       \event{b}{\DW{x}{1}}{right=of a}
-      \event{c}{\DR[\mACQ]{x}{1}}{right=2.5em of b}
+      \event{c}{\DR[\fACQ]{x}{1}}{right=2.5em of b}
       \event{d}{\DW{y}{1}}{right=of c}
-      \event{e}{\DR[\mACQ]{y}{1}}{right=2.5em of d}
+      \event{e}{\DR[\fACQ]{y}{1}}{right=2.5em of d}
       \event{f}{\DW{x}{2}}{right=of e}
       \poloc{a}{b}
       \co[out=15,in=165]{b}{f}
@@ -1471,9 +1471,9 @@ exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \event{a}{\DR{x}{2}}{}
       \event{b}{\DW{x}{1}}{right=of a}
-      \event{c}{\DR[\mACQ]{x}{1}}{right=2.5em of b}
+      \event{c}{\DR[\fACQ]{x}{1}}{right=2.5em of b}
       \event{d}{\DW{y}{1}}{right=of c}
-      \event{e}{\DR[\mACQ]{y}{1}}{right=2.5em of d}
+      \event{e}{\DR[\fACQ]{y}{1}}{right=2.5em of d}
       \event{f}{\DW{x}{2}}{right=of e}
       \coe[out=165,in=15]{f}[above]{b}
       %\rfe[out=-165,in=-15]{f}{a}
@@ -1756,8 +1756,8 @@ Prefixing is as in OOPSLA, using $\lesync$ for order everywhere except
 %   \end{aligned}
 % \end{gather*}
 % \begin{align*}
-%   \fmode \BNFDEF&\mREL  &&\text{(Release)} &\hbox{$\;\mkern60mu\;$}&
-%   \\ \BNFSEP&\mACQ   &&\text{(Acquire)} 
+%   \fmode \BNFDEF&\fREL  &&\text{(Release)} &\hbox{$\;\mkern60mu\;$}&
+%   \\ \BNFSEP&\fACQ   &&\text{(Acquire)} 
 %   \\      \BNFSEP&\mSC  &&\text{(SC)} 
 % \end{align*}
 
