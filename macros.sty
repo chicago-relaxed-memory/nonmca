@@ -127,6 +127,7 @@
 \usepackage{mathtools}
 \usepackage{enumitem}
 \setlist[enumerate,2]{label=(\theenumi\alph*),ref=\theenumi\alph*}
+\setlist[enumerate,3]{label=(\roman*),ref=\theenumi\theenumii\roman*}
 % \setlist[enumerate,1]{leftmargin = 1.6\parindent, topsep = 0.2\baselineskip}
 % \setlist[itemize,1]{leftmargin = 1.6\parindent, topsep = 0.2\baselineskip}
 \usepackage{amsmath}
@@ -161,7 +162,8 @@
 \newcommand{\classD}{\texttt{D}}
 
 \newcounter{mypara}
-\newcommand{\myparagraph}[1]{\paragraph{#1}\stepcounter{mypara}\belowpdfbookmark{#1}{mypara\arabic{mypara}}}
+%\newcommand{\myparagraph}[2][]{\subsubsection*{#2}\stepcounter{mypara}\belowpdfbookmark{#2}{mypara\arabic{mypara}}\ifnotempty{#1}{\labeltext[#2]{}{#1}}}
+\newcommand{\myparagraph}[2][]{\subsection{#2}\ifnotempty{#1}{\label{sec:#1}\labeltext[\textsection\ref{sec:#1}]{}{#1}}}
 \newcommand{\noparagraph}[1]{\stepcounter{mypara}\belowpdfbookmark{#1}{mypara\arabic{mypara}}}
 
 
