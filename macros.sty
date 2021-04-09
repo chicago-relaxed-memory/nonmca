@@ -11,7 +11,7 @@
 \newcommand{\sreaddef}{\mathrel{\textnormal{\emph{read}}}}
 \newcommand{\sreleasedef}{\mathrel{\textnormal{\emph{release}}}}
 \newcommand{\rimpliesdef}{\mathrel{\vDash}}%{\mathrel{\textnormal{\emph{implies}}}}
-\newcommand{\rextendsdef}[2]{\mathrel{\textnormal{\emph{extends}}}\ifnotempty{#1#2}{{#1}\textand{#2}}}
+%\newcommand{\rextendsdef}[2]{\mathrel{\textnormal{\emph{extends}}}\ifnotempty{#1#2}{{#1}\;\allowbreak\textnormal{\emph{and}}\;\allowbreak{#2}}}
 
 \newcommand{\roverlaps}{\mathrel{\textnormal{{overlaps}}}}
 \newcommand{\rmatches}{\mathrel{\textnormal{{matches}}}}
@@ -24,7 +24,8 @@
 \newcommand{\sread}{\mathrel{\textnormal{{read}}}}
 \newcommand{\srelease}{\mathrel{\textnormal{{release}}}}
 \newcommand{\rimplies}{\mathrel{\vDash}}%{\mathrel{\textnormal{{implies}}}}
-\newcommand{\rextends}[2]{\mathrel{\textnormal{{extends}}}\ifnotempty{#1#2}{{#1}\textand{#2}}}
+%\newcommand{\rextends}[2]{\mathrel{\textnormal{{extends}}}\ifnotempty{#1#2}{{#1}\textand{#2}}}
+\newcommand{\rextends}[2]{\supseteq({#1}\cup{#2})}
 
 \newcommand{\C}{,\;\allowbreak}
 \newcommand{\fcard}[1]{{|}#1{|}}
@@ -81,7 +82,7 @@
 \newcommand{\QxREF}[1]{\Qx{\REF{#1}}}
 \newcommand{\QwREF}[1]{\Qw{\REF{#1}}}
 \newcommand{\SB}[1]{}%_{#1}}
-\newcommand{\limplies}{\Rightarrow}
+\newcommand{\limplies}{\mathbin{\Rightarrow}}
 
 % \begin{wrapfigure}{r}{0mm}%
 %   \centering\rule{3cm}{7cm}
@@ -1144,6 +1145,9 @@
 \NewDocumentCommand \obs {O{} m O{} m} {\draw[hb,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{obs}$}  (#4);}
 \newcommand{\robs}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{obs}}}}}%
 \newcommand{\xobs}{\xarrowtikz{hb}{obs}}%
+\NewDocumentCommand \cb {O{} m O{} m} {\draw[hb,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{cb}$}  (#4);}
+\newcommand{\rcb}{\ensuremath{\mathrel{\textcolor{blue}{\mathsf{cb}}}}}%
+\newcommand{\xcb}{\xarrowtikz{hb}{cb}}%
 
 
 % \tikzstyle{ird} = [-latex,thick,color=green!50!black,]
@@ -1165,6 +1169,12 @@
 \NewDocumentCommand \lob {O{} m O{} m} {\draw[ppo,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{lob}$}  (#4);}
 \newcommand{\rlob}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{lob}}}}}%
 \newcommand{\xlob}{\xarrowtikz{ppo}{lob}}%
+\NewDocumentCommand \pre {O{} m O{} m} {\draw[ppo,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{pre}$}  (#4);}
+\newcommand{\rpre}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{pre}}}}}%
+\newcommand{\xpre}{\xarrowtikz{ppo}{pre}}%
+\NewDocumentCommand \gcb {O{} m O{} m} {\draw[ppo,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{gcb}$}  (#4);}
+\newcommand{\rgcb}{\ensuremath{\mathrel{\textcolor{cyan!90!black}{\mathsf{gcb}}}}}%
+\newcommand{\xgcb}{\xarrowtikz{ppo}{gcb}}%
 
 
 \tikzstyle{si} = [-latex,thick]

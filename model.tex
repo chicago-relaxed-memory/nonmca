@@ -798,8 +798,8 @@ And release-acquire pairs \texttt{[rfi-ra-coe-coe]} (where acquiring read
   \PW{y}{2}\SEMI
   \PW[\mREL]{x}{1}
   \PAR
-  \PR{r}{w}\SEMI
-  \PW{r}{1}\SEMI
+  \PR{w}{r}\SEMI
+  \PW{z}{1}\SEMI
   \\
   \tag{\cmark\armeight}
   \hbox{\begin{tikzinline}[node distance=1.5em]
@@ -870,8 +870,8 @@ places order between the $\mRA$ accesses:
   \PW{y}{2}\SEMI
   \PW[\mREL]{x}{1}
   \PAR
-  \PR{r}{w}\SEMI
-  \PW{r}{z}\SEMI
+  \PR{w}{r}\SEMI
+  \PW{z}{r}\SEMI
   \\
   \tag{\xmark\armeight}
   \hbox{\begin{tikzinline}[node distance=1.5em]
