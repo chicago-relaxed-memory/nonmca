@@ -378,7 +378,7 @@ Before fulfilling the read:
       \raevent{ry1}{\DR[\mACQ]{y}[\sSYS]{1}}{right=2.5em of wy1}
       \event{rx}{\DR{x}{}}{right=of ry1}
       \rf{wy1}{ry1}
-      \wk{wx0}{wx1}
+      \wki{wx0}{wx1}
       \po[out=-15,in=-165]{wx1}{rx}
     \end{tikzinline}}
 \end{gather*}
@@ -427,7 +427,7 @@ $(\DR{x}{0})$ must be allowed:
       \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
       \event{rx}{\DR{x}{}}{right=of ry1}
       % \rf{wy1}{ry1}
-      \wk{wx0}{wx1}
+      \wki{wx0}{wx1}
       % \wk[out=-15,in=-165]{wx1}{rx}
     \end{tikzinline}}
 \end{gather*}
@@ -478,8 +478,8 @@ $\bEv\leloc\aEv$.
       \event{a2}{\DW{x}{1}}{right=of a1}
       \event{b1}{\DR{x}{1}}{right=3em of a2}
       \event{b2}{\DW{x}{2}}{right=of b1}
-      \wk{a1}{a2}
-      \wk{b1}{b2}
+      \wki{a1}{a2}
+      \wki{b1}{b2}
       % \rf{a2}{b1}
       % \rf[out=-165,in=-15]{b2}{a1}
     \end{tikzinline}}
@@ -624,7 +624,7 @@ Bad example:
       \event{d}{\DW{y}{1}}{right=of c}
       \event{e}{\DR{y}{1}}{right=3em of d}
       \event{f}{\DW{x}{1}}{right=of e}
-      \wk{a}{b}
+      \wki{a}{b}
       \rf{b}{c}
       % \po{c}{d}
       \rf{d}{e}
@@ -681,7 +681,7 @@ Bad example:
       \event{d}{\DW{y}{1}}{right=of c}
       \event{e}{\DR{y}{1}}{right=3em of d}
       \event{f}{\DW{x}{1}}{right=of e}
-      \wk{a}{b}
+      \wki{a}{b}
       \rf{b}{c}
       % \po{c}{d}
       \rf{d}{e}
@@ -1292,7 +1292,7 @@ Leading sync is also unsound in \cXI{} with SC fences
       \wk[in=-15,out=-165]{f}{a}
       %\rf[out=-15,in=-165]{a}{g}
       \wk{c}{d}
-      \wk{f}{g}
+      \wki{f}{g}
       \sync{e}{f}
       %\sync[out=15,in=165]{e}{g}
     \end{tikzinline}}
@@ -1776,7 +1776,7 @@ exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
       \event{d}{\DW{y}{1}}{right=of c}
       \event{e}{\DR[\fACQ]{y}{1}}{right=2.5em of d}
       \event{f}{\DW{x}{2}}{right=of e}
-      \wk{a}{b}
+      \wki{a}{b}
       \sync{c}{d}
       \sync{e}{f}
       \rf{b}{c}
