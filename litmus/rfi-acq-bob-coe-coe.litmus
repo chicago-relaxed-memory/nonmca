@@ -12,3 +12,8 @@ AArch64 rfi-acq-coe-coe
  STR  W5,[X4]    | STLR W3,[X2]    ;
 exists
 (x=2 /\ y=2 /\ 0:X3=2)
+
+
+If you add 
+ DMB  ST         | NOP             ;
+before the LD, then it is stopped
