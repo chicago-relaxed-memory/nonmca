@@ -31,7 +31,43 @@ a := [x]  || b := [y]
       \data{a}{b}
       \rfe{b}{c}
       \bob{c}{d}
-      \rfe[out=-165,in=-15]{d}[below]{a}
+      \rfe[out=-165,in=-15]{d}[above]{a}
+    \end{tikzinline}}
+  \\
+  \tag{$\ledep$}  
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{1}}{}
+      \event{b}{\DW{y}{1}}{right=of a}
+      \event{c}{\DR{y}{1}}{right=3em of b}
+      \raevent{d}{\DW[\mREL]{x}{1}}{right=of c}
+      \po{a}{b}
+      \rf{b}{c}
+      %\sync{c}{d}
+      \rf[out=-165,in=-15]{d}{a}
+    \end{tikzinline}}
+  \\
+  \tag{$\lesync$}  
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{1}}{}
+      \event{b}{\DW{y}{1}}{right=of a}
+      \event{c}{\DR{y}{1}}{right=3em of b}
+      \raevent{d}{\DW[\mREL]{x}{1}}{right=of c}
+      %\po{a}{b}
+      %\rf{b}{c}
+      \sync{c}{d}
+      %\rf[out=-165,in=-15]{d}{a}
+    \end{tikzinline}}
+  \\
+  \tag{$\leloc$}  
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DR{x}{1}}{}
+      \event{b}{\DW{y}{1}}{right=of a}
+      \event{c}{\DR{y}{1}}{right=3em of b}
+      \raevent{d}{\DW[\mREL]{x}{1}}{right=of c}
+      %\po{a}{b}
+      %\rf{b}{c}
+      %\sync{c}{d}
+      %\rf[out=-165,in=-15]{d}{a}
     \end{tikzinline}}
 \end{gather*}
 
@@ -44,13 +80,13 @@ program, then you can erase release annotations from writes. In this regard, PTX
 AFAIU for the same reason we won't be able to show compilation correctness from the Pomset model to PTX even directly,
 if the Pomset model mixes release/acquire induced order with dependencies in the same causality relation.
 
-Another oddity: PTX includes the $\rbob$ edge below; IMM does not.
+Another oddity: PTX includes the $\rbob$ edge below; IMM does not. (?)
 \begin{gather*}
   \PW[\mREL]{x}{1}
   \PAR
   \PR{x}{r}\SEMI
   \PW{x}{1}\SEMI
-  \PR[\mACQ]{x}{1}
+  \PR[\mACQ]{x}{s}
   \\
   \hbox{\begin{tikzinline}[node distance=1.5em]
       \raevent{a}{\DW[\mREL]{x}{1}}{}
@@ -60,7 +96,43 @@ Another oddity: PTX includes the $\rbob$ edge below; IMM does not.
       \rfe{a}{b}
       \wk{b}{c}
       \rfi{c}{d}
-      \bob[in=-165,out=-15]{a}[below]{d}
+      \bob[in=-165,out=-15]{a}[pos=.55]{d}
+    \end{tikzinline}}
+  \\
+  \tag{$\ledep$}  
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \raevent{a}{\DW[\mREL]{x}{1}}{}
+      \event{b}{\DR{x}{1}}{right=3em of a}
+      \event{c}{\DW{x}{1}}{right=of b}
+      \raevent{d}{\DR[\mACQ]{x}{1}}{right=of c}
+      \rf{a}{b}
+      %\wk{b}{c}
+      \rf{c}{d}
+      %\sync[in=-165,out=-15]{a}{d}
+    \end{tikzinline}}
+  \\
+  \tag{$\lesync$}  
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \raevent{a}{\DW[\mREL]{x}{1}}{}
+      \event{b}{\DR{x}{1}}{right=3em of a}
+      \event{c}{\DW{x}{1}}{right=of b}
+      \raevent{d}{\DR[\mACQ]{x}{1}}{right=of c}
+      \rf{a}{b}
+      %\wk{b}{c}
+      \rf{c}{d}
+      %\sync[in=-165,out=-15]{a}{d}
+    \end{tikzinline}}
+  \\
+  \tag{$\leloc$}  
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \raevent{a}{\DW[\mREL]{x}{1}}{}
+      \event{b}{\DR{x}{1}}{right=3em of a}
+      \event{c}{\DW{x}{1}}{right=of b}
+      \raevent{d}{\DR[\mACQ]{x}{1}}{right=of c}
+      \rf{a}{b}
+      \wk{b}{c}
+      \rf{c}{d}
+      %\sync[in=-165,out=-15]{a}{d}
     \end{tikzinline}}
 \end{gather*}
 
