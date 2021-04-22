@@ -8,7 +8,7 @@ GPU stuff:
   Evaluation for Relaxed Atomics on Heterogeneous Systems'' and his thesis
 \end{itemize}
 
-\section{Anton's recent examples relating IMM and PTX}
+\section{Relating IMM and PTX}
 It looks like we cannot prove compilation correctness from IMM to PTX.
 (In this email I assume that all threads are in the same CTA, so any relation is a morally strong one if it is applicable.)
 The problem is in the LB-data-rel example:
@@ -80,61 +80,40 @@ program, then you can erase release annotations from writes. In this regard, PTX
 AFAIU for the same reason we won't be able to show compilation correctness from the Pomset model to PTX even directly,
 if the Pomset model mixes release/acquire induced order with dependencies in the same causality relation.
 
-Another oddity: PTX includes the $\rbob$ edge below; IMM does not. (?)
+The previous example in the section shows that IMM's acquires are stronger
+than PTX for this pattern.  The next example shows that acquiring reads in
+PTX are stronger than in IMM for a different pattern.  Thus the acquires in
+PTX and IMM are incomparable.
+
+The following behavior is allowed by IMM and C11, but forbidden by PTX.  PTX
+forbids it since acquire reads work as fences for po-previous reads from the
+same location (symmetrically to release writes for po-latter writes to the
+same location in IMM, C11, and PTX).
 \begin{gather*}
-  \PW[\mREL]{x}{1}
-  \PAR
-  \PR{x}{r}\SEMI
   \PW{x}{1}\SEMI
-  \PR[\mACQ]{x}{s}
+  \PW[\mREL]{y}{1}
+  \PAR
+  \PR{y}{r}\SEMI
+  \PW{y}{2}\SEMI
+  \PR[\mACQ]{y}{s}
+  \PR{x}{t}
   \\
   \hbox{\begin{tikzinline}[node distance=1.5em]
-      \raevent{a}{\DW[\mREL]{x}{1}}{}
-      \event{b}{\DR{x}{1}}{right=3em of a}
-      \event{c}{\DW{x}{1}}{right=of b}
-      \raevent{d}{\DR[\mACQ]{x}{1}}{right=of c}
-      \rfe{a}{b}
-      \wk{b}{c}
-      \rfi{c}{d}
-      \bob[in=-165,out=-15]{a}[pos=.55]{d}
-    \end{tikzinline}}
-  \\
-  \tag{$\ledep$}  
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \raevent{a}{\DW[\mREL]{x}{1}}{}
-      \event{b}{\DR{x}{1}}{right=3em of a}
-      \event{c}{\DW{x}{1}}{right=of b}
-      \raevent{d}{\DR[\mACQ]{x}{1}}{right=of c}
-      \rf{a}{b}
-      %\wk{b}{c}
-      \rf{c}{d}
-      %\sync[in=-165,out=-15]{a}{d}
-    \end{tikzinline}}
-  \\
-  \tag{$\lesync$}  
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \raevent{a}{\DW[\mREL]{x}{1}}{}
-      \event{b}{\DR{x}{1}}{right=3em of a}
-      \event{c}{\DW{x}{1}}{right=of b}
-      \raevent{d}{\DR[\mACQ]{x}{1}}{right=of c}
-      %\rf{a}{b}
-      %\wk{b}{c}
-      %\rf{c}{d}
-      %\sync[in=-165,out=-15]{a}{d}
-    \end{tikzinline}}
-  \\
-  \tag{$\leloc$}  
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \raevent{a}{\DW[\mREL]{x}{1}}{}
-      \event{b}{\DR{x}{1}}{right=3em of a}
-      \event{c}{\DW{x}{1}}{right=of b}
-      \raevent{d}{\DR[\mACQ]{x}{1}}{right=of c}
-      \rf{a}{b}
-      \wk{b}{c}
-      \rf{c}{d}
-      %\sync[in=-165,out=-15]{a}{d}
+      \event{a}{\DW{x}{1}}{}
+      \raevent{b}{\DW[\mREL]{y}{1}}{right=of a}
+      \event{c}{\DR{y}{1}}{right=3em of b}
+      \event{d}{\DW{y}{2}}{right=of c}
+      \raevent{e}{\DR[\mACQ]{y}{2}}{right=of d}
+      \event{f}{\DR{x}{0}}{right=of e}
+      \sync{a}{b}
+      \rf{b}{c}
+      \wk{c}{d}
+      \rf{d}{e}
+      \sync{e}{f}
+      \wk[out=-165,in=-15]{f}{a}
     \end{tikzinline}}
 \end{gather*}
+
 
 \section{Thin Air}
 
