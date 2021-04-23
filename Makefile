@@ -24,3 +24,7 @@ zip:
 
 present:
 	presentation.py -p 0 -d 15 talk.pdf 2>/dev/null
+
+takemacros:
+	mv ${HOME}/cvs/seqcomp/paper/macros.sty ${HOME}/cvs/seqcomp/paper/bib.bib .
+	(cd ${HOME}/cvs/seqcomp/paper; ln -s ${HOME}/cvs/nonmca/bib.bib .; ln -s ${HOME}/cvs/nonmca/macros.sty .)
