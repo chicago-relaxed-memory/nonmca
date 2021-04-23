@@ -1039,6 +1039,25 @@
         }
     }
 }
+%% https://tex.stackexchange.com/questions/72784/arrow-with-two-colors-with-tikz
+% \tikzset{
+%   double -latex/.style args={#1 colored by #2 and #3}{    
+%     -latex,line width=#1,#2,
+%     postaction={draw,-latex,#3,line width=(#1)/3,shorten <=(#1)/4,shorten >=4.5*(#1)/3},
+%   },
+%   double round cap-latex/.style args={#1 colored by #2 and #3}{    
+%     round cap-latex,line width=#1,#2,
+%     postaction={draw,round cap-latex,#3,line width=(#1)/3,shorten <=(#1)/4,shorten >=4.5*(#1)/3},
+%   },
+%   double round cap-stealth/.style args={#1 colored by #2 and #3}{
+%     round cap-stealth,line width=#1,#2,
+%     postaction={round cap-stealth,draw,,#3,line width=(#1)/3,shorten <=(#1)/3,shorten >=2*(#1)/3},
+%   },
+%   double -stealth/.style args={#1 colored by #2 and #3}{
+%     -stealth,line width=#1,#2,
+%     postaction={-stealth,draw,,#3,line width=(#1)/3,shorten <=(#1)/3,shorten >=2*(#1)/3},
+%   },
+% }
 \newcommand{\nonevent}[3]{\node[nonevent](#1)[#3]{$\mathstrut#2$};}
 \newcommand{\nonfinal}[3]{\node[nonfinal](#1)[#3]{$\mathstrut#2$};}
 \tikzstyle{race} = [-,thick,decorate,decoration={zigzag,segment length = 0.2cm, amplitude = 0.5mm},color=red!50!black]
@@ -1059,8 +1078,6 @@
 \newcommand{\xo}[3][]{\draw[xo,#1](#2)to(#3);}
 \newcommand{\xxo}{\xarrowtikz{xo}{\;\;}}%
 %\newcommand{\xos}[3][]{\draw[xo,#1](#2)to(#3);}
-\tikzstyle{lift} = [-latex,double]
-\newcommand{\lift}[3][]{\draw[lift,#1](#2)to(#3);}
 
 \newcommand{\depcolor}{magenta}
 \newcommand{\synccolor}{red!65!black}
@@ -1069,6 +1086,18 @@
 \newcommand{\wkcolor}{cyan!70!black}
 \newcommand{\hbcolor}{blue!70!black}
 \newcommand{\pocolor}{blue!50!black}
+
+\tikzstyle{liftrf} = [-latex,double,\rfcolor]
+\newcommand{\liftrf}[3][]{\draw[liftrf,#1](#2)to(#3);}
+\newcommand{\xliftrf}{\xarrowtikz{liftrf}{\;\;}}%
+%\tikzstyle{close} = [double -latex=7pt colored by \synccolor and \rfcolor,thick]
+% \tikzstyle{close} = [-latex,double,\rfcolor]
+%\tikzstyle{close} = [-latex,double,line width=.7pt,color=\rfcolor,postaction={draw,-,\synccolor,line width=.7pt,shorten <=0pt,shorten >=5.5pt},]
+% \newcommand{\close}[3][]{\draw[close,#1](#2)to(#3);}
+% \newcommand{\xclose}{\xarrowtikz{close}{\;\;}}%
+\tikzstyle{liftrmw} = [-latex,double,\wkicolor]
+\newcommand{\liftrmw}[3][]{\draw[liftrmw,#1](#2)to(#3);}
+\newcommand{\xliftrmw}{\xarrowtikz{liftrmw}{\;\;}}%
 
 \tikzstyle{pox} = [-latex,thick,color=\pocolor,]
 \NewDocumentCommand \pox {O{} m O{} m} {\draw[pox,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{po}$}  (#4);}
@@ -1119,10 +1148,6 @@
 \NewDocumentCommand \bob {O{} m O{} m} {\draw[sync,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{bob}$}  (#4);}
 \newcommand{\rbob}{\ensuremath{\mathrel{\textcolor{\synccolor}{\mathsf{bob}}}}}%
 \newcommand{\xbob}{\xarrowtikz{sync}{bob}}%
-
-\tikzstyle{close} = [-latex,double,color=\synccolor]
-\newcommand{\close}[3][]{\draw[close,#1](#2)to(#3);}
-\newcommand{\xclose}{\xarrowtikz{close}{\;\;}}%
 
 \tikzstyle{rf} = [->,thick,color=\rfcolor,]
 \newcommand{\rf}[3][]{\draw[rf,#1](#2)to(#3);}

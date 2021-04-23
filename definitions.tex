@@ -174,7 +174,7 @@ A possible fix is the following closure condition:
 \item[(\ref{rf-lesync}$'$)]
   if $\bEv'\lesync\bEv\xrfx\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$.
 \end{itemize}
-With that we have the following, using $\xclose$ for edges induced by closure
+With that we have the following, using $\xliftrf$ for edges induced by closure
 when $\bEv'\neq\bEv$ or $\aEv'\neq\aEv$:
 \begin{gather*}
   {
@@ -204,7 +204,7 @@ when $\bEv'\neq\bEv$ or $\aEv'\neq\aEv$:
       \sync{b1}{b2}
       \sync{b2}{b3}
       \rfint{a3}{b1}
-      \close[out=-15,in=-165]{a2}{b2}
+      \liftrf[out=-15,in=-165]{a2}{b2}
       %\wk[out=-165,in=-15]{b3}{a1}
     \end{tikzinline}}
 \end{gather*}
@@ -270,7 +270,7 @@ the same location in IMM, C11, and PTX).
       \rfint{d}{e}
       \sync{e}{f}
       %\wk[out=-165,in=-15]{f}{a}
-      \close[out=-15,in=-165]{b}{e}
+      \liftrf[out=-15,in=-165]{b}{e}
     \end{tikzinline}}
 \end{gather*}
 To allow this on for IMM, we need to drop
@@ -281,7 +281,7 @@ from $\rsyncdelays$.
 
 \begin{gather*}
   {
-    \PR[\mACQ]{y}{r}
+    \PR[\mACQ]{x}{r}
     \SEMI
     \PINC{y}{}
   }\PAR{
@@ -334,7 +334,7 @@ from $\rsyncdelays$.
       \rf{c3}{d1}
       \rf{d3}{e1}
       \rf{e2}{f1}
-      \rf[out=-15,in=-165]{f3}{a1}
+      \rf{f3}{a1}
     \end{tikzinline}}
 \end{gather*}
 
