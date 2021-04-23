@@ -279,6 +279,64 @@ To allow this on for IMM, we need to drop
 \end{math}
 from $\rsyncdelays$.
 
+\begin{gather*}
+  {
+    \PR[\mACQ]{y}{r}
+    \SEMI
+    \PINC{y}{}
+  }\PAR{
+    \PINC{y}{}
+  }\PAR{
+    \PINC{y}{}
+    \SEMI
+    \PW[\mREL]{z}{1}
+  }\PAR{
+    \PR[\mACQ]{z}{s}
+    \SEMI
+    \PINC{w}{}
+  }\PAR{
+    \PINC{w}{}
+  }\PAR{
+    \PINC{w}{}
+    \SEMI
+    \PW[\mREL]{x}{1}
+  }
+  \\
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a1}{\DR[\mACQ]{x}{1}}{}
+      \event{a2}{\DR{y}{0}}{below=of a1}
+      \event{a3}{\DW{y}{1}}{below=of a2}
+      \sync{a1}{a2}
+      \rmw{a2}{a3}
+      \event{b1}{\DR{y}{1}}{right=of a1}
+      \event{b2}{\DW{y}{2}}{below=of b1}
+      \rmw{b1}{b2}
+      \event{c1}{\DR{y}{2}}{right=of b1}
+      \event{c2}{\DW{y}{3}}{below=of c1}
+      \event{c3}{\DW[\mREL]{z}{1}}{below=of c2}
+      \rmw{c1}{c2}
+      \sync{c2}{c3}
+      \event{d1}{\DR[\mACQ]{z}{1}}{right=of c1}
+      \event{d2}{\DR{w}{0}}{below=of d1}
+      \event{d3}{\DW{w}{1}}{below=of d2}
+      \sync{d1}{d2}
+      \rmw{d2}{d3}
+      \event{e1}{\DR{w}{1}}{right=of d1}
+      \event{e2}{\DW{w}{2}}{below=of e1}
+      \rmw{e1}{e2}
+      \event{f1}{\DR{w}{2}}{right=of e1}
+      \event{f2}{\DR{w}{3}}{below=of f1}
+      \event{f3}{\DW[\mREL]{x}{1}}{below=of f2}
+      \rmw{f1}{f2}
+      \sync{f2}{f3}
+      \rf{a3}{b1}
+      \rf{b2}{c1}
+      \rf{c3}{d1}
+      \rf{d3}{e1}
+      \rf{e2}{f1}
+      \rf[out=-15,in=-165]{f3}{a1}
+    \end{tikzinline}}
+\end{gather*}
 
 \section{Model}
 \label{sec:model}

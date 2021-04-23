@@ -237,6 +237,7 @@
 
 \NewDocumentCommand\PCAS{O{} O{} m O{} m m m}{\ifnotempty{#5}{{#5} \GETS}\CAS^{#1\ifnotempty{#2}{,#2}}\ifshowSCOPE_{#4}\fi \ifnotempty{#3}{\texttt{(}#3,#6,#7\texttt{)}}}
 \NewDocumentCommand\PFADD{O{} O{} m O{} m m}{\ifnotempty{#5}{{#5} \GETS}\FADD^{#1\ifnotempty{#2}{,#2}}\ifshowSCOPE_{#4}\fi \ifnotempty{#3}{\texttt{(}#3,#6\texttt{)}}}
+\NewDocumentCommand\PINC{O{} O{} m O{} m}{\ifnotempty{#5}{{#5} \GETS}\INC^{#1\ifnotempty{#2}{,#2}}\ifshowSCOPE_{#4}\fi \ifnotempty{#3}{\texttt{(}#3\texttt{)}}}
 \NewDocumentCommand\PEXCHG{O{} O{} m O{} m m}{\ifnotempty{#5}{{#5} \GETS}\EXCHG^{#1\ifnotempty{#2}{,#2}}\ifshowSCOPE_{#4}\fi \ifnotempty{#3}{\texttt{(}#3,#6\texttt{)}}}
 
 \NewDocumentCommand\PR{O{} m O{} m}{\ifnotempty{#4}{{#4} \GETS}{#2}^{#1}\ifshowSCOPE_{#3}\fi}
@@ -804,6 +805,7 @@
 \newcommand{\semsc}[1]{\llbracket#1\rrbracket_{\SC}}
 %\newcommand{\semsc}[1]{\textit{SC}\llbracket#1\rrbracket}
 \newcommand{\FENCE}{\texttt{F}}
+\newcommand{\INC}{\texttt{INC}}
 \newcommand{\FADD}{\texttt{FADD}}
 \newcommand{\CAS}{\texttt{CAS}}
 \newcommand{\EXCHG}{\texttt{EXCHG}}
