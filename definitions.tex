@@ -227,7 +227,14 @@ This seems to work for the above examples, but it could be too strong in general
   \item How does transitivity interact with scopes?
   \end{itemize}
 \end{itemize}
-
+Anton proposes:
+\begin{itemize}
+\item[(\ref{pom-rmw-lesync}$'$)]
+  if $\bEv\xrmw\aEv$ then %$\bEv \lesync \aEv$ and
+  $\bEv \leloc \aEv$,    
+\item[(\ref{rf-lesync}$'''$)]
+  if $\bEv'\lesync\bEv\mathrel{(\xrfx;(\xrmw;\xrfx)^{*})}\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$.
+\end{itemize}
 
 The following behavior is allowed by Arm, IMM, and C11, but forbidden by PTX.
 PTX forbids it since acquire reads work as fences for po-previous reads from
