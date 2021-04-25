@@ -14,9 +14,10 @@
 \newcommand{\roverlapsdef}{\mathrel{\textnormal{\emph{overlaps}}}}
 \newcommand{\rmatchesdef}{\mathrel{\textnormal{\emph{matches}}}}
 \newcommand{\rblocksdef}{\mathrel{\textnormal{\emph{blocks}}}}
+\newcommand{\rsfencesdef}{\mathrel{\textnormal{\emph{strongly-fences}}}}
 \newcommand{\rsmatchesdef}{\mathrel{\textnormal{\emph{strongly-matches}}}}
-\newcommand{\rsblocksdef}{\mathrel{\textnormal{\emph{strongly-blocks}}}}
-\newcommand{\rsmatchesblocksdef}{\mathrel{\textnormal{\emph{strongly-matches/blocks}}}}
+\newcommand{\rsoverlapsdef}{\mathrel{\textnormal{\emph{strongly-overlaps}}}}
+%\newcommand{\rsmatchesblocksdef}{\mathrel{\textnormal{\emph{strongly-matches/blocks}}}}
 \newcommand{\rdelayspdef}{\mathrel{\textnormal{\emph{delays}}'}}
 \newcommand{\rdelaysdef}{\mathrel{\textnormal{\emph{delays}}}}
 \newcommand{\rcodelaysdef}{\mathrel{\textnormal{\emph{coherence-delays}}}}
@@ -29,8 +30,10 @@
 \newcommand{\roverlaps}{\mathrel{\textnormal{{overlaps}}}}
 \newcommand{\rmatches}{\mathrel{\textnormal{{matches}}}}
 \newcommand{\rblocks}{\mathrel{\textnormal{{blocks}}}}
+\newcommand{\rsfences}{\mathrel{\textnormal{{strongly-fences}}}}
 \newcommand{\rsmatches}{\mathrel{\textnormal{{strongly-matches}}}}
-\newcommand{\rsblocks}{\mathrel{\textnormal{{strongly-blocks}}}}
+\newcommand{\rsoverlaps}{\mathrel{\textnormal{{strongly-overlaps}}}}
+\newcommand{\rsoverlap}{\mathrel{\textnormal{{strongly-overlap}}}}
 \newcommand{\rdelaysp}{\mathrel{\textnormal{{delays}}'}}
 \newcommand{\rdelays}{\mathrel{\textnormal{{delays}}}}
 \newcommand{\rcodelays}{\mathrel{\textnormal{{coherence-delays}}}}
@@ -410,19 +413,20 @@
 \newcommand{\bmode}{\nu}
 \newcommand{\fmode}{\nu}
 \newcommand{\mWK}{{\mathsf{wk}}}
-\newcommand{\mACQ}{{\mathsf{ra}}}
-\newcommand{\mREL}{{\mathsf{ra}}}
+\newcommand{\mACQ}{{\mathsf{acq}}}
+\newcommand{\mREL}{{\mathsf{rel}}}
 \newcommand{\mRA}{{\mathsf{ra}}}
 \newcommand{\mSC}{{\mathsf{sc}}}
 \newcommand{\mRLX}{{\mathsf{rlx}}}
 \newcommand{\fREL}{{\mathsf{rel}}}
 \newcommand{\fACQ}{{\mathsf{acq}}}
-\newcommand{\fSC}{{\mathsf{fsc}}}
+\newcommand{\fRA}{{\mathsf{ra}}}
+\newcommand{\fSC}{{\mathsf{sc}}}
 
 \newcommand{\ascope}{\sigma}
 \newcommand{\bscope}{\rho}
-\newcommand{\sCTA}{{\mathsf{cta}}}
-\newcommand{\sGPU}{{\mathsf{gpu}}}
+\newcommand{\sCTA}{{\mathsf{grp}}}
+\newcommand{\sGPU}{{\mathsf{proc}}}
 \newcommand{\sSYS}{{\mathsf{sys}}}
 \newcommand{\rms}{\mathrel{\mathsf{ms}}}
 \newcommand{\xms}{\mathrel{\smash{\xleftrightarrow{\rms}}}}
@@ -512,6 +516,7 @@
 \newcommand{\EC}{{\sc ec}}
 \newcommand{\EGC}{{\sc egc}}
 \newcommand{\armeight}{Arm8}%{\sc arm8}}
+\newcommand{\CPU}{{\sc cpu}}
 \newcommand{\IMM}{{\sc imm}}
 \newcommand{\PTX}{{\sc ptx}}
 \newcommand{\ppc}{{\sc power}}

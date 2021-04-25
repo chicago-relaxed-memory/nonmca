@@ -1,350 +1,12 @@
-\section{Sync examples}
-
-The first of these is seen in hardware.  All are allowed by \PTX.
-Showing $\rrfx$ that is not included in the order using a dashed arrow.
-\begin{gather*}
-  {
-    \PW{x}{1}
-    \SEMI
-    \PW[\mREL]{y}{1}
-  }\PAR{
-    \PR[\mACQ]{y}{r}
-    \SEMI
-    \PW{z}[\sSYS]{r}
-  }\LPAR[\bScp]{
-    \PR[\mACQ]{z}[\sSYS]{r}
-    \SEMI
-    \PR{x}{s}
-  }
-  \\
-  \tag{$\lesync$}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a1}{\DW{x}{1}[\aScp]}{}
-      \event{a2}{\DW[\mREL]{y}{1}[\aScp]}{right=of a1}
-      \event{b1}{\DR[\mACQ]{y}{1}[\aScp]}{right=3em of a2}
-      \event{b2}{\DW{z}[\sSYS]{1}[\aScp]}{right=of b1}
-      \event{c1}{\DR[\mACQ]{z}[\sSYS]{1}[\bScp]}{right=3em of b2}
-      \event{c2}{\DR{x}{0}[\bScp]}{right=of c1}
-      \sync{a1}{a2}
-      \sync{b1}{b2}
-      \sync{c1}{c2}
-      \rf{a2}{b1}
-      \rfint{b2}{c1}
-      %\wk[out=-165,in=-15]{c2}{a1}
-    \end{tikzinline}}
-\end{gather*}
-
-\begin{gather*}
-  {
-    \PW{x}{1}
-    \SEMI
-    \PW[\mREL]{y}{1}
-  }\PAR{
-    \PR[\mACQ]{y}{r}
-    \SEMI
-    \PW{z}{r}
-  }\PAR{
-    \PR[\mACQ]{z}{r}
-    \SEMI
-    \PR{x}{s}
-  }
-  % \\
-  % \tag{$\ledep$}
-  % \hbox{\begin{tikzinline}[node distance=1.5em]
-  %     \event{a1}{\DW{x}{1}}{}
-  %     \event{a2}{\DW[\mREL]{y}{1}}{right=of a1}
-  %     \event{b1}{\DR[\mACQ]{y}{1}}{right=3em of a2}
-  %     \event{b2}{\DW{z}{1}}{right=of b1}
-  %     \event{c1}{\DR[\mACQ]{z}{1}}{right=3em of b2}
-  %     \event{c2}{\DR{x}{0}}{right=of c1}
-  %     %\sync{a1}{a2}
-  %     \po{b1}{b2}
-  %     %\sync{c1}{c2}
-  %     \rf{a2}{b1}
-  %     \rf{b2}{c1}
-  %     %\wk[out=-165,in=-15]{c2}{a1}
-  %   \end{tikzinline}}
-  \\
-  \tag{$\lesync$}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a1}{\DW{x}{1}}{}
-      \event{a2}{\DW[\mREL]{y}{1}}{right=of a1}
-      \event{b1}{\DR[\mACQ]{y}{1}}{right=3em of a2}
-      \event{b2}{\DW{z}{1}}{right=of b1}
-      \event{c1}{\DR[\mACQ]{z}{1}}{right=3em of b2}
-      \event{c2}{\DR{x}{0}}{right=of c1}
-      \sync{a1}{a2}
-      \sync{b1}{b2}
-      \sync{c1}{c2}
-      \rf{a2}{b1}
-      \rfint{b2}{c1}
-      %\wk[out=-165,in=-15]{c2}{a1}
-    \end{tikzinline}}
-  % \\
-  % \tag{$\leloc$}
-  % \hbox{\begin{tikzinline}[node distance=1.5em]
-  %     \event{a1}{\DW{x}{1}}{}
-  %     \event{a2}{\DW[\mREL]{y}{1}}{right=of a1}
-  %     \event{b1}{\DR[\mACQ]{y}{1}}{right=3em of a2}
-  %     \event{b2}{\DW{z}{1}}{right=of b1}
-  %     \event{c1}{\DR[\mACQ]{z}{1}}{right=3em of b2}
-  %     \event{c2}{\DR{x}{0}}{right=of c1}
-  %     %\sync{a1}{a2}
-  %     %\sync{b1}{b2}
-  %     %\sync{c1}{c2}
-  %     \rf{a2}{b1}
-  %     \rf{b2}{c1}
-  %     \wk[out=-165,in=-15]{c2}{a1}
-  %   \end{tikzinline}}
-\end{gather*}
-
-\begin{gather*}
-  {
-    \PW{x}{1}
-    \SEMI
-    \PW[\mREL]{y}{1}
-  }\PAR{
-    \PR{y}{r}
-    \SEMI
-    \PW[\mREL]{z}{r}
-  }\PAR{
-    \PR[\mACQ]{z}{r}
-    \SEMI
-    \PR{x}{s}
-  }
-  \\
-  \tag{$\lesync$}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a1}{\DW{x}{1}}{}
-      \event{a2}{\DW[\mREL]{y}{1}}{right=of a1}
-      \event{b1}{\DR{y}{1}}{right=3em of a2}
-      \event{b2}{\DW[\mREL]{z}{1}}{right=of b1}
-      \event{c1}{\DR[\mACQ]{z}{1}}{right=3em of b2}
-      \event{c2}{\DR{x}{0}}{right=of c1}
-      \sync{a1}{a2}
-      \sync{b1}{b2}
-      \sync{c1}{c2}
-      \rfint{a2}{b1}
-      \rf{b2}{c1}
-      %\wk[out=-165,in=-15]{c2}{a1}
-    \end{tikzinline}}
-\end{gather*}
-
-To get publication using fences we need an additional closure property for
-$\rrfx$ on sync order:
-\begin{gather*}
-  {
-    \PW{x}{1}
-    \SEMI
-    \PF{\fREL}
-    \SEMI
-    \PW{y}{1}
-  }\PAR{
-    \PR{y}{r}
-    \SEMI
-    \PF{\fACQ}
-    \SEMI
-    \PR{x}{s}
-  }
-  \\
-  \tag{$\lesync$}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a1}{\DW{x}{1}}{}
-      \event{a2}{\DF{\fREL}}{right=of a1}
-      \event{a3}{\DW{y}{1}}{right=of a2}
-      \event{b1}{\DR{y}{1}}{right=3em of a3}
-      \event{b2}{\DF{\fACQ}}{right=of b1}
-      \event{b3}{\DR{x}{0}}{right=of b2}
-      \sync{a1}{a2}
-      \sync{a2}{a3}
-      \sync{b1}{b2}
-      \sync{b2}{b3}
-      \rfint{a3}{b1}
-      %\wk[out=-165,in=-15]{b3}{a1}
-    \end{tikzinline}}
-\end{gather*}
-Current def of candidate requires:
-\begin{itemize}
-\item[(\ref{rf-lesync})]
-  if $\bEv\xrfx\aEv$ and $\labeling(\bEv) \rsmatches \labeling(\aEv)$ then $\bEv \lesync \aEv$.
-\end{itemize}
-This is not good enough for fences.
-A possible fix is the following closure condition:
-\begin{itemize}
-\item[(\ref{rf-lesync}$'$)]
-  if $\bEv'\lesync\bEv\xrfx\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$.
-\end{itemize}
-With that we have the following, using $\xliftrf$ for edges induced by closure
-when $\bEv'\neq\bEv$ or $\aEv'\neq\aEv$:
-\begin{gather*}
-  {
-    \PW{x}{1}
-    \SEMI
-    \PF{\fREL}
-    \SEMI
-    \PW{y}{1}
-  }\PAR{
-    \PR{y}{r}
-    \SEMI
-    \PF{\fACQ}
-    \SEMI
-    \PR{x}{s}
-  }
-  \\
-  \tag{$\lesync$}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a1}{\DW{x}{1}}{}
-      \event{a2}{\DF{\fREL}}{right=of a1}
-      \event{a3}{\DW{y}{1}}{right=of a2}
-      \event{b1}{\DR{y}{1}}{right=3em of a3}
-      \event{b2}{\DF{\fACQ}}{right=of b1}
-      \event{b3}{\DR{x}{0}}{right=of b2}
-      \sync{a1}{a2}
-      \sync{a2}{a3}
-      \sync{b1}{b2}
-      \sync{b2}{b3}
-      \rfint{a3}{b1}
-      \liftrf[out=-15,in=-165]{a2}{b2}
-      %\wk[out=-165,in=-15]{b3}{a1}
-    \end{tikzinline}}
-\end{gather*}
-This seems to work for the above examples, but it could be too strong in general.
-\begin{itemize}
-\item One possibility is to restrict to preceding and following things in the
-  same thread:
-  \begin{itemize}
-  \item[(\ref{rf-lesync}$''$)]
-    if $\bEv'\lesyncpo\bEv\xrfx\aEv\lesyncpo\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$.
-  \end{itemize}
-  where $\lesyncpo$ is the obvious restriction of $\lesync$ to actions on the
-  same thread.
-\item With either (\ref{rf-lesync}$'$) or (\ref{rf-lesync}$''$) is it too strong to require $\lesync$ that be
-  transitive?   In particular:
-  \begin{itemize}
-  \item if we restrict to $\lesyncpo$, the closure condition
-    (\ref{rf-lesync}$''$) could add order between actions on the same thread
-    via cross-thread reads.
-  \item How does transitivity interact with scopes?
-  \end{itemize}
-\end{itemize}
-Anton proposes:
-\begin{itemize}
-\item[(\ref{pom-rmw-lesync}$'$)]
-  if $\bEv\xrmw\aEv$ then %$\bEv \lesync \aEv$ and
-  $\bEv \leloc \aEv$,    
-\item[(\ref{rf-lesync}$'''$)]
-  if $\bEv'\lesync\bEv\mathrel{(\xrfx;(\xrmw;\xrfx)^{*})}\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$.
-\end{itemize}
-
-The following behavior is allowed by Arm, IMM, and C11, but forbidden by \PTX.
-\PTX{} forbids it since acquire reads work as fences for po-previous reads from
-the same location (symmetrically to release writes for po-latter writes to
-the same location in \IMM, \cXI, and \PTX).
-\begin{gather*}
-  {
-    \PW{x}{1}
-    \SEMI
-    \PW[\mREL]{y}{1}
-  }\PAR{
-    \PR{y}{r}
-    \SEMI
-    \PW{y}{2}
-    \SEMI
-    \PR[\mACQ]{y}{s}
-     \SEMI
-    \PR{x}{t}
-  }
-  \\
-  \tag{$\lesync$}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a}{\DW{x}{1}}{}
-      \raevent{b}{\DW[\mREL]{y}{1}}{right=of a}
-      \event{c}{\DR{y}{1}}{right=3em of b}
-      \event{d}{\DW{y}{2}}{right=of c}
-      \raevent{e}{\DR[\mACQ]{y}{2}}{right=of d}
-      \event{f}{\DR{x}{0}}{right=of e}
-      \sync{a}{b}
-      \rfint{b}{c}
-      \sync[out=15,in=165]{c}{e}
-      %\wk{c}{d}
-      \rfint{d}{e}
-      \sync{e}{f}
-      %\wk[out=-165,in=-15]{f}{a}
-      \liftrf[out=-15,in=-165]{b}{e}
-    \end{tikzinline}}
-\end{gather*}
-To allow this on for IMM, we need to drop
-\begin{math}
-  (\DR{\aLoc}{}, \DR[\gemode\mACQ]{\aLoc}{})
-\end{math}
-from $\rsyncdelays$.
-
-The following is allowed by \cXI{}, but not \IMM{} or \PTX.
-The goal here is to construct a cycle
-$a\xrfx b \xhb c \xrfx d \xhb a$
-where $\rrfx$  will be included in synch-relation.
-In relational notation, the cycle has the following form:
-\begin{displaymath}
-  \PBRbig{{\rrmw} ; ({\rrfe} ; {\rrmw})^2 ; {\rppo} ; \Wclass[\mREL]; {\rrfe} ; \Rclass[\mACQ] ; {\rppo}}^2
-\end{displaymath}
-\begin{gather*}
-  {
-    \PR[\mACQ]{x}{r}
-    \SEMI
-    \PINC{y}{}
-  }\PAR{
-    \PINC{y}{}
-  }\PAR{
-    \PINC{y}{}
-    \SEMI
-    \PW[\mREL]{z}{1}
-  }\PAR{
-    \PR[\mACQ]{z}{s}
-    \SEMI
-    \PINC{w}{}
-  }\PAR{
-    \PINC{w}{}
-  }\PAR{
-    \PINC{w}{}
-    \SEMI
-    \PW[\mREL]{x}{1}
-  }
-  \\
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a1}{\DR[\mACQ]{x}{1}}{}
-      \event{a2}{\DR{y}{0}}{below=of a1}
-      \event{a3}{\DW{y}{1}}{below=of a2}
-      \sync{a1}{a2}
-      \rmw{a2}{a3}
-      \event{b1}{\DR{y}{1}}{right=of a1}
-      \event{b2}{\DW{y}{2}}{below=of b1}
-      \rmw{b1}{b2}
-      \event{c1}{\DR{y}{2}}{right=of b1}
-      \event{c2}{\DW{y}{3}}{below=of c1}
-      \event{c3}{\DW[\mREL]{z}{1}}{below=of c2}
-      \rmw{c1}{c2}
-      \sync{c2}{c3}
-      \event{d1}{\DR[\mACQ]{z}{1}}{right=of c1}
-      \event{d2}{\DR{w}{0}}{below=of d1}
-      \event{d3}{\DW{w}{1}}{below=of d2}
-      \sync{d1}{d2}
-      \rmw{d2}{d3}
-      \event{e1}{\DR{w}{1}}{right=of d1}
-      \event{e2}{\DW{w}{2}}{below=of e1}
-      \rmw{e1}{e2}
-      \event{f1}{\DR{w}{2}}{right=of e1}
-      \event{f2}{\DR{w}{3}}{below=of f1}
-      \event{f3}{\DW[\mREL]{x}{1}}{below=of f2}
-      \rmw{f1}{f2}
-      \sync{f2}{f3}
-      \rf{a3}{b1}
-      \rf{b2}{c1}
-      \rf{c3}{d1}
-      \rf{d3}{e1}
-      \rf{e2}{f1}
-      \rf{f3}{a1}
-    \end{tikzinline}}
-\end{gather*}
+% \section{Notes}
+% GPU stuff:
+% \begin{itemize}
+% \item Vulcan/Alloy
+% \item OpenCL
+% \item AMD PTX
+% \item Matthew Sinclair/Sarita Adve stuff ``Chasing Away RAts- Semantics and
+%   Evaluation for Relaxed Atomics on Heterogeneous Systems'' and his thesis
+% \end{itemize}
 
 \section{Model}
 \label{sec:model}
@@ -383,14 +45,16 @@ assigned at most once.\footnote{We make this assumption when discussing any
 
 We model the following language.
 \begin{align*}
-  \amode \BNFDEF& \mWK
+  \amode,\bmode \BNFDEF& \mWK
   \BNFSEP \mRLX
+  \BNFSEP \mREL
+  \BNFSEP \mACQ
   \BNFSEP \mRA 
   \BNFSEP \mSC
-  &
-  \fmode \BNFDEF& \fACQ 
-  \BNFSEP \fREL
-  \BNFSEP \fSC
+  % &
+  % \fmode \BNFDEF& \fACQ 
+  % \BNFSEP \fREL
+  % \BNFSEP \fSC
   &
   \ascope,\bscope \BNFDEF& \sCTA
   \BNFSEP \sGPU
@@ -475,10 +139,11 @@ $\aForm$ is \emph{unsatisfiable} if $\aForm\vDash\FALSE$.
 We require several binary relations between actions, detailed in the next
 subsection: 
 $\roverlapsdef$, 
+$\rsoverlapsdef$,
 $\rmatchesdef$, 
 $\rsmatchesdef$, 
+$\rsfencesdef$, 
 $\rblocksdef$, 
-$\rsblocksdef$,
 $\rsyncdelaysdef$
 and $\rcodelaysdef$.
 We also require that there is a subsets of actions, distinguishing
@@ -490,25 +155,41 @@ $\fmerge{}{}:\Act\times\Act\fun2^{\Act}$.
 \label{sec:actions}
 
 We combine access and fence modes into a single order:
-\begin{align*}
-  \begin{tikzcenter}
+% \begin{align*}
+%   \begin{tikzcenter}
+%     \node (wk)  at (-1, 0) {$\mathstrut\mWK$};
+%     \node (rlx) at (0, 0) {$\mathstrut\mRLX$};
+%     \node (ra)  at (1, 0) {$\mathstrut\mRA$};
+%     \node (sc)  at (2, 0) {$\mathstrut\mSC$};
+%     \draw[->](wk)to(rlx);
+%     \draw[->](rlx)to(ra);
+%     \draw[->](ra)to(sc);
+%   \end{tikzcenter}
+%   &&
+%   \begin{tikzcenter}
+%     \node (fsc) at (3, 0) {$\mathstrut\fSC$};
+%     \node (rel) at (2, -0.2) {$\mathstrut\fREL$};
+%     \node (acq) at (2,  0.2) {$\mathstrut\fACQ$};
+%     \draw[->](rel)to(fsc);
+%     \draw[->](acq)to(fsc);
+%   \end{tikzcenter}
+% \end{align*}
+\begin{math}
+  \!\!\smash{\hbox{\begin{tikzcenter}
     \node (wk)  at (-1, 0) {$\mathstrut\mWK$};
     \node (rlx) at (0, 0) {$\mathstrut\mRLX$};
-    \node (ra)  at (1, 0) {$\mathstrut\mRA$};
-    \node (sc)  at (2, 0) {$\mathstrut\mSC$};
+    \node (rel) at (1,  0.2) {$\mathstrut\mREL$};
+    \node (acq) at (1, -0.2) {$\mathstrut\mACQ$};
+    \node (ra)  at (2, 0) {$\mathstrut\mRA$};
+    \node (sc)  at (3, 0) {$\mathstrut\mSC$};
     \draw[->](wk)to(rlx);
-    \draw[->](rlx)to(ra);
+    \draw[->](rlx)to(rel);
+    \draw[->](rlx)to(acq);
+    \draw[->](rel)to(ra);
+    \draw[->](acq)to(ra);
     \draw[->](ra)to(sc);
-  \end{tikzcenter}
-  &&
-  \begin{tikzcenter}
-    \node (fsc) at (3, 0) {$\mathstrut\fSC$};
-    \node (rel) at (2, -0.2) {$\mathstrut\fREL$};
-    \node (acq) at (2,  0.2) {$\mathstrut\fACQ$};
-    \draw[->](rel)to(fsc);
-    \draw[->](acq)to(fsc);
-  \end{tikzcenter}
-\end{align*}
+  \end{tikzcenter}}}\!\!.
+\end{math}
 We write $\amode\lemode\bmode$ for this order.
 Let $\amode\lubmode\bmode$ denote the least upper bound of $\amode$ and $\bmode$.
 
@@ -518,12 +199,16 @@ Let actions be reads, writes and fences:
   \BNFSEP \DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]
   \BNFSEP \DF[\ascope]{\fmode}[\aThrd]
 \end{displaymath}
-In definitions, we drop elements of actions that are existentially
-quantified.  In examples, we drop elements of actions, using defaults.  We
-write $\DXP[\amode]{}[\ascope]{}[\aThrd]$ to stand for $\DWP[\amode]{}[\ascope]{}[\aThrd]$, $\DRP[\amode]{}[\ascope]{}[\aThrd]$,
-or $\DFP[\ascope]{\amode}[\aThrd]$.  We write $\DWP[\gemode\mREL]{}{}$ to stand for either
-$\DWP[\mREL]{}{}$ or $\DWP[\mSC]{}{}$, and similarly for other actions and
-modes.
+In examples, we systematically drop the default mode $\mRLX$ and the default
+scope $\sSYS$.  In definitions, we drop elements of actions that are
+existentially quantified.
+%
+We write $\DXP[\amode]{\aLoc}[\ascope]{}[\aThrd]$ to stand for an
+\emph{access}: either $\DWP[\amode]{\aLoc}[\ascope]{}[\aThrd]$ or
+$\DRP[\amode]{\aLoc}[\ascope]{}[\aThrd]$.
+% , or $\DFP[\ascope]{\amode}[\aThrd]$.
+We write $\DWP[\gemode\mREL]{}{}$ to stand for either $\DWP[\mREL]{}{}$ or
+$\DWP[\mSC]{}{}$, and similarly for other actions and modes.
 
 We say $\aAct \rmatchesdef \bAct$ if $\aAct=\DWP{\aLoc}{\aVal}$ and $\bAct=\DRP{\aLoc}{\aVal}$.
 
@@ -594,36 +279,43 @@ although this is considered safe.\footnote{A list of safe merge operations
   reorderings, see \cite[\textsection D]{DBLP:conf/cgo/ChakrabortyV17}.}
 
 
-Default mode should be RLX, default scope SYS.
-
 \begin{definition}
-  When modeling \IMM, we ban access mode $\mWK$; the default access mode is
-  $\mRLX$.  We also ban scopes $\sCTA$ and $\sGPU$; the only allowed scope is
-  $\sSYS$.  We assume there is only one thread \ID{} ($\fcard{\Thrd}=1$), which
-  we elide.  Let $\rsblocksdef$ be $\Act\times\Act$.
-  We say $\aAct \rsmatchesdef \bAct$ if (1) $\aAct \roverlaps \bAct$ and (2) neither has mode $\mRLX$.
-\end{definition}
-\begin{definition}
-  When modeling \PTX, the default access mode is $\mWK$.  The default scope
-  is $\sCTA$.  We assume two equivalences:
+We assume two equivalences:
   $\PBR{\xgpu}\subseteq(\Thrd\times\Thrd)$ partitions threads by
   \emph{processor}, and $\PBR{\xcta}\subseteq\PBR{\xgpu}$ refines the processor
-  partitioning into \emph{thread groups}.  
+  partitioning into \emph{thread groups}.
+  
   We say
-  $\DXP[\amode]{}[\ascope]{}[\aThrd] \rsblocksdef \DXP[\bmode]{}[\bscope]{}[\bThrd]$
-  when either (1) $\aThrd=\bThrd$ or (2) all of the following hold:
+  $\DXP[\amode]{}[\ascope]{}[\aThrd] \rsoverlapsdef
+  \DXP[\bmode]{}[\bscope]{}[\bThrd]$ when they overlap and either
+  \labeltext[1]{(1)}{moral-local} $\aThrd=\bThrd$ or 
+  %\labeltext[2]{(2)}{moral-nonlocal} all of the following hold:
+  % \begin{enumerate}    
+  % \item \label{moral-local} $\aThrd=\bThrd$ or 
+  % \item \label{moral-nonlocal} all of the following hold:
   \begin{enumerate}[,label=(2\alph*),ref=2\alph*]
-  \item $\amode,\bmode\neq\mWK$,
+  \item \labeltext[2]{}{moral-nonlocal} $\amode,\bmode\neq\mWK$,
   \item if $\ascope=\sCTA$ or $\bscope=\sCTA$ then $\aThrd\xcta\bThrd$,
-  \item if $\ascope=\sGPU$ or $\bscope=\sGPU$ then $\aThrd\xgpu\bThrd$, 
-  \item if either action is an access then they overlap.
+  \item if $\ascope=\sGPU$ or $\bscope=\sGPU$ then $\aThrd\xgpu\bThrd$.
   \end{enumerate}
+
+
   % We say $\DXP[\amode]{}[\ascope]{}[\aThrd] \rsmatchesdef \DXP[\bmode]{}[\bscope]{}[\bThrd]$ if
-  % (1) $\DXP[\amode]{}[\ascope]{}[\aThrd] \rsblocks \DXP[\bmode]{}[\bscope]{}[\bThrd]$ and
+  % (1) $\DXP[\amode]{}[\ascope]{}[\aThrd] \rsoverlaps \DXP[\bmode]{}[\bscope]{}[\bThrd]$ and
   % either (2a) $\aThrd=\bThrd$ or (2b) $\amode$ is an acquire and $\bmode$ is a release.
-  We say $\aAct \rsmatchesdef \bAct$ if (1) $\aAct \rsblocks \bAct$ and
-  either (2a) they have the same thread (2b) $\aAct$ is an acquire and $\bAct$ is a release.
+  We say $\aAct \rsmatchesdef \bAct$ when they $\rsoverlap$, $\aAct$ is an
+  acquire, and $\bAct$ is a release.
+
+  We say
+  $\DFP[\ascope]{\amode}[\aThrd] \rsfencesdef \DFP[\bscope]{\bmode}[\bThrd]$
+  when $\amode=\bmode=\fSC$ and either \eqref{moral-local} or
+  \eqref{moral-nonlocal} apply (from the definition of $\rsoverlaps$).
 \end{definition}
+
+Note that for a \CPU{}s, all accesses have scope $\sSYS$ and mode $\mRLX$ or
+greater.  For this subset of actions,  $\roverlapsdef$ is the same $\rsoverlapsdef$.
+
+
 
 
 
@@ -718,13 +410,13 @@ Default mode should be RLX, default scope SYS.
     \labeltext[\textsc{c}2a]{(\textsc{c}2a)}{rf-block-not-leloc}
     $\aEv'\not\ltloc\bEv'$ and
     \labeltext[\textsc{c}2b]{(\textsc{c}2b)}{rf-block-strongly}
-    if $\labeling(\bEv') \rsblocks \labeling(\aEv')$ then $\bEv'\leloc\aEv'$,
+    if $\labeling(\bEv') \rsoverlaps \labeling(\aEv')$ then $\bEv'\leloc\aEv'$,
   \item \label{rf-ledep} \label{rf-leloc}
     if $\bEv\xrfx\aEv$ then $\bEv \ledep \aEv$ and $\bEv \leloc \aEv$,
   \item \label{rf-lesync}
     if $\bEv\xrfx\aEv$ and $\labeling(\bEv) \rsmatches \labeling(\aEv)$ then $\bEv \lesync \aEv$,
   \item \label{top-sc}
-    if $\labeling(\bEv) \rsblocks \labeling(\aEv)$ and both are $\mSC$ fences
+    if $\labeling(\bEv) \rsfences \labeling(\aEv)$ 
     then either $\bEv\lesync\aEv$ or $\aEv\lesync\bEv$.
   \end{enumerate}
 
@@ -741,17 +433,58 @@ Default mode should be RLX, default scope SYS.
   %   \end{enumerate}
   % \end{enumerate}
   \begin{enumerate}[,label=(\textsc{t}\arabic*),ref=\textsc{t}\arabic*]
-  \item \label{top-term} $\aTerm$ is a tautology,
+  \item \label{top-rf} if $\labeling(\aEv)$ is a $\sread$ then there is some $\bEv\xrfx\aEv$,
   \item \label{top-kappa} $\labelingForm(\aEv)$ is a tautology (for every $\aEv\in\aEvs$),
-  \item \label{top-rf} if $\labeling(\aEv)$ is a $\sread$ then there is some $\bEv\xrfx\aEv$.
+  \item \label{top-term} $\aTerm$ is a tautology.
   \end{enumerate}
 \end{definition}
 
-Note that for the \IMM{} model, \ref{rf-block} is equivalent to:
+Note that for the \IMM{} model, \ref{rf-block} is equivalent to: \footnote{If all accesses are morally strong with each other, weak fulfillment
+degenerates to
+\begin{center}
+  $\forall\labelingAct(\cEv)=\DWP[]{x}{}$ either
+  $\cEv \leloc \bEv$ or $\aEv \leloc \cEv$
+\end{center}
+
+If no accesses are morally strong with each other, weak fulfillment
+degenerates to
+\begin{center}
+  $\not\mkern-5mu\exists\labelingAct(\cEv)=\DWP[]{x}{}$ 
+  both $\bEv \ltloc \cEv$ and $\cEv \ltloc \aEv$
+\end{center}
+
+Note that the difference between strong and weak fulfillment is limited to $\leloc$.
+We sometimes write $\lelocstrong$ for strong fulfillment and
+$\lelocweak$ for weak fulfillment.}
 \begin{center}
   if $\bEv\xrfx\aEv$ and $\labeling(\cEv) \rblocks \labeling(\aEv)$ then
   either $\cEv\leloc\bEv$ or $\aEv\leloc\cEv$.
 \end{center}
+
+  % Define $\leexists$ as follows.
+  % \begin{align*}
+  %   \bEv\leexists\aEv &\textwhen                      
+  %   \begin{cases}
+  %     \bEv\leloc\aEv &\text{if}\; \bEv \;\text{is morally strong with}\; \aEv
+  %     \\
+  %     \aEv\not\ltloc\bEv &\text{otherwise}
+  %   \end{cases}
+  % \end{align*}    
+  % A read event $\aEv$ is \emph{strongly fulfilled} if there is a
+  % $\bEv\xrfx\aEv$ and 
+  % \begin{center}
+  %   for any $\cEv$ that can block $\aEv$, either $\cEv\leloc\bEv$ or
+  %   $\aEv\leloc\cEv$.
+  % \end{center}
+  % A read event $\aEv$ is \emph{weakly fulfilled} if there is a
+  % $\bEv\xrfx\aEv$ and 
+  % \begin{center}
+  %   for any $\cEv$ that can block $\aEv$, either $\cEv\leexists\bEv$ or
+  %   $\aEv\leexists\cEv$.
+  % \end{center}
+
+
+
 
 Let $\aPS$ range over pomsets, and $\aPSS$ over sets of pomsets.
 
@@ -1332,267 +1065,9 @@ adopt the following conventions:
     $\bEv\xrmw\aEv$.
   \end{enumerate}
 \end{definition}
-\begin{example}
-  Consider \iriw{} with all $\mRA$ access:
-  \begin{gather*}
-    \PW[\mREL]{x}{1}
-    \PAR
-    \PR[\mACQ]{x}{r}\SEMI \PR[\mACQ]{y}{s}
-    \PAR
-    \PW[\mREL]{y}{1}
-    \PAR
-    \PR[\mACQ]{y}{r}\SEMI \PR[\mACQ]{x}{s}
-    \taglabel{IRIW-acq-acq}
-    \\
-    \tag{\cmark\ppc,\cXI}
-    \hbox{\begin{tikzinline}[node distance=1.5em]
-        \raevent{wx1}{\DW[\mREL]{x}{1}}{}
-        \raevent{rx1}{\DR[\mACQ]{x}{1}}{right=2.5em of wx1}
-        \raevent{ry0}{\DR[\mACQ]{y}{0}}{right=of rx1}
-        \raevent{wy1}{\DW[\mREL]{y}{1}}{right=2.5em of ry0}
-        \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
-        \raevent{rx0}{\DR[\mACQ]{x}{0}}{right=of ry1}
-        \sync{rx1}{ry0}
-        \sync{ry1}{rx0}
-        \rf{wx1}{rx1}
-        \rf{wy1}{ry1}
-        \wk[out=-165,in=-15]{rx0}{wx1}
-        \wk{ry0}{wy1}
-      \end{tikzinline}}
-  \end{gather*}
-  We allow this execution:
-  \begin{gather*}
-    \tag{$\ledep$}
-    \hbox{\begin{tikzinline}[node distance=1.5em]
-        \raevent{wx1}{\DW[\mREL]{x}{1}}{}
-        \raevent{rx1}{\DR[\mACQ]{x}{1}}{right=2.5em of wx1}
-        \raevent{ry0}{\DR[\mACQ]{y}{0}}{right=of rx1}
-        \raevent{wy1}{\DW[\mREL]{y}{1}}{right=2.5em of ry0}
-        \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
-        \raevent{rx0}{\DR[\mACQ]{x}{0}}{right=of ry1}
-        \rf{wx1}{rx1}
-        \rf{wy1}{ry1}
-      \end{tikzinline}}
-    \\
-    \tag{$\lesync$}
-    \hbox{\begin{tikzinline}[node distance=1.5em]
-        \raevent{wx1}{\DW[\mREL]{x}{1}}{}
-        \raevent{rx1}{\DR[\mACQ]{x}{1}}{right=2.5em of wx1}
-        \raevent{ry0}{\DR[\mACQ]{y}{0}}{right=of rx1}
-        \raevent{wy1}{\DW[\mREL]{y}{1}}{right=2.5em of ry0}
-        \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
-        \raevent{rx0}{\DR[\mACQ]{x}{0}}{right=of ry1}
-        \sync{rx1}{ry0}
-        \sync{ry1}{rx0}
-        \rf{wx1}{rx1}
-        \rf{wy1}{ry1}
-      \end{tikzinline}}
-    \\
-    \tag{$\leloc$}
-    \hbox{\begin{tikzinline}[node distance=1.5em]
-        \raevent{wx1}{\DW[\mREL]{x}{1}}{}
-        \raevent{rx1}{\DR[\mACQ]{x}{1}}{right=2.5em of wx1}
-        \raevent{ry0}{\DR[\mACQ]{y}{0}}{right=of rx1}
-        \raevent{wy1}{\DW[\mREL]{y}{1}}{right=2.5em of ry0}
-        \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
-        \raevent{rx0}{\DR[\mACQ]{x}{0}}{right=of ry1}
-        \rf{wx1}{rx1}
-        \rf{wy1}{ry1}
-        \wk[out=-165,in=-15]{rx0}{wx1}
-        \wk{ry0}{wy1}
-      \end{tikzinline}}
-  \end{gather*}
-  \ref{IRIW-acq-sc}, is allowed by trailing-sync compilation to power
-  \cite[\textsection 1]{DBLP:conf/pldi/LahavVKHD17}.
-  \begin{gather*}
-    \PW[\mSC]{x}{1}
-    \PAR
-    \PR[\mACQ]{x}{r}\SEMI \PR[\mSC]{y}{s}
-    \PAR
-    \PW[\mSC]{y}{1}
-    \PAR
-    \PR[\mACQ]{y}{r}\SEMI \PR[\mSC]{x}{s}
-    \taglabel{IRIW-acq-sc}
-    \\
-    \tag{\cmark\ppc,\xmark\cXI}
-    \hbox{\begin{tikzinline}[node distance=1.5em]
-        \scevent{wx1}{\DW[\mSC]{x}{1}}{}
-        \raevent{rx1}{\DR[\mACQ]{x}{1}}{right=2.5em of wx1}
-        \scevent{ry0}{\DR[\mSC]{y}{0}}{right=of rx1}
-        \scevent{wy1}{\DW[\mSC]{y}{1}}{right=2.5em of ry0}
-        \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
-        \scevent{rx0}{\DR[\mSC]{x}{0}}{right=of ry1}
-        \sync{rx1}{ry0}
-        \sync{ry1}{rx0}
-        \rf{wx1}{rx1}
-        \rf{wy1}{ry1}
-        \wk[out=-165,in=-15]{rx0}{wx1}
-        \wk{ry0}{wy1}
-      \end{tikzinline}}
-  \end{gather*}
-  To model this it is convenient that synchronization is not included in
-  dependency order:
-  \begin{itemize}
-  \item add $\mSC$ bullet to def of $\leexists$ in \ref{rf-block},
-  \item add SC access to $\rsyncdelaysdef$.
-  \end{itemize}
-  \begin{gather*}
-    \tag{$\ledep$}
-    \hbox{\begin{tikzinline}[node distance=1.5em]
-        \scevent{wx1}{\DW[\mSC]{x}{1}}{}
-        \raevent{rx1}{\DR[\mACQ]{x}{1}}{right=2.5em of wx1}
-        \scevent{ry0}{\DR[\mSC]{y}{0}}{right=of rx1}
-        \scevent{wy1}{\DW[\mSC]{y}{1}}{right=2.5em of ry0}
-        \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
-        \scevent{rx0}{\DR[\mSC]{x}{0}}{right=of ry1}
-        \rf{wx1}{rx1}
-        \rf{wy1}{ry1}
-        \wk[out=-165,in=-15]{rx0}{wx1}
-        \wk{ry0}{wy1}
-      \end{tikzinline}}    
-    \\
-    \tag{$\lesync$}
-    \hbox{\begin{tikzinline}[node distance=1.5em]
-        \scevent{wx1}{\DW[\mSC]{x}{1}}{}
-        \raevent{rx1}{\DR[\mACQ]{x}{1}}{right=2.5em of wx1}
-        \scevent{ry0}{\DR[\mSC]{y}{0}}{right=of rx1}
-        \scevent{wy1}{\DW[\mSC]{y}{1}}{right=2.5em of ry0}
-        \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
-        \scevent{rx0}{\DR[\mSC]{x}{0}}{right=of ry1}
-        \sync{rx1}{ry0}
-        \sync{ry1}{rx0}
-        \rf{wx1}{rx1}
-        \rf{wy1}{ry1}
-      \end{tikzinline}}    
-    \\
-    \tag{$\leloc$}
-    \hbox{\begin{tikzinline}[node distance=1.5em]
-        \scevent{wx1}{\DW[\mSC]{x}{1}}{}
-        \raevent{rx1}{\DR[\mACQ]{x}{1}}{right=2.5em of wx1}
-        \scevent{ry0}{\DR[\mSC]{y}{0}}{right=of rx1}
-        \scevent{wy1}{\DW[\mSC]{y}{1}}{right=2.5em of ry0}
-        \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
-        \scevent{rx0}{\DR[\mSC]{x}{0}}{right=of ry1}
-        \rf{wx1}{rx1}
-        \rf{wy1}{ry1}
-        \wk[out=-165,in=-15]{rx0}{wx1}
-        \wk{ry0}{wy1}
-      \end{tikzinline}}    
-  \end{gather*}
-  This correctly forbids the all $\mSC$ version:
-  \begin{gather*}
-    \PW[\mSC]{x}{1}
-    \PAR
-    \PR[\mSC]{x}{r}\SEMI \PR[\mSC]{y}{s}
-    \PAR
-    \PW[\mSC]{y}{1}
-    \PAR
-    \PR[\mSC]{y}{r}\SEMI \PR[\mSC]{x}{s}
-    \taglabel{IRIW-sc-sc}
-    \\
-    \tag{$\ledep$}
-    \hbox{\begin{tikzinline}[node distance=1.5em]
-        \scevent{wx1}{\DW[\mSC]{x}{1}}{}
-        \scevent{rx1}{\DR[\mSC]{x}{1}}{right=2.5em of wx1}
-        \scevent{ry0}{\DR[\mSC]{y}{0}}{right=of rx1}
-        \scevent{wy1}{\DW[\mSC]{y}{1}}{right=2.5em of ry0}
-        \scevent{ry1}{\DR[\mSC]{y}{1}}{right=2.5em of wy1}
-        \scevent{rx0}{\DR[\mSC]{x}{0}}{right=of ry1}
-        \sync{rx1}{ry0}
-        \sync{ry1}{rx0}
-        \rf{wx1}{rx1}
-        \rf{wy1}{ry1}
-        \wk[out=-165,in=-15]{rx0}{wx1}
-        \wk{ry0}{wy1}
-      \end{tikzinline}}
-  \end{gather*}
-  
-\end{example}  
-
-\begin{example}
-  Thin air with an SC antidependency:
-  \begin{gather*}
-    \PW[\mSC]{y}{\PR{x}{}}
-    \PAR \PW[\mSC]{y}{2}
-    \PAR \PW{x}{\PR{y}{}{-}1}
-    \\
-    \tag{$\ledep$}
-    \hbox{\begin{tikzinline}[node distance=1.5em]
-        \event{a}{\DR{x}{1}}{}
-        \scevent{b}{\DW[\mSC]{y}{1}}{right=of a}
-        \scevent{c}{\DW[\mSC]{y}{2}}{right=2.5em of b}
-        \event{d}{\DR{y}{2}}{right=2.5em of c}
-        \event{e}{\DW{x}{1}}{right=of d}
-        \po{a}{b}
-        \wk{b}{c}
-        \rf{c}{d}
-        \po{d}{e}
-        \rf[out=-165,in=-15]{e}{a}
-      \end{tikzinline}}
-  \end{gather*}
-\end{example}
-
-\subsection{Fulfillment}
-[This is old.]
-
-
-
-\begin{definition}
-  \label{def:fulfilled}
-  Define $\leexists$ as follows.
-  \begin{align*}
-    \bEv\leexists\aEv &\textwhen                      
-    \begin{cases}
-      \bEv\leloc\aEv &\text{if}\; \bEv \;\text{is morally strong with}\; \aEv
-      \\
-      \aEv\not\ltloc\bEv &\text{otherwise}
-    \end{cases}
-  \end{align*}    
-
-  
-
-  A read event $\aEv$ is \emph{strongly fulfilled} if there is a
-  $\bEv\xrfx\aEv$ and 
-  \begin{center}
-    for any $\cEv$ that can block $\aEv$, either $\cEv\leloc\bEv$ or
-    $\aEv\leloc\cEv$.
-  \end{center}
-
-
-  A read event $\aEv$ is \emph{weakly fulfilled} if there is a
-  $\bEv\xrfx\aEv$ and 
-  \begin{center}
-    for any $\cEv$ that can block $\aEv$, either $\cEv\leexists\bEv$ or
-    $\aEv\leexists\cEv$.
-  \end{center}
-
-\end{definition}
-
-
-
-
-
-If all accesses are morally strong with each other, weak fulfillment
-degenerates to
-\begin{center}
-  $\forall\labelingAct(\cEv)=\DWP[]{x}{}$ either
-  $\cEv \leloc \bEv$ or $\aEv \leloc \cEv$
-\end{center}
-
-If no accesses are morally strong with each other, weak fulfillment
-degenerates to
-\begin{center}
-  $\not\mkern-5mu\exists\labelingAct(\cEv)=\DWP[]{x}{}$ 
-  both $\bEv \ltloc \cEv$ and $\cEv \ltloc \aEv$
-\end{center}
-
-Note that the difference between strong and weak fulfillment is limited to $\leloc$.
-We sometimes write $\lelocstrong$ for strong fulfillment and
-$\lelocweak$ for weak fulfillment.
 
 
 \endinput
-
 \subsection{Generalized access modes}
 This is an option.
 
