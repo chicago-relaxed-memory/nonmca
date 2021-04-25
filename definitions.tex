@@ -1,6 +1,6 @@
 \section{Sync examples}
 
-The first of these is seen in hardware.  All are allowed by PTX.
+The first of these is seen in hardware.  All are allowed by \PTX.
 Showing $\rrfx$ that is not included in the order using a dashed arrow.
 \begin{gather*}
   {
@@ -236,10 +236,10 @@ Anton proposes:
   if $\bEv'\lesync\bEv\mathrel{(\xrfx;(\xrmw;\xrfx)^{*})}\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$.
 \end{itemize}
 
-The following behavior is allowed by Arm, IMM, and C11, but forbidden by PTX.
-PTX forbids it since acquire reads work as fences for po-previous reads from
+The following behavior is allowed by Arm, IMM, and C11, but forbidden by \PTX.
+\PTX{} forbids it since acquire reads work as fences for po-previous reads from
 the same location (symmetrically to release writes for po-latter writes to
-the same location in IMM, C11, and PTX).
+the same location in \IMM, \cXI, and \PTX).
 \begin{gather*}
   {
     \PW{x}{1}
@@ -279,6 +279,14 @@ To allow this on for IMM, we need to drop
 \end{math}
 from $\rsyncdelays$.
 
+The following is allowed by \cXI{}, but not \IMM{} or \PTX.
+The goal here is to construct a cycle
+$a\xrfx b \xhb c \xrfx d \xhb a$
+where $\rrfx$  will be included in synch-relation.
+In relational notation, the cycle has the following form:
+\begin{displaymath}
+  \PBRbig{{\rrmw} ; ({\rrfe} ; {\rrmw})^2 ; {\rppo} ; \Wclass[\mREL]; {\rrfe} ; \Rclass[\mACQ] ; {\rppo}}^2
+\end{displaymath}
 \begin{gather*}
   {
     \PR[\mACQ]{x}{r}
@@ -586,6 +594,7 @@ although this is considered safe.\footnote{A list of safe merge operations
   reorderings, see \cite[\textsection D]{DBLP:conf/cgo/ChakrabortyV17}.}
 
 
+Default mode should be RLX, default scope SYS.
 
 \begin{definition}
   When modeling \IMM, we ban access mode $\mWK$; the default access mode is
@@ -713,19 +722,28 @@ although this is considered safe.\footnote{A list of safe merge operations
   \item \label{rf-ledep} \label{rf-leloc}
     if $\bEv\xrfx\aEv$ then $\bEv \ledep \aEv$ and $\bEv \leloc \aEv$,
   \item \label{rf-lesync}
-    if $\bEv\xrfx\aEv$ and $\labeling(\bEv) \rsmatches \labeling(\aEv)$ then $\bEv \lesync \aEv$.
+    if $\bEv\xrfx\aEv$ and $\labeling(\bEv) \rsmatches \labeling(\aEv)$ then $\bEv \lesync \aEv$,
+  \item \label{top-sc}
+    if $\labeling(\bEv) \rblocks \labeling(\aEv)$ and both are $\mSC$ fences
+    then either $\bEv\lesync\aEv$ or $\aEv\lesync\bEv$.
   \end{enumerate}
 
-  A pomset is \emph{top-level} if \labeltext[\textsc{t}1]{(\textsc{t}1)}{top-term} $\aTerm$ is a tautology and \labeltext[\textsc{t}2]{(\textsc{t}2)}{top-ev} for every $\aEv\in\aEvs$,
-  \begin{enumerate}[label=(\textsc{t}\arabic*),ref=\textsc{t}\arabic*]
-    \setcounter{enumi}{2}
-  \item[]
-    \begin{enumerate}[leftmargin=0pt]
-    \item \label{top-kappa}
-      $\labelingForm(\aEv)$ is a tautology,    
-    \item \label{top-rf}
-      if $\labeling(\aEv)$ is a $\sread$ then there is some $\bEv\xrfx\aEv$.
-    \end{enumerate}
+  A pomset is \emph{top-level} if
+  % \labeltext[\textsc{t}1]{(\textsc{t}1)}{top-term} $\aTerm$ is a tautology and \labeltext[\textsc{t}2]{(\textsc{t}2)}{top-ev} for every $\aEv\in\aEvs$,
+  % \begin{enumerate}[label=(\textsc{t}\arabic*),ref=\textsc{t}\arabic*]
+  %   \setcounter{enumi}{2}
+  % \item[]
+  %   \begin{enumerate}[leftmargin=0pt]
+  %   \item \label{top-kappa}
+  %     $\labelingForm(\aEv)$ is a tautology,    
+  %   \item \label{top-rf}
+  %     if $\labeling(\aEv)$ is a $\sread$ then there is some $\bEv\xrfx\aEv$.
+  %   \end{enumerate}
+  % \end{enumerate}
+  \begin{enumerate}[,label=(\textsc{t}\arabic*),ref=\textsc{t}\arabic*]
+  \item \label{top-term} $\aTerm$ is a tautology,
+  \item \label{top-kappa} $\labelingForm(\aEv)$ is a tautology (for every $\aEv\in\aEvs$),
+  \item \label{top-rf} if $\labeling(\aEv)$ is a $\sread$ then there is some $\bEv\xrfx\aEv$.
   \end{enumerate}
 \end{definition}
 
