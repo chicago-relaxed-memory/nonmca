@@ -71,18 +71,49 @@ We model the following language.
   \BNFSEP \aCmd_1 \SEMI \aCmd_2
   \\[-.5ex]
   \BNFSEP& \aCmd_1 \LPAR[\bThrd] \aCmd_2
-  \BNFSEP \PCAS[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}{\bExp}
-  \BNFSEP \PFADD[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
-  \BNFSEP \PEXCHG[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
+  \BNFSEP \PCAS[\amode][\bmode]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}{\bExp}
+  \BNFSEP \PFADD[\amode][\bmode]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
+  \BNFSEP \PEXCHG[\amode][\bmode]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
+  % \BNFSEP \PCAS[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}{\bExp}
+  % \BNFSEP \PFADD[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
+  % \BNFSEP \PEXCHG[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
 \end{align*}
 
-\emph{Access modes}, $\amode$, are {weak} ($\mWK$), are {relaxed} ($\mRLX$),
-{release-acquire} ($\mRA$), and {sequentially consistent} ($\mSC$).
-$\mRA$/$\mSC$ accesses are collectively known as \emph{synchronized
-  accesses}.
+% \emph{Access modes}, $\amode$, are {weak} ($\mWK$), are {relaxed} ($\mRLX$),
+% {release-acquire} ($\mRA$), and {sequentially consistent} ($\mSC$).
+% $\mRA$/$\mSC$ accesses are collectively known as \emph{synchronized
+%   accesses}.
+% %
+% \emph{Fence modes}, $\bmode$, are {acquire} ($\fACQ$), {release} ($\fREL$), 
+% and {acquire-release} ($\fSC$).  
 
-\emph{Fence modes}, $\bmode$, are {acquire} ($\fACQ$), {release} ($\fREL$), 
-and {acquire-release} ($\fSC$).  
+\emph{Access modes}, $\amode$, are {weak} ($\mWK$), are {relaxed} ($\mRLX$),
+{release} ($\mREL$), {acquire} ($\mACQ$), {release-acquire} ($\mRA$), and
+{sequentially consistent} ($\mSC$).
+%
+Reads ($\PR[\amode]{\REF{\cExp}}[\ascope]{\aReg}$) support
+$\mWK$,
+$\mRLX$,
+%$\mREL$,
+$\mACQ$,
+%$\mRA$, 
+$\mSC$. 
+Writes ($\PW[\amode]{\REF{\cExp}}[\ascope]{\aReg}$) support
+$\mWK$,
+$\mRLX$,
+$\mREL$,
+%$\mACQ$,
+%$\mRA$, 
+$\mSC$. 
+Fences ($\PF[\ascope]{\fmode}$) support
+%$\mWK$,
+%$\mRLX$,
+$\mREL$,
+$\mACQ$,
+$\mRA$, 
+$\mSC$.
+%
+In the atomic update operations, $\amode$ is a read and $\bmode$ is a write.
 
 \emph{Scopes}, $\ascope$, are thread group ($\sCTA$), processor ($\sGPU$) and
 system ($\sSYS$).
@@ -232,10 +263,11 @@ We say $\aAct \rsyncdelaysdef \bAct$ if
   (\DF{\gemode\fACQ},   \bAct                    )\Cc
   (\DF{\gemode\fREL},   \DW{}{}                  )\Cc
   (\DW[\gemode\mREL]{\aLoc}{},\DW{\aLoc}{})\}
-\end{math}.\footnote{For \PTX, one can additionally include
+\end{math}.\footnote{For \PTX, one could additionally include
   \begin{math}
-    (\DR{\aLoc}{}, \DR[\gemode\mACQ]{\aLoc}{}).
-  \end{math}}
+    (\DR{\aLoc}{}, \DR[\gemode\mACQ]{\aLoc}{}),
+  \end{math}
+but this is not sound for Arm or \IMM{}.}
 
 Let $\DWP[\gemode\mREL]{}{}$ and $\DFP{\gemode\fREL}$ be
 $\sreleasedef$ actions.  Actions $\DRP{}{}$ are $\sreaddef$ actions.
@@ -299,21 +331,19 @@ We assume two equivalences:
   \item if $\ascope=\sGPU$ or $\bscope=\sGPU$ then $\aThrd\xgpu\bThrd$.
   \end{enumerate}
 
-
-  % We say $\DXP[\amode]{}[\ascope]{}[\aThrd] \rsmatchesdef \DXP[\bmode]{}[\bscope]{}[\bThrd]$ if
-  % (1) $\DXP[\amode]{}[\ascope]{}[\aThrd] \rsoverlaps \DXP[\bmode]{}[\bscope]{}[\bThrd]$ and
-  % either (2a) $\aThrd=\bThrd$ or (2b) $\amode$ is an acquire and $\bmode$ is a release.
-  We say $\aAct \rsmatchesdef \bAct$ when they $\rsoverlap$, $\aAct$ is an
-  acquire, and $\bAct$ is a release.
-
   We say
   $\DFP[\ascope]{\amode}[\aThrd] \rsfencesdef \DFP[\bscope]{\bmode}[\bThrd]$
   when $\amode=\bmode=\fSC$ and either \eqref{moral-local} or
   \eqref{moral-nonlocal} apply (from the definition of $\rsoverlaps$).
+
+  We say $\aAct \rsmatchesdef \bAct$ when $\aAct$ is a release, $\bAct$ is an
+  acquire, and either $\aAct\rsoverlaps \bAct$ or $\aAct\rsfences \bAct$.
+
 \end{definition}
 
 Note that for a \CPU{}s, all accesses have scope $\sSYS$ and mode $\mRLX$ or
-greater.  For this subset of actions,  $\roverlapsdef$ is the same $\rsoverlapsdef$.
+greater.  For this subset of actions,  $\rsoverlapsdef$ is the same
+$\roverlaps$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
 
 
 
@@ -399,25 +429,49 @@ greater.  For this subset of actions,  $\roverlapsdef$ is the same $\rsoverlapsd
     \end{enumerate}
   \end{enumerate}
 
+  % Let $\bEv\leexists\aEv$ when $\aEv\leloc\bEv$ implies $\bEv=\aEv$ and
+  % $\labeling(\bEv) \rsoverlaps \labeling(\aEv)$ implies $\bEv\leloc\aEv$.
+  % $\aEv\not\ltloc\bEv$ and if
+  % $\labeling(\bEv) \rsoverlaps \labeling(\aEv)$ then $\bEv\leloc\aEv$.
+  % \begin{math}
+  %   \smash{\begin{cases}
+  %     \bEv'\leloc\aEv' &\text{if}\; \bEv \rsmatches \aEv
+  %     \\
+  %     \aEv'\not\ltloc\bEv' &\text{otherwise}
+  %   \end{cases}}
+  % \end{math}
+
   A pomset is a \emph{candidate} if there is an injective relation
   ${\rrfx} : \Event\times\Event$, capturing \emph{reads-from}, such that
   \begin{enumerate}[,label=(\textsc{c}\arabic*),ref=\textsc{c}\arabic*]
+    \setcounter{enumi}{1}
   \item \label{rf-match}
     if $\bEv\xrfx\aEv$ then $\labeling(\bEv) \rmatches \labeling(\aEv)$,
-  \item \label{rf-block}
-    if $\bEv\xrfx\aEv$ and $\labeling(\cEv) \rblocks \labeling(\aEv)$ then either $\cEv\leexists\bEv$ or $\aEv\leexists\cEv$,\\
-    where $\bEv'\leexists\aEv'$ when
-    \labeltext[\textsc{c}2a]{(\textsc{c}2a)}{rf-block-not-leloc}
-    $\aEv'\not\ltloc\bEv'$ and
-    \labeltext[\textsc{c}2b]{(\textsc{c}2b)}{rf-block-strongly}
-    if $\labeling(\bEv') \rsoverlaps \labeling(\aEv')$ then $\bEv'\leloc\aEv'$,
-  \item \label{rf-ledep} \label{rf-leloc}
-    if $\bEv\xrfx\aEv$ then $\bEv \ledep \aEv$ and $\bEv \leloc \aEv$,
-  \item \label{rf-lesync}
-    if $\bEv\xrfx\aEv$ and $\labeling(\bEv) \rsmatches \labeling(\aEv)$ then $\bEv \lesync \aEv$,
-  \item \label{top-sc}
-    if $\labeling(\bEv) \rsfences \labeling(\aEv)$ 
-    then either $\bEv\lesync\aEv$ or $\aEv\lesync\bEv$.
+    \setcounter{enumi}{5}
+  \item \label{rf-ledep}
+    if $\bEv\xrfx\aEv$ then $\bEv \ledep \aEv$,
+    \stepcounter{enumi}
+  \item[] %\labeltext[\textsc{c}7]{}{}
+    \begin{enumerate}[leftmargin=0pt]
+    \item \label{rf-lesync}
+      if $\bEv'\lesync\bEv\xrfx\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$,
+    \item \label{top-sc}
+      if $\labeling(\bEv) \rsfences \labeling(\aEv)$ then either $\bEv\lesync\aEv$ or $\aEv\lesync\bEv$,
+    \end{enumerate}
+    \stepcounter{enumi}
+  \item[] %\labeltext[\textsc{c}7]{}{}
+    \begin{enumerate}[leftmargin=0pt]
+    \item  \label{rf-leloc}
+      if $\bEv\xrfx\aEv$ then $\bEv \leloc \aEv$,
+    \item \label{rf-block}
+      if $\bEv\xrfx\aEv$ and $\labeling(\cEv) \rblocks \labeling(\aEv)$ then either $\cEv\leexists\bEv$ or $\aEv\leexists\cEv$,\\
+      where $\bEv'\leexists\aEv'$ when $\aEv'\leloc\bEv'$ implies $\bEv'=\aEv'$ and
+      $\labeling(\bEv') \rsoverlaps \labeling(\aEv')$ implies $\bEv'\leloc\aEv'$.
+    \end{enumerate}
+    % where \labeltext[\textsc{c}2a]{(\textsc{c}2a)}{rf-block-not-leloc}
+    % $\aEv'\not\ltloc\bEv'$ and
+    % \labeltext[\textsc{c}2b]{(\textsc{c}2b)}{rf-block-strongly}
+    % if $\labeling(\bEv') \rsoverlaps \labeling(\aEv')$ then $\bEv'\leloc\aEv'$.
   \end{enumerate}
 
   A pomset is \emph{top-level} if
@@ -433,9 +487,14 @@ greater.  For this subset of actions,  $\roverlapsdef$ is the same $\rsoverlapsd
   %   \end{enumerate}
   % \end{enumerate}
   \begin{enumerate}[,label=(\textsc{t}\arabic*),ref=\textsc{t}\arabic*]
-  \item \label{top-rf} if $\labeling(\aEv)$ is a $\sread$ then there is some $\bEv\xrfx\aEv$,
-  \item \label{top-kappa} $\labelingForm(\aEv)$ is a tautology (for every $\aEv\in\aEvs$),
-  \item \label{top-term} $\aTerm$ is a tautology.
+    \setcounter{enumi}{1}
+  \item \label{top-rf}
+    if $\labeling(\aEv)$ is a $\sread$ then there is some $\bEv\xrfx\aEv$,
+  \item \label{top-kappa}
+    $\labelingForm(\aEv)$ is a tautology (for every $\aEv\in\aEvs$),
+    \setcounter{enumi}{4}
+  \item \label{top-term}
+    $\aTerm$ is a tautology.
   \end{enumerate}
 \end{definition}
 
@@ -1043,22 +1102,22 @@ adopt the following conventions:
       \bForm.
     \end{math}
   \end{itemize}
-  If $\aPS\in\mathit{FADD}(\aReg,\aLoc,\aExp,\amode_1,\amode_2)$ then
-  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode_1]{\aReg}{\aLoc}}{\sSTORE[\amode_2]{\aLoc}{\aReg{+}\aExp}})$
+  If $\aPS\in\mathit{FADD}(\aReg,\aLoc,\aExp,\amode,\bmode)$ then
+  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\aLoc}}{\sSTORE[\bmode]{\aLoc}{\aReg{+}\aExp}})$
   \begin{enumerate}[topsep=0pt,label=(\textsc{u}\arabic*),ref=\textsc{u}\arabic*]
   \item if $\labeling_1(\aEv)$ is a write then there is a read $\labeling_1(\bEv)$ such that 
     $\labelingForm(\aEv)\rimplies\labelingForm(\bEv)$ and
     $\bEv\xrmw\aEv$.
   \end{enumerate}
-  If $\aPS\in\mathit{EXCHG}(\aReg,\aLoc,\aExp,\amode_1,\amode_2)$ then
-  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode_1]{\aReg}{\aLoc}}{\sSTORE[\amode_2]{\aLoc}{\aExp}})$
+  If $\aPS\in\mathit{EXCHG}(\aReg,\aLoc,\aExp,\amode,\bmode)$ then
+  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\aLoc}}{\sSTORE[\bmode]{\aLoc}{\aExp}})$
   \begin{enumerate}[topsep=0pt,label=(\textsc{u}\arabic*),ref=\textsc{u}\arabic*]
   \item if $\labeling_1(\aEv)$ is a write then there is a read $\labeling_1(\bEv)$ such that 
     $\labelingForm(\aEv)\rimplies\labelingForm(\bEv)$ and
     $\bEv\xrmw\aEv$.
   \end{enumerate}
-  If $\aPS\in\mathit{CAS}(\aReg,\aLoc,\aExp,\bExp,\amode_1,\amode_2)$ then
-  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode_1]{\aReg}{\aLoc}}{\sIF{\aReg{=}\aExp}\sTHEN\sSTORE[\amode_2]{\aLoc}{\bExp}\sELSE\sSKIP\sFI})$
+  If $\aPS\in\mathit{CAS}(\aReg,\aLoc,\aExp,\bExp,\amode,\bmode)$ then
+  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\aLoc}}{\sIF{\aReg{=}\aExp}\sTHEN\sSTORE[\bmode]{\aLoc}{\bExp}\sELSE\sSKIP\sFI})$
   \begin{enumerate}[topsep=0pt,label=(\textsc{u}\arabic*),ref=\textsc{u}\arabic*]
   \item if $\labeling_1(\aEv)$ is a write then there is a read $\labeling_1(\bEv)$ such that 
     $\labelingForm(\aEv)\rimplies\labelingForm(\bEv)$ and
