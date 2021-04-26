@@ -341,9 +341,9 @@ We assume two equivalences:
 
 \end{definition}
 
-Note that for a \CPU{}s, all accesses have scope $\sSYS$ and mode $\mRLX$ or
-greater.  For this subset of actions,  $\rsoverlapsdef$ is the same
-$\roverlaps$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
+Note that for a \CPU{}s, all action have scope $\sSYS$ and mode $\mRLX$ or
+greater.  For this subset of actions, $\rsoverlapsdef$ is the same as
+$\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
 
 
 
@@ -445,25 +445,25 @@ $\roverlaps$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
   ${\rrfx} : \Event\times\Event$, capturing \emph{reads-from}, such that
   \begin{enumerate}[,label=(\textsc{c}\arabic*),ref=\textsc{c}\arabic*]
     \setcounter{enumi}{1}
-  \item \label{rf-match}
+  \item \label{cand-lambda}
     if $\bEv\xrfx\aEv$ then $\labeling(\bEv) \rmatches \labeling(\aEv)$,
     \setcounter{enumi}{5}
-  \item \label{rf-ledep}
+  \item \label{cand-ledep-rf}
     if $\bEv\xrfx\aEv$ then $\bEv \ledep \aEv$,
     \stepcounter{enumi}
   \item[] %\labeltext[\textsc{c}7]{}{}
     \begin{enumerate}[leftmargin=0pt]
-    \item \label{rf-lesync}
+    \item \label{cand-lesync-rf}
       if $\bEv'\lesync\bEv\xrfx\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$,
-    \item \label{top-sc}
+    \item \label{cand-lesync-sc}
       if $\labeling(\bEv) \rsfences \labeling(\aEv)$ then either $\bEv\lesync\aEv$ or $\aEv\lesync\bEv$,
     \end{enumerate}
     \stepcounter{enumi}
   \item[] %\labeltext[\textsc{c}7]{}{}
     \begin{enumerate}[leftmargin=0pt]
-    \item  \label{rf-leloc}
+    \item  \label{cand-leloc-rf}
       if $\bEv\xrfx\aEv$ then $\bEv \leloc \aEv$,
-    \item \label{rf-block}
+    \item \label{cand-leloc-block}
       if $\bEv\xrfx\aEv$ and $\labeling(\cEv) \rblocks \labeling(\aEv)$ then either $\cEv\leexists\bEv$ or $\aEv\leexists\cEv$,\\
       where $\bEv'\leexists\aEv'$ when $\aEv'\leloc\bEv'$ implies $\bEv'=\aEv'$ and
       $\labeling(\bEv') \rsoverlaps \labeling(\aEv')$ implies $\bEv'\leloc\aEv'$.
@@ -498,7 +498,7 @@ $\roverlaps$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
   \end{enumerate}
 \end{definition}
 
-Note that for the \IMM{} model, \ref{rf-block} is equivalent to: \footnote{If all accesses are morally strong with each other, weak fulfillment
+Note that for the \IMM{} model, \ref{cand-leloc-block} is equivalent to: \footnote{If all accesses are morally strong with each other, weak fulfillment
 degenerates to
 \begin{center}
   $\forall\labelingAct(\cEv)=\DWP[]{x}{}$ either
@@ -775,8 +775,9 @@ adopt the following conventions:
 \item \makebox{$\aEv\xpo\bEv$} arises from control/data/address \emph{dependency} \eqref{seq-kappa},
 \item \makebox{$\aEv\xsync\bEv$} arises from $\rsyncdelaysdef$ \eqref{seq-delay-sync},
 \item \makebox{$\aEv\xwki\bEv$} arises from $\rcodelaysdef$ \eqref{seq-delay-co},
-\item \makebox{$\aEv\xwk\bEv$} arises from \emph{blocking} \eqref{rf-block},
-\item \makebox{$\aEv\xrf\bEv$} arises from \emph{matching} \eqref{rf-ledep} \eqref{rf-lesync}.
+\item \makebox{$\aEv\xwk\bEv$} arises from \emph{blocking} \eqref{cand-leloc-block},
+\item \makebox{$\aEv\xrf\bEv$} arises from \emph{matching}
+  \eqref{cand-ledep-rf}, \eqref{cand-lesync-rf} and \eqref{cand-leloc-rf}.
 \end{itemize}
 
 \begin{definition}

@@ -163,15 +163,15 @@ $\rrfx$ on sync order:
       %\wk[out=-165,in=-15]{b3}{a1}
     \end{tikzinline}}
 \end{gather*}
-Current def of candidate requires:
+Previous def of candidate requires:
 \begin{itemize}
-\item[(\ref{rf-lesync})]
+\item[(\ref{cand-lesync-rf})]
   if $\bEv\xrfx\aEv$ and $\labeling(\bEv) \rsmatches \labeling(\aEv)$ then $\bEv \lesync \aEv$.
 \end{itemize}
 This is not good enough for fences.
 A possible fix is the following closure condition:
 \begin{itemize}
-\item[(\ref{rf-lesync}$'$)]
+\item[(\ref{cand-lesync-rf}$'$)]
   if $\bEv'\lesync\bEv\xrfx\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$.
 \end{itemize}
 With that we have the following, using $\xliftrf$ for edges induced by closure
@@ -213,16 +213,16 @@ This seems to work for the above examples, but it could be too strong in general
 \item One possibility is to restrict to preceding and following things in the
   same thread:
   \begin{itemize}
-  \item[(\ref{rf-lesync}$''$)]
+  \item[(\ref{cand-lesync-rf}$''$)]
     if $\bEv'\lesyncpo\bEv\xrfx\aEv\lesyncpo\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$.
   \end{itemize}
   where $\lesyncpo$ is the obvious restriction of $\lesync$ to actions on the
   same thread.
-\item With either (\ref{rf-lesync}$'$) or (\ref{rf-lesync}$''$) is it too strong to require $\lesync$ that be
+\item With either (\ref{cand-lesync-rf}$'$) or (\ref{cand-lesync-rf}$''$) is it too strong to require $\lesync$ that be
   transitive?   In particular:
   \begin{itemize}
   \item if we restrict to $\lesyncpo$, the closure condition
-    (\ref{rf-lesync}$''$) could add order between actions on the same thread
+    (\ref{cand-lesync-rf}$''$) could add order between actions on the same thread
     via cross-thread reads.
   \item How does transitivity interact with scopes?
   \end{itemize}
@@ -232,7 +232,7 @@ Anton proposes:
 \item[(\ref{pom-rmw-lesync}$'$)]
   if $\bEv\xrmw\aEv$ then %$\bEv \lesync \aEv$ and
   $\bEv \leloc \aEv$,    
-\item[(\ref{rf-lesync}$'''$)]
+\item[(\ref{cand-lesync-rf}$'''$)]
   if $\bEv'\lesync\bEv\mathrel{(\xrfx;(\xrmw;\xrfx)^{*})}\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$.
 \end{itemize}
 
@@ -715,7 +715,7 @@ Before fulfilling the read:
       \rf[out=-15,in=-165]{wx1}{rx}
     \end{tikzinline}}
 \end{gather*}
-$(\DW{x}{1})\leexists(\DR{x}{})$ is required by \ref{m-loc}, enforcing publication.
+$(\DW{x}{1})\leexists(\DR{x}{})$ is required by \ref{cand-leloc-block}, enforcing publication.
 
 $(\DR{x}{0})$ must be allowed:
 \begin{gather*}
@@ -764,7 +764,7 @@ $(\DR{x}{0})$ must be allowed:
       % \wk[out=-15,in=-165]{wx1}{rx}
     \end{tikzinline}}
 \end{gather*}
-We do not have $(\DW[\mREL]{y}{1})\lesync (\DR[\mACQ]{y}{1})$ since \ref{rf3} only
+We do not have $(\DW[\mREL]{y}{1})\lesync (\DR[\mACQ]{y}{1})$ since \ref{cand-lesync-rf} only
 requires order for things that are morally strong.  
 
 Another example that may be of interest (nothing morally strong).  Can this $(\DR{x}{0})$?
@@ -779,8 +779,8 @@ Another example that may be of interest (nothing morally strong).  Can this $(\D
 \PTX{} allows TC16 for events that are not mutually strong (\ref{tc16wk}),
 but disallows it when events are mutually strong (\ref{tc16sys}).  Note that
 $\lesync$ imposes no requirements here.  Fulfillment imposes no order.  This
-example shows that \ref{rf3c} cannot be strengthened to require that
-$\bEv\leloc\aEv$.
+example shows that \ref{cand-leloc-block} cannot be strengthened to replace
+$\leexists$ with $\leloc$.
 \begin{gather*}
   \taglabel[wk]{tc16}
   \PR[\mWK]{x}[\sCTA]{r} \SEMI
@@ -1281,9 +1281,9 @@ RF variant \texttt{[rfi-rfe-coe]}:
     \end{tikzinline}}
 \end{gather*}
 
-\tso{} variant \texttt{[rfi-fre-coe]}:
+\tso{} variant \texttt{[rfi-fre-coe2]}:
 \begin{gather*}
-  \taglabel{rfi-coe-coe}
+  \taglabel{rfi-coe-coe2}
   \PW{x}{2}\SEMI 
   \PR[\mACQ]{x}{r}\SEMI
   \PR{y}{s} \PAR
@@ -1602,7 +1602,7 @@ This is not allowed with a data dependency instead of a control dependency \text
         \wk{ry0}{wy1}
       \end{tikzinline}}
   \end{gather*}
-  \ref{IRIW-acq-sc}, is allowed by trailing-sync compilation to power
+  \ref{IRIW-acq-sc1}, is allowed by trailing-sync compilation to power
   \cite[\textsection 1]{DBLP:conf/pldi/LahavVKHD17}.
   \begin{gather*}
     \PW[\mSC]{x}{1}
@@ -1612,7 +1612,7 @@ This is not allowed with a data dependency instead of a control dependency \text
     \PW[\mSC]{y}{1}
     \PAR
     \PR[\mACQ]{y}{r}\SEMI \PR[\mSC]{x}{s}
-    \taglabel{IRIW-acq-sc}
+    \taglabel{IRIW-acq-sc1}
     \\
     \tag{\cmark\ppc,\xmark\cXI}
     \hbox{\begin{tikzinline}[node distance=1.5em]
@@ -1633,7 +1633,7 @@ This is not allowed with a data dependency instead of a control dependency \text
   To model this it is convenient that synchronization is not included in
   dependency order:
   \begin{itemize}
-  \item add $\mSC$ bullet to def of $\leexists$ in \ref{rf-block},
+  \item add $\mSC$ bullet to def of $\leexists$ in \ref{cand-leloc-block},
   \item add SC access to $\rsyncdelaysdef$.
   \end{itemize}
   \begin{gather*}
@@ -1733,7 +1733,7 @@ This is not allowed with a data dependency instead of a control dependency \text
 \end{example}
 
 
-\ref{IRIW-acq-sc} is allowed by trailing-sync compilation to power
+\ref{IRIW-acq-sc2} is allowed by trailing-sync compilation to power
 \cite[\textsection 1]{DBLP:conf/pldi/LahavVKHD17}.
 \begin{gather*}
   \PW[\mSC]{x}{1}
@@ -1743,7 +1743,7 @@ This is not allowed with a data dependency instead of a control dependency \text
   \PW[\mSC]{y}{1}
   \PAR
   \PR[\mACQ]{y}{r}\SEMI \PR[\mSC]{x}{s}
-  \taglabel{IRIW-acq-sc}
+  \taglabel{IRIW-acq-sc2}
   \\
   \tag{\cmark\ppc,\rcXI}
   \hbox{\begin{tikzinline}[node distance=1.5em]
