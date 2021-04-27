@@ -87,9 +87,12 @@ We model the following language.
 % \emph{Fence modes}, $\bmode$, are {acquire} ($\fACQ$), {release} ($\fREL$), 
 % and {acquire-release} ($\fSC$).  
 
-\emph{Access modes}, $\amode$, are {weak} ($\mWK$), are {relaxed} ($\mRLX$),
+\emph{Access modes}, $\amode$, are {weak} ($\mWK$), {relaxed} ($\mRLX$),
 {release} ($\mREL$), {acquire} ($\mACQ$), {release-acquire} ($\mRA$), and
 {sequentially consistent} ($\mSC$).
+%
+Let expressions ($\LET{\aReg}{\aExp}$) only affect thread-local state and
+thus do not have a mode.
 %
 Reads ($\PR[\amode]{\REF{\cExp}}[\ascope]{\aReg}$) support
 $\mWK$,
@@ -113,7 +116,8 @@ $\mACQ$,
 $\mRA$, 
 $\mSC$.
 %
-In the atomic update operations, $\amode$ is a read and $\bmode$ is a write.
+In the atomic update operations, $\amode$ is a read and $\bmode$ is a write;
+we require that $\aReg$ does not occur in $\cExp$.
 
 \emph{Scopes}, $\ascope$, are thread group ($\sCTA$), processor ($\sGPU$) and
 system ($\sSYS$).
@@ -245,12 +249,16 @@ We say $\aAct \rmatchesdef \bAct$ if $\aAct=\DWP{\aLoc}{\aVal}$ and $\bAct=\DRP{
 
 We say $\aAct \rblocksdef \bAct$ if $\aAct=\DWP{\aLoc}{}$ and $\bAct=\DRP{\aLoc}{}$, regardless of value.
 
-We say $\aAct \roverlapsdef \bAct$ if they access the same location.
+We say $\aAct \roverlapsdef \bAct$ if $\aAct=\DXP{\aLoc}{}$ and
+$\bAct=\DXP{\aLoc}{}$, regardless of access type or value.
+%they access the same location.
 
 We say $\aAct \rcodelaysdef \bAct$ if
 \begin{math}
   (\aAct,\bAct)\in
-  \{(\DW{\aLoc}{}, \DW{\aLoc}{}),\;(\DR{\aLoc}{}, \DW{\aLoc}{}),\;(\DW{\aLoc}{}, \DR{\aLoc}{}),\;(\DX[\mSC]{}{},\DX[\mSC]{}{})\}
+  \{(\DW{\aLoc}{}, \DW{\aLoc}{}),\;(\DR{\aLoc}{}, \DW{\aLoc}{}),\;(\DW{\aLoc}{}, \DR{\aLoc}{})\} \cup 
+  %\{(\DW[\mSC]{}{}\Cb \DW[\mSC]{}{})\Cc(\DR[\mSC]{}{}\Cb \DW[\mSC]{}{}) \Cc(\DW[\mSC]{}{}\Cb \DR[\mSC]{}{})\Cc(\DR[\mSC]{}{}\Cb \DR[\mSC]{}{})\}
+  \{(\DX[\mSC]{}{},\DX[\mSC]{}{})\}
 \end{math}.
 
 We say $\aAct \rsyncdelaysdef \bAct$ if
@@ -318,8 +326,9 @@ We assume two equivalences:
   partitioning into \emph{thread groups}.
   
   We say
-  $\DXP[\amode]{}[\ascope]{}[\aThrd] \rsoverlapsdef
-  \DXP[\bmode]{}[\bscope]{}[\bThrd]$ when they overlap and either
+  $\DXP[\amode]{\aLoc}[\ascope]{}[\aThrd] \rsoverlapsdef
+  \DXP[\bmode]{\aLoc}[\bscope]{}[\bThrd]$ when %they overlap and
+  either
   \labeltext[1]{(1)}{moral-local} $\aThrd=\bThrd$ or 
   %\labeltext[2]{(2)}{moral-nonlocal} all of the following hold:
   % \begin{enumerate}    
@@ -1103,22 +1112,22 @@ adopt the following conventions:
       \bForm.
     \end{math}
   \end{itemize}
-  If $\aPS\in\mathit{FADD}(\aReg,\aLoc,\aExp,\amode,\bmode)$ then
-  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\aLoc}}{\sSTORE[\bmode]{\aLoc}{\aReg{+}\aExp}})$
+  If $\aPS\in\mathit{FADD}(\aReg,\cExp,\aExp,\amode,\bmode)$ then
+  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\cExp}}{\sSTORE[\bmode]{\cExp}{\aReg{+}\aExp}})$
   \begin{enumerate}[topsep=0pt,label=(\textsc{u}\arabic*),ref=\textsc{u}\arabic*]
   \item if $\labeling_1(\aEv)$ is a write then there is a read $\labeling_1(\bEv)$ such that 
     $\labelingForm(\aEv)\rimplies\labelingForm(\bEv)$ and
     $\bEv\xrmw\aEv$.
   \end{enumerate}
-  If $\aPS\in\mathit{EXCHG}(\aReg,\aLoc,\aExp,\amode,\bmode)$ then
-  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\aLoc}}{\sSTORE[\bmode]{\aLoc}{\aExp}})$
+  If $\aPS\in\mathit{EXCHG}(\aReg,\cExp,\aExp,\amode,\bmode)$ then
+  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\cExp}}{\sSTORE[\bmode]{\cExp}{\aExp}})$
   \begin{enumerate}[topsep=0pt,label=(\textsc{u}\arabic*),ref=\textsc{u}\arabic*]
   \item if $\labeling_1(\aEv)$ is a write then there is a read $\labeling_1(\bEv)$ such that 
     $\labelingForm(\aEv)\rimplies\labelingForm(\bEv)$ and
     $\bEv\xrmw\aEv$.
   \end{enumerate}
-  If $\aPS\in\mathit{CAS}(\aReg,\aLoc,\aExp,\bExp,\amode,\bmode)$ then
-  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\aLoc}}{\sIF{\aReg{=}\aExp}\sTHEN\sSTORE[\bmode]{\aLoc}{\bExp}\sELSE\sSKIP\sFI})$
+  If $\aPS\in\mathit{CAS}(\aReg,\cExp,\aExp,\bExp,\amode,\bmode)$ then
+  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\cExp}}{\sIF{\aReg{=}\aExp}\sTHEN\sSTORE[\bmode]{\cExp}{\bExp}\sELSE\sSKIP\sFI})$
   \begin{enumerate}[topsep=0pt,label=(\textsc{u}\arabic*),ref=\textsc{u}\arabic*]
   \item if $\labeling_1(\aEv)$ is a write then there is a read $\labeling_1(\bEv)$ such that 
     $\labelingForm(\aEv)\rimplies\labelingForm(\bEv)$ and
