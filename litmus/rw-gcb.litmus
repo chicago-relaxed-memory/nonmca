@@ -1,0 +1,18 @@
+AArch64 rw-gcb
+{
+0:X1=x; 0:X3=y;
+1:X1=x; 
+2:X1=x; 2:X3=y;
+}
+ P0            | P1            | P2            ;
+ MOV  W0,#2    | NOP           | NOP           ;
+ STR  W0,[X1]  | NOP           | NOP           ;
+ MOV  W0,#1    | NOP           | NOP           ;
+ STLR W0,[X3]  | NOP           | NOP           ;
+ NOP           | MOV  W0,#1    | NOP           ;
+ NOP           | STR  W0,[X1]  | NOP           ;
+ NOP           | LDR  W2,[X1]  | NOP           ;
+ NOP           | NOP           | LDAR W0,[X3]  ;
+ NOP           | NOP           | LDR  W2,[X1]  ;
+exists
+(1:X2=2 /\ 2:X0=1 /\ 2:X2=1)

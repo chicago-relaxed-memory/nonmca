@@ -1,0 +1,25 @@
+Downgrading messes up publication
+
+
+AArch64 Publication
+{
+0:X1=x; 0:X3=y;
+1:X1=x; 1:X3=y; 1:X5=z;
+2:X1=x; 2:X5=z;
+}
+ P0            | P1            | P2            ;
+ LDR  W0,[X1]  | NOP           | NOP           ;
+ ADD  W2,W0,#1 | NOP           | NOP           ;
+ STR  W2,[X1]  | NOP           | NOP           ;
+ MOV  W4,#1    | NOP           | NOP           ;
+ STLR W4,[X3]  | NOP           | NOP           ;
+ NOP           | MOV   W0,#1   | NOP           ;
+ NOP           | STR   W0,[X1] | NOP           ;
+ NOP           | LDAPR W2,[X3] | NOP           ;
+ NOP           | LDAPR W4,[X1] | NOP           ;
+ NOP           | LDR   W6,[X5] | NOP           ;
+ NOP           | NOP           | MOV  W0, #1   ;
+ NOP           | NOP           | STR  W0,[X5]  ;
+ NOP           | NOP           | STLR W0,[X1]  ;
+exists
+(0:X0=1 /\ 1:X2=1 /\ 1:X4=1 /\ 1:X6=0)

@@ -1,3 +1,8 @@
+\newcommand{\suptesteq}{\succeq}
+\newcommand{\suptest}{\succ}
+\newcommand{\ncomptest}{\mathrel{{\not\preceq}{\not\succeq}}}
+\newcommand{\eqtest}{=_{\mathsf{obs}}}%\mathrel{{\preceq}{\succeq}}}
+\newcommand{\makecounter}[1]{\newcounter{#1}\setcounter{#1}{\value{enumi}}}
 \newcommand{\Wclass}[1][]{{[}\mathsf{W}^{#1}{]}}
 \newcommand{\Rclass}[1][]{{[}\mathsf{R}^{#1}{]}}
 \newcommand{\LDR}{\textnormal{\texttt{ldr}}}
@@ -20,8 +25,8 @@
 %\newcommand{\rsmatchesblocksdef}{\mathrel{\textnormal{\emph{strongly-matches/blocks}}}}
 \newcommand{\rdelayspdef}{\mathrel{\textnormal{\emph{delays}}'}}
 \newcommand{\rdelaysdef}{\mathrel{\textnormal{\emph{delays}}}}
-\newcommand{\rcodelaysdef}{\mathrel{\textnormal{\emph{coherence-delays}}}}
-\newcommand{\rsyncdelaysdef}{\mathrel{\textnormal{\emph{synchronization-delays}}}}
+\newcommand{\rcodelaysdef}{\mathrel{\textnormal{\emph{co-delays}}}}
+\newcommand{\rsyncdelaysdef}{\mathrel{\textnormal{\emph{sync-delays}}}}
 \newcommand{\sreaddef}{\mathrel{\textnormal{\emph{read}}}}
 \newcommand{\sreleasedef}{\mathrel{\textnormal{\emph{release}}}}
 \newcommand{\rimpliesdef}{\mathrel{\vDash}}%{\mathrel{\textnormal{\emph{implies}}}}
@@ -36,8 +41,8 @@
 \newcommand{\rsoverlap}{\mathrel{\textnormal{{strongly-overlap}}}}
 \newcommand{\rdelaysp}{\mathrel{\textnormal{{delays}}'}}
 \newcommand{\rdelays}{\mathrel{\textnormal{{delays}}}}
-\newcommand{\rcodelays}{\mathrel{\textnormal{{coherence-delays}}}}
-\newcommand{\rsyncdelays}{\mathrel{\textnormal{{synchronization-delays}}}}
+\newcommand{\rcodelays}{\mathrel{\textnormal{{co-delays}}}}
+\newcommand{\rsyncdelays}{\mathrel{\textnormal{{sync-delays}}}}
 \newcommand{\sread}{\mathrel{\textnormal{{read}}}}
 \newcommand{\srelease}{\mathrel{\textnormal{{release}}}}
 \newcommand{\rimplies}{\mathrel{\vDash}}%{\mathrel{\textnormal{{implies}}}}
@@ -49,6 +54,9 @@
 \newcommand{\Cc}{,\;\allowbreak}
 \newcommand{\fcard}[1]{{|}#1{|}}
 \newcommand{\Cdown}[1]{\smash{\downarrow}#1}
+\newcommand{\lubscope}{\sqcup}
+\newcommand{\ltscope}{\sqsubset}
+\newcommand{\lescope}{\sqsubseteq}
 \newcommand{\lubmode}{\sqcup}
 \newcommand{\ltmode}{\sqsubset}
 \newcommand{\lemode}{\sqsubseteq}
@@ -327,6 +335,19 @@
     \@esphack%
     \labelmarkup{#2}% visible printed text.
   }
+\newcommand{\labeltextX}[3]{%
+  \@bsphack%
+  \csname phantomsection\endcsname% in case hyperref is used
+  \def\@currentlabel{\textsc{#2}#1}{\label{#3}}%
+  \@esphack%
+}
+\newcommand{\labeltextXX}[3]{%
+  \@bsphack%
+  \csname phantomsection\endcsname% in case hyperref is used
+  \def\@currentlabel{\textsc{#2}#1}{\label{#3}}%
+  \@esphack%
+  (\textsc{#2}#1)
+}
 %\newcommand{\imm}{\restrict{\mathrm{imm}}}
 % \renewcommand{\@fnsymbol}[1]{\ensuremath{\ifcase#1\or
 %     \dagger\dagger\or
@@ -412,6 +433,7 @@
 \newcommand{\fmode}{\mu}
 \newcommand{\amode}{\mu}
 \newcommand{\bmode}{\nu}
+\newcommand{\xmode}{\amode}
 \newcommand{\mWK}{{\mathsf{wk}}}
 \newcommand{\mACQ}{{\mathsf{acq}}}
 \newcommand{\mREL}{{\mathsf{rel}}}
@@ -425,6 +447,7 @@
 
 \newcommand{\ascope}{\sigma}
 \newcommand{\bscope}{\rho}
+\newcommand{\xscope}{\ascope}
 \newcommand{\sCTA}{{\mathsf{grp}}}
 \newcommand{\sGPU}{{\mathsf{proc}}}
 \newcommand{\sSYS}{{\mathsf{sys}}}
@@ -439,9 +462,11 @@
 \newcommand{\xcta}{\mathrel{\smash{=_{\rcta}}}}
 \newcommand{\rgpu}{\mathrel{\sGPU}}
 \newcommand{\xgpu}{\mathrel{\smash{=_{\rgpu}}}}
-\newcommand{\topThrd}{0}
+\newcommand{\topThrd}{\mathbf{0}}
+%\newcommand{\testThrd}{\mathbf{1}}
 % \newcommand{\fthrd}{\mathsf{thread}}
 \newcommand{\Thrd}{\mathcal{T}}
+\newcommand{\xThrd}{\aThrd}
 \newcommand{\aThrd}{\alpha}
 \newcommand{\bThrd}{\gamma}
 \newcommand{\cThrd}{\delta}
@@ -599,6 +624,9 @@
 \newenvironment{noenv}{\ignorespaces}{\ignorespacesafterend}
 \newcommand{\aGrp}{G}
 \newcommand{\aCmd}{S}
+\newcommand{\aUser}{U}
+\newcommand{\aTest}{T}
+\newcommand{\pass}[2]{#1\mathbin{\Downarrow}#2}
 % \newcommand{\bCmd}{D}
 % \newcommand{\eCmd}{E}
 % \newcommand{\cCmd}{B}
@@ -887,8 +915,8 @@
 \NewDocumentCommand\sIFTHEN{m m m}{\textnormal{\textit{IF}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2,\,\allowbreak#3)}}
 \NewDocumentCommand\sPAR{m m}{#1\PAR#2}
 \NewDocumentCommand\sRPAR{m O{} m}{#1\RPAR[#2]#3}
-% \NewDocumentCommand\sLPAR{m O{} m}{#1\LPAR[#2]#3}
-% \NewDocumentCommand\sSEMI{m m}{#1\SEMI#2}
+\NewDocumentCommand\sLPARX{m O{} m}{#1\LPAR[#2]#3}
+\NewDocumentCommand\sSEMIX{m m}{#1\SEMI#2}
 \NewDocumentCommand\sLPAR{m O{} m}{\textnormal{\textit{PAR}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak\ifnotempty{#2}{#2,\,\allowbreak}#3)}}
 \NewDocumentCommand\sSEMI{m m}{\textnormal{\textit{SEQ}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2)}}
 \NewDocumentCommand\sSEQ{m m}{\textnormal{\textit{SEQ}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2)}}
@@ -1089,6 +1117,7 @@
 
 \newcommand{\depcolor}{magenta}
 \newcommand{\synccolor}{red!65!black}
+\newcommand{\syncsccolor}{blue!90!black}
 \newcommand{\rfcolor}{green!50!black}
 \newcommand{\wkicolor}{orange!80!black}
 \newcommand{\wkcolor}{cyan!70!black}
@@ -1150,6 +1179,10 @@
 \newcommand{\rsi}{\ensuremath{\mathrel{\textcolor{\depcolor}{\mathsf{si}}}}}%
 \newcommand{\xsi}{\xarrowtikz{si}{si}}%
 
+\tikzstyle{syncsc} = [->,thick,color=\syncsccolor]
+\newcommand{\syncsc}[3][]{\draw[syncsc,#1](#2)to(#3);}
+\newcommand{\xsyncsc}{\xarrowtikz{syncsc}{\;\;}}%
+
 \tikzstyle{sync} = [-latex,thick,color=\synccolor]
 \newcommand{\sync}[3][]{\draw[sync,#1](#2)to(#3);}
 \newcommand{\xsync}{\xarrowtikz{sync}{\;\;}}%
@@ -1172,7 +1205,7 @@
 % \newcommand{\rird}{\ensuremath{\mathrel{\textcolor{\rfcolor}{\mathsf{ird}}}}}%
 % \newcommand{\xird}{\xarrowtikz{rf}{ird}}%
 
-\tikzstyle{rfint} = [->,dashed,thick,color=\rfcolor]
+\tikzstyle{rfint} = [->,dotted,thick,color=\rfcolor]
 \newcommand{\rfint}[3][]{\draw[rfint,#1](#2)to(#3);}
 \newcommand{\rrfint}{\ensuremath{\mathrel{\textcolor{\rfcolor}{\mathsf{rfi}}}}}%
 \newcommand{\xrfint}{\xarrowtikz{rfint}{\;\;}}%
@@ -1180,7 +1213,7 @@
 \newcommand{\rrfi}{\ensuremath{\mathrel{\textcolor{\rfcolor}{\mathsf{rfi}}}}}%
 \newcommand{\xrfi}{\xarrowtikz{rfint}{rfi}}%
 
-\tikzstyle{wki} = [-latex,thick,color=\wkicolor,]
+\tikzstyle{wki} = [-latex,dashed,thick,color=\wkicolor,]
 \newcommand{\wki}[3][]{\draw[wki,#1](#2)to(#3);}
 \newcommand{\xwki}{\xarrowtikz{wki}{\;\;}}%
 \NewDocumentCommand \coi {O{} m O{} m} {\draw[wki,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{coi}$}  (#4);}
@@ -1193,16 +1226,16 @@
 \newcommand{\rpoloc}{\ensuremath{\mathrel{\textcolor{\wkicolor}{\mathsf{poloc}}}}}%
 \newcommand{\xpoloc}{\xarrowtikz{wki}{poloc}}%
 
-\tikzstyle{wk} = [-latex,thick,color=\wkcolor,]
+\tikzstyle{wk} = [->,dashed,thick,color=\wkcolor,]
 \newcommand{\wk}[3][]{\draw[wk,#1](#2)to(#3);}
 \newcommand{\xwk}{\xarrowtikz{wk}{\;\;}}%
-\tikzstyle{wkx} = [-latex,dashed,thick,color=\wkcolor,]
+\tikzstyle{wkx} = [->,dashed,thick,color=\wkcolor,]
 \newcommand{\wkx}[3][]{\draw[wkx,#1](#2)to(#3);}
 \newcommand{\xwkx}{\xarrowtikz{wkx}{\;\;}}%
-\tikzstyle{wky} = [-latex,dotted,thick,color=\wkcolor,]
+\tikzstyle{wky} = [->,dotted,thick,color=\wkcolor,]
 \newcommand{\wky}[3][]{\draw[wky,#1](#2)to(#3);}
 \newcommand{\xwky}{\xarrowtikz{wky}{\;\;}}%
-\tikzstyle{wkz} = [-latex,dashdotted,thick,color=\wkcolor,]
+\tikzstyle{wkz} = [->,dashdotted,thick,color=\wkcolor,]
 \newcommand{\wkz}[3][]{\draw[wkz,#1](#2)to(#3);}
 \newcommand{\xwkz}{\xarrowtikz{wkz}{\;\;}}%
 \NewDocumentCommand \eco {O{} m O{} m} {\draw[wk,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{eco}$}  (#4);}

@@ -27,95 +27,89 @@ The syntax is built from
 
 \emph{Memory references} are tagged values, written $\REF{\cVal}$.  Let $\Loc$
 be the set of memory references, ranged over by $\aLoc$, $\bLoc$, $\cLoc$.
-
-We require that
+We require that:
 \begin{itemize}
 \item values and registers are disjoint, 
 \item values include at least the constants $0$ and $1$,  
 \item expressions include at least registers and values, 
-\item expressions do \emph{not} include references: $\aExp[\bExp/\aLoc]=\aExp$,
-\item there are registers
-  $\uRegs{\AllEvents}=\{\uReg{\aEv}\mid\aEv\in\AllEvents\}$,
-\item registers $\uRegs{\AllEvents}$ do not appear in programs: $\aCmd[\bExp/\uReg{\aEv}]=\aCmd$.
+\item references do not appear in expressions: $\aExp[\bExp/\aLoc]=\aExp$,
+\item thread ids include the \emph{top-level} id $\topThrd$. % and the \emph{test} id $\testThrd$. 
 \end{itemize}
-Alternative to the last assumption, we sometimes assume each register is
-assigned at most once.\footnote{We make this assumption when discussing any
-  semantics of load ($\PRREF[\amode]{\cExp}[\ascope]{\aReg}$) that does not
-  include the substitution $[\uReg{\aEv}/\aReg]$.}
-
 We model the following language.
-\begin{align*}
-  \amode,\bmode \BNFDEF& \mWK
-  \BNFSEP \mRLX
-  \BNFSEP \mREL
-  \BNFSEP \mACQ
-  \BNFSEP \mRA 
-  \BNFSEP \mSC
-  % &
-  % \fmode \BNFDEF& \fACQ 
-  % \BNFSEP \fREL
-  % \BNFSEP \fSC
-  &
-  \ascope,\bscope \BNFDEF& \sCTA
-  \BNFSEP \sGPU
-  \BNFSEP \sSYS
-\end{align*}
-\begin{align*}
-  \aCmd
-  \BNFDEF& \SKIP
-  \BNFSEP \LET{\aReg}{\aExp}
-  \BNFSEP \PR[\amode]{\REF{\cExp}}[\ascope]{\aReg}
-  \BNFSEP \PW[\amode]{\REF{\cExp}}[\ascope]{\aExp}
-  \BNFSEP \PF[\ascope]{\fmode}
-  \BNFSEP \IF{\aExp} \THEN \aCmd_1 \ELSE \aCmd_2 \FI
-  \BNFSEP \aCmd_1 \SEMI \aCmd_2
-  \\[-.5ex]
-  \BNFSEP& \aCmd_1 \LPAR[\bThrd] \aCmd_2
-  \BNFSEP \PCAS[\amode][\bmode]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}{\bExp}
-  \BNFSEP \PFADD[\amode][\bmode]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
-  \BNFSEP \PEXCHG[\amode][\bmode]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
-  % \BNFSEP \PCAS[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}{\bExp}
-  % \BNFSEP \PFADD[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
-  % \BNFSEP \PEXCHG[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
-\end{align*}
-
+\begin{gather*}
+  \begin{aligned}
+    \amode,\bmode \BNFDEF& \mWK
+    \BNFSEP \mRLX
+    \BNFSEP \mREL
+    \BNFSEP \mACQ
+    \BNFSEP \mRA 
+    \BNFSEP \mSC
+    % &
+    % \fmode \BNFDEF& \fACQ 
+    % \BNFSEP \fREL
+    % \BNFSEP \fSC
+    &\qquad \qquad
+    \ascope,\bscope \BNFDEF& \sCTA
+    \BNFSEP \sGPU
+    \BNFSEP \sSYS
+  \end{aligned}
+  \\
+  \begin{aligned}
+    \aCmd%,\aTest
+    \BNFDEF& \SKIP
+    \BNFSEP \LET{\aReg}{\aExp}
+    \BNFSEP \PR[\amode]{\REF{\cExp}}[\ascope]{\aReg}
+    \BNFSEP \PW[\amode]{\REF{\cExp}}[\ascope]{\aExp}
+    \BNFSEP \PF[\ascope]{\fmode}
+    \BNFSEP \IF{\aExp} \THEN \aCmd_1 \ELSE \aCmd_2 \FI
+    \BNFSEP \aCmd_1 \SEMI \aCmd_2
+    \\[-.5ex]
+    \BNFSEP& \aCmd_1 \LPAR[\bThrd] \aCmd_2
+    \BNFSEP \PCAS[\amode][\bmode]{\REF{\cExp}\,}[\ascope]{\aReg}{\aExp}{\bExp}
+    \BNFSEP \PFADD[\amode][\bmode]{\REF{\cExp}\,}[\ascope]{\aReg}{\aExp}
+    \BNFSEP \PEXCHG[\amode][\bmode]{\REF{\cExp}\,}[\ascope]{\aReg}{\aExp}
+    % \BNFSEP \PCAS[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}{\bExp}
+    % \BNFSEP \PFADD[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
+    % \BNFSEP \PEXCHG[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
+  \end{aligned}
+\end{gather*}
 % \emph{Access modes}, $\amode$, are {weak} ($\mWK$), are {relaxed} ($\mRLX$),
 % {release-acquire} ($\mRA$), and {sequentially consistent} ($\mSC$).
 % $\mRA$/$\mSC$ accesses are collectively known as \emph{synchronized
-%   accesses}.
-% %
+% accesses}.
+% % 
 % \emph{Fence modes}, $\bmode$, are {acquire} ($\fACQ$), {release} ($\fREL$), 
 % and {acquire-release} ($\fSC$).  
 
 \emph{Access modes}, $\amode$, are {weak} ($\mWK$), {relaxed} ($\mRLX$),
 {release} ($\mREL$), {acquire} ($\mACQ$), {release-acquire} ($\mRA$), and
 {sequentially consistent} ($\mSC$).
-%
+% 
 Let expressions ($\LET{\aReg}{\aExp}$) only affect thread-local state and
 thus do not have a mode.
-%
+% 
 Reads ($\PR[\amode]{\REF{\cExp}}[\ascope]{\aReg}$) support
 $\mWK$,
 $\mRLX$,
-%$\mREL$,
+% $\mREL$,
 $\mACQ$,
-%$\mRA$, 
+% $\mRA$, 
 $\mSC$. 
 Writes ($\PW[\amode]{\REF{\cExp}}[\ascope]{\aReg}$) support
 $\mWK$,
 $\mRLX$,
 $\mREL$,
-%$\mACQ$,
-%$\mRA$, 
+% $\mACQ$,
+% $\mRA$, 
 $\mSC$. 
 Fences ($\PF[\ascope]{\fmode}$) support
-%$\mWK$,
-%$\mRLX$,
+% $\mWK$,
+% $\mRLX$,
 $\mREL$,
 $\mACQ$,
 $\mRA$, 
 $\mSC$.
-%
+% 
 In the atomic update operations, $\amode$ is a read and $\bmode$ is a write;
 we require that $\aReg$ does not occur in $\cExp$.
 
@@ -143,8 +137,11 @@ The semantics is built from the following.
 Subsets of $\AllEvents$ are ranged over by $\aEvs$, $\bEvs$, $\cEvs$,
 $\dEvs$.
 
-We require that:
+
 \begin{itemize}
+\item registers include %\emph{event registers}
+  $\uRegs{\AllEvents}=\{\uReg{\aEv}\mid\aEv\in\AllEvents\}$ which do not appear in commands:
+  $\aCmd[\bExp/\uReg{\aEv}]=\aCmd$,
 \item formulae include equalities $(\aExp{=}\bExp)$ and $(\aLoc{=}\aExp)$,
 \item formulae are closed under negation, conjunction, disjunction, and
   substitutions $[\aExp/\aReg]$, $[\aExp/\aLoc]$,
@@ -153,6 +150,8 @@ We require that:
 \item $\rimpliesdef$ has the expected semantics for $=$, $\lnot$, $\land$, $\lor$,
   $\limplies$ and substitution.
 \end{itemize}
+We relax the first assumption in examples, assuming that each register is
+assigned at most once.
 
 Logical formulae include equations over registers, such as
 $(\aReg{=}\bReg{+}1)$.  For \xLIR{}, we also include equations over memory
@@ -211,19 +210,19 @@ We combine access and fence modes into a single order:
 % \end{align*}
 \begin{math}
   \!\!\smash{\hbox{\begin{tikzcenter}
-    \node (wk)  at (-1, 0) {$\mathstrut\mWK$};
-    \node (rlx) at (0, 0) {$\mathstrut\mRLX$};
-    \node (rel) at (1,  0.2) {$\mathstrut\mREL$};
-    \node (acq) at (1, -0.2) {$\mathstrut\mACQ$};
-    \node (ra)  at (2, 0) {$\mathstrut\mRA$};
-    \node (sc)  at (3, 0) {$\mathstrut\mSC$};
-    \draw[->](wk)to(rlx);
-    \draw[->](rlx)to(rel);
-    \draw[->](rlx)to(acq);
-    \draw[->](rel)to(ra);
-    \draw[->](acq)to(ra);
-    \draw[->](ra)to(sc);
-  \end{tikzcenter}}}\!\!.
+        \node (wk)  at (-1, 0) {$\mathstrut\mWK$};
+        \node (rlx) at (0, 0) {$\mathstrut\mRLX$};
+        \node (rel) at (1,  0.2) {$\mathstrut\mREL$};
+        \node (acq) at (1, -0.2) {$\mathstrut\mACQ$};
+        \node (ra)  at (2, 0) {$\mathstrut\mRA$};
+        \node (sc)  at (3, 0) {$\mathstrut\mSC$};
+        \draw[->](wk)to(rlx);
+        \draw[->](rlx)to(rel);
+        \draw[->](rlx)to(acq);
+        \draw[->](rel)to(ra);
+        \draw[->](acq)to(ra);
+        \draw[->](ra)to(sc);
+      \end{tikzcenter}}}\!\!.
 \end{math}
 We write $\amode\lemode\bmode$ for this order.
 Let $\amode\lubmode\bmode$ denote the least upper bound of $\amode$ and $\bmode$.
@@ -237,7 +236,7 @@ Let actions be reads, writes and fences:
 In examples, we systematically drop the default mode $\mRLX$ and the default
 scope $\sSYS$.  In definitions, we drop elements of actions that are
 existentially quantified.
-%
+% 
 We write $\DXP[\amode]{\aLoc}[\ascope]{}[\aThrd]$ to stand for an
 \emph{access}: either $\DWP[\amode]{\aLoc}[\ascope]{}[\aThrd]$ or
 $\DRP[\amode]{\aLoc}[\ascope]{}[\aThrd]$.
@@ -251,13 +250,13 @@ We say $\aAct \rblocksdef \bAct$ if $\aAct=\DWP{\aLoc}{}$ and $\bAct=\DRP{\aLoc}
 
 We say $\aAct \roverlapsdef \bAct$ if $\aAct=\DXP{\aLoc}{}$ and
 $\bAct=\DXP{\aLoc}{}$, regardless of access type or value.
-%they access the same location.
+% they access the same location.
 
 We say $\aAct \rcodelaysdef \bAct$ if
 \begin{math}
   (\aAct,\bAct)\in
   \{(\DW{\aLoc}{}, \DW{\aLoc}{}),\;(\DR{\aLoc}{}, \DW{\aLoc}{}),\;(\DW{\aLoc}{}, \DR{\aLoc}{})\} \cup 
-  %\{(\DW[\mSC]{}{}\Cb \DW[\mSC]{}{})\Cc(\DR[\mSC]{}{}\Cb \DW[\mSC]{}{}) \Cc(\DW[\mSC]{}{}\Cb \DR[\mSC]{}{})\Cc(\DR[\mSC]{}{}\Cb \DR[\mSC]{}{})\}
+  % \{(\DW[\mSC]{}{}\Cb \DW[\mSC]{}{})\Cc(\DR[\mSC]{}{}\Cb \DW[\mSC]{}{}) \Cc(\DW[\mSC]{}{}\Cb \DR[\mSC]{}{})\Cc(\DR[\mSC]{}{}\Cb \DR[\mSC]{}{})\}
   \{(\DX[\mSC]{}{},\DX[\mSC]{}{})\}
 \end{math}.
 
@@ -275,75 +274,37 @@ We say $\aAct \rsyncdelaysdef \bAct$ if
   \begin{math}
     (\DR{\aLoc}{}, \DR[\gemode\mACQ]{\aLoc}{}),
   \end{math}
-but this is not sound for Arm or \IMM{}.}
+  but this is not sound for Arm or \IMM{}.}
 
 Let $\DWP[\gemode\mREL]{}{}$ and $\DFP{\gemode\fREL}$ be
 $\sreleasedef$ actions.  Actions $\DRP{}{}$ are $\sreaddef$ actions.
 
-Let
-$\fmerge{}{}:\Act\times\Act\fun2^{\Act}$
-be defined as follows.
-Let
-\begin{math}
-  \fmerge{\DR[\amode]{\aLoc}{\aVal}}{\DR[\bmode]{\aLoc}{\aVal}} = \{
-  \DR[\amode\lubmode\bmode]{\aLoc}{\aVal} \}
-\end{math},
-\begin{math}
-  \fmerge{\DW[\amode]{\aLoc}{\aVal}}{\DW[\bmode]{\aLoc}{\bVal}} = \{
-  \DW[\amode\lubmode\bmode]{\aLoc}{\bVal} \}
-\end{math},
-\begin{math}
-  \fmerge{\DW[\amode]{\aLoc}{\aVal}}{\DR[\bmode\lemode\mRLX]{\aLoc}{\aVal}} = \{
-  \DW[\amode\lubmode\bmode]{\aLoc}{\aVal} \}
-\end{math},
-\begin{math}
-  \fmerge{\DF{\amode}}{\DF{\bmode}} = \{ \DF{\amode\lubmode\bmode} \}
-\end{math},
-and
-\begin{math}
-  \fmerge{\aAct}{\bAct} = \emptyset, 
-\end{math}
-otherwise.
-
-If $\aAct_0\in\fmerge{\aAct_1}{\aAct_2}$, then $\aAct_1$ and $\aAct_2$ can
-coalesce, resulting in $\aAct_0$.  This allows optimizations such as
-$(\PW{x}{1}\SEMI \PW{x}{2})$ to $(\PW{x}{2})$ and
-$(\PW{x}{1}\SEMI \PR{x}{r})$ to $(\PW{x}{1}\SEMI \PR{1}{r})$.  For
-associativity of sequential composition, it is important that $\fmerge{}{}$
-always take an upper bound on the modes of the two actions.  For example, it
-would invalidate associativity to allow
-$\DWP{\aLoc}{\aVal}\in\fmerge{\DW{\aLoc}{\aVal}}{\DR[\mACQ]{\aLoc}{\aVal}}$,
-although this is considered safe.\footnote{A list of safe merge operations
-  can be found in \cite[\textsection E]{DBLP:conf/cgo/ChakrabortyV17} and
-  \cite[\textsection7.1]{Kang19}.  For examples of unsafe merges and
-  reorderings, see \cite[\textsection D]{DBLP:conf/cgo/ChakrabortyV17}.}
-
-
 \begin{definition}
-We assume two equivalences:
+  We assume two equivalences:
   $\PBR{\xgpu}\subseteq(\Thrd\times\Thrd)$ partitions threads by
   \emph{processor}, and $\PBR{\xcta}\subseteq\PBR{\xgpu}$ refines the processor
   partitioning into \emph{thread groups}.
   
   We say
-  $\DXP[\amode]{\aLoc}[\ascope]{}[\aThrd] \rsoverlapsdef
-  \DXP[\bmode]{\aLoc}[\bscope]{}[\bThrd]$ when %they overlap and
+  $\DXP[\amode_1]{\aLoc}[\ascope_1]{}[\aThrd_1] \rsoverlapsdef
+  \DXP[\xmode_2]{\aLoc}[\xscope_2]{}[\xThrd_2]$ when %they overlap and
   either
-  \labeltext[1]{(1)}{moral-local} $\aThrd=\bThrd$ or 
-  %\labeltext[2]{(2)}{moral-nonlocal} all of the following hold:
-  % \begin{enumerate}    
-  % \item \label{moral-local} $\aThrd=\bThrd$ or 
-  % \item \label{moral-nonlocal} all of the following hold:
-  \begin{enumerate}[,label=(2\alph*),ref=2\alph*]
-  \item \labeltext[2]{}{moral-nonlocal} $\amode,\bmode\neq\mWK$,
-  \item if $\ascope=\sCTA$ or $\bscope=\sCTA$ then $\aThrd\xcta\bThrd$,
-  \item if $\ascope=\sGPU$ or $\bscope=\sGPU$ then $\aThrd\xgpu\bThrd$.
-  \end{enumerate}
+  \begin{multicols}{2}
+    \begin{enumerate}[,label=(2\alph*),ref=2\alph*]      
+    \item[{\labeltext[1]{(1)}{moral-local}}]
+    $\aThrd_1=\xThrd_2$, or
+    \labeltext[2]{}{moral-nonlocal}
+    \item $\amode_1,\xmode_2\neq\mWK$,
+    \item if $\ascope_1=\sCTA$ or $\xscope_2=\sCTA$ then $\aThrd_1\xcta\xThrd_2$, and
+    \item if $\ascope_1=\sGPU$ or $\xscope_2=\sGPU$ then $\aThrd_1\xgpu\xThrd_2$.
+    \end{enumerate}
+  \end{multicols}
+  \smallskip
 
   We say
-  $\DFP[\ascope]{\amode}[\aThrd] \rsfencesdef \DFP[\bscope]{\bmode}[\bThrd]$
-  when $\amode=\bmode=\fSC$ and either \eqref{moral-local} or
-  \eqref{moral-nonlocal} apply (from the definition of $\rsoverlaps$).
+  $\DFP[\ascope_1]{\amode_1}[\aThrd_1] \rsfencesdef \DFP[\xscope_2]{\xmode_2}[\xThrd_2]$
+  when $\amode_1=\xmode_2=\fSC$ and either \eqref{moral-local} or
+  \eqref{moral-nonlocal} apply, from the definition of $\rsoverlaps$.
 
   We say $\aAct \rsmatchesdef \bAct$ when $\aAct$ is a release, $\bAct$ is an
   acquire, and either $\aAct\rsoverlaps \bAct$ or $\aAct\rsfences \bAct$.
@@ -364,14 +325,22 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
 
 \begin{definition}
   \label{def:trans}
-  A \emph{predicate transformer} is a   function
+  A \emph{predicate transformer} is a %monotone
+  function
   $\aTr{}{}:\Formulae\fun\Formulae$ such that
-  \begin{enumerate}
-  \item $\aTr{}{\FALSE}$ is $\FALSE$,    
-  \item $\aTr{}{\bForm_1\land\bForm_2}$ is $\aTr{}{\bForm_1}\land\aTr{}{\bForm_2}$,    
-  \item $\aTr{}{\bForm_1\lor\bForm_2}$ is $\aTr{}{\bForm_1}\lor\aTr{}{\bForm_2}$, 
-  \item if $\aForm \rimplies \bForm$, then $\aTr{}{\aForm} \rimplies \aTr{}{\bForm}$.
-  \end{enumerate}
+  \begin{multicols}{2}
+    \begin{enumerate}[,label=(\textsc{x}\arabic*),ref=\textsc{x}\arabic*]
+    \item \label{tr-false}
+      $\aTr{}{\FALSE}$ is $\FALSE$,    
+    \item \label{tr-and}
+      $\aTr{}{\bForm_1\land\bForm_2}$ is $\aTr{}{\bForm_1}\land\aTr{}{\bForm_2}$,    
+    \item \label{tr-or}
+      $\aTr{}{\bForm_1\lor\bForm_2}$ is $\aTr{}{\bForm_1}\lor\aTr{}{\bForm_2}$, 
+    \item \label{tr-implies}
+      if $\aForm \rimplies \bForm$, then $\aTr{}{\aForm} \rimplies
+      \aTr{}{\bForm}$.
+    \end{enumerate}
+  \end{multicols}
 \end{definition}
 
 \begin{definition}
@@ -380,6 +349,8 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
   predicate transformer $\aTr{\bEvs}{}$ for each $\bEvs\subseteq\AllEvents$,
   such that if $\cEvs \cap \aEvs \subseteq \bEvs$ then
   $\aTr{\cEvs}{\bForm} \rimplies \aTr{\bEvs}{\bForm}$.
+
+  We write $\aTr{}{}$ as an abbreviation of $\aTr{\aEvs}{}$.
 \end{definition}
 
 \begin{definition}
@@ -387,35 +358,38 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
   A \emph{pomset with predicate transformers} 
   is a tuple $(\Event, \labeling, \labelingForm, \aTr{}{}, {\aTerm}, {\ledep}, {\lesync}, {\leloc}, {\rrmw})$ where
   \begin{enumerate}[,label=(\textsc{m}\arabic*),ref=\textsc{m}\arabic*]
-  \item \label{pom-E}
+    \makecounter{BE}
+  \item \label{pom-E} \makecounter{E}
     $\Event\subset\AllEvents$ is a set of \emph{events},
-  \item \label{pom-lambda}
+    \makecounter{Blambda}
+  \item \label{pom-lambda} \makecounter{lambda}
     $\labeling: \Event \fun \Act$ defines a \emph{label} for each event,
-  \item \label{pom-kappa}
+    \makecounter{Bkappa}
+  \item \label{pom-kappa} \makecounter{kappa}
     $\labelingForm:\aEvs\fun\Formulae$ defines a \emph{precondition} for each event,
-  \item \label{pom-tau}
-    $\aTr{}{}:2^{\AllEvents}\fun\Formulae \fun\Formulae$ is a \emph{family of
-      predicate transformers} over $\aEvs$, 
-  \item \label{pom-term}
+    \makecounter{Btau}
+  \item \label{pom-tau} \makecounter{tau}
+    $\aTr{}{}:2^{\AllEvents}\fun\Formulae \fun\Formulae$ is a \emph{family of predicate transformers} over $\aEvs$, 
+    \makecounter{Bterm}
+  \item \label{pom-term} \makecounter{term}
     $\aTerm:\Formulae$ defines a \emph{termination condition},
-  \item
-    \label{pom-ledep}
+    \makecounter{Bledep}
+  \item \label{pom-ledep} \makecounter{ledep}
     ${\ledep} : (\Event\times\Event)$ is a partial order capturing \emph{dependency},
-  \item
-    \label{pom-lesync}
-    ${\lesync} : (\Event\times\Event)$ is a partial order capturing
-    \emph{synchronization}, 
-  \item \label{pom-leloc}
-    ${\leloc} : (\Event\times\Event)$ is a partial order capturing
-    \emph{per-location order}, such that 
+    \makecounter{Blesync}
+  \item \label{pom-lesync} \makecounter{lesync}
+    ${\lesync} : (\Event\times\Event)$ is a partial order capturing \emph{synchronization}, 
+    \makecounter{Bleloc}
+  \item \label{pom-leloc} \makecounter{leloc}
+    ${\leloc} : (\Event\times\Event)$ is a partial order capturing \emph{per-location order}, such that 
     \begin{enumerate}
     \item \label{pom-leloc-lesync}
       if $\labeling(\bEv)\roverlaps\labeling(\aEv)$ 
       then $\bEv\lesync\aEv$ implies $\bEv\leloc\aEv$,      
     \end{enumerate}
-  \item \label{pom-rmw}
-    ${\rrmw} : \Event\fun\Event$ is a partial function capturing
-    read-modify-write \emph{atomicity}, such that
+    \makecounter{Brmw}
+  \item \label{pom-rmw} \makecounter{rmw}
+    ${\rrmw} : \Event\fun\Event$ is a partial function capturing read-modify-write \emph{atomicity}, such that
     \begin{enumerate}
     \item \label{pom-rmw-block}
       if $\bEv\xrmw\aEv$ then $\labeling(\aEv) \rblocks \labeling(\bEv)$,
@@ -453,22 +427,22 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
   A pomset is a \emph{candidate} if there is an injective relation
   ${\rrfx} : \Event\times\Event$, capturing \emph{reads-from}, such that
   \begin{enumerate}[,label=(\textsc{c}\arabic*),ref=\textsc{c}\arabic*]
-    \setcounter{enumi}{1}
+    \setcounter{enumi}{\value{Blambda}}
   \item \label{cand-lambda}
     if $\bEv\xrfx\aEv$ then $\labeling(\bEv) \rmatches \labeling(\aEv)$,
-    \setcounter{enumi}{5}
+    \setcounter{enumi}{\value{Bledep}}
   \item \label{cand-ledep-rf}
     if $\bEv\xrfx\aEv$ then $\bEv \ledep \aEv$,
-    \stepcounter{enumi}
-  \item[] %\labeltext[\textsc{c}7]{}{}
+    \setcounter{enumi}{\value{lesync}}
+  \item[] 
     \begin{enumerate}[leftmargin=0pt]
     \item \label{cand-lesync-rf}
       if $\bEv'\lesync\bEv\xrfx\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$,
     \item \label{cand-lesync-sc}
       if $\labeling(\bEv) \rsfences \labeling(\aEv)$ then either $\bEv\lesync\aEv$ or $\aEv\lesync\bEv$,
     \end{enumerate}
-    \stepcounter{enumi}
-  \item[] %\labeltext[\textsc{c}7]{}{}
+    \setcounter{enumi}{\value{leloc}}
+  \item[] 
     \begin{enumerate}[leftmargin=0pt]
     \item  \label{cand-leloc-rf}
       if $\bEv\xrfx\aEv$ then $\bEv \leloc \aEv$,
@@ -477,79 +451,65 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
       where $\bEv'\leexists\aEv'$ when $\aEv'\leloc\bEv'$ implies $\bEv'=\aEv'$ and
       $\labeling(\bEv') \rsoverlaps \labeling(\aEv')$ implies $\bEv'\leloc\aEv'$.
     \end{enumerate}
-    % where \labeltext[\textsc{c}2a]{(\textsc{c}2a)}{rf-block-not-leloc}
-    % $\aEv'\not\ltloc\bEv'$ and
-    % \labeltext[\textsc{c}2b]{(\textsc{c}2b)}{rf-block-strongly}
-    % if $\labeling(\bEv') \rsoverlaps \labeling(\aEv')$ then $\bEv'\leloc\aEv'$.
   \end{enumerate}
 
   A candidate pomset with $\rrfx$ is \emph{top-level} if
-  % \labeltext[\textsc{t}1]{(\textsc{t}1)}{top-term} $\aTerm$ is a tautology and \labeltext[\textsc{t}2]{(\textsc{t}2)}{top-ev} for every $\aEv\in\aEvs$,
-  % \begin{enumerate}[label=(\textsc{t}\arabic*),ref=\textsc{t}\arabic*]
-  %   \setcounter{enumi}{2}
-  % \item[]
-  %   \begin{enumerate}[leftmargin=0pt]
-  %   \item \label{top-kappa}
-  %     $\labelingForm(\aEv)$ is a tautology,    
-  %   \item \label{top-rf}
-  %     if $\labeling(\aEv)$ is a $\sread$ then there is some $\bEv\xrfx\aEv$.
-  %   \end{enumerate}
-  % \end{enumerate}
   \begin{enumerate}[,label=(\textsc{t}\arabic*),ref=\textsc{t}\arabic*]
-    \setcounter{enumi}{1}
+    \setcounter{enumi}{\value{Blambda}}
   \item \label{top-rf}
     if $\labeling(\aEv)$ is a $\sread$ then there is some $\bEv\xrfx\aEv$,
+    \setcounter{enumi}{\value{Bkappa}}
   \item \label{top-kappa}
     $\labelingForm(\aEv)$ is a tautology (for every $\aEv\in\aEvs$),
-    \setcounter{enumi}{4}
+    \setcounter{enumi}{\value{Bterm}}
   \item \label{top-term}
     $\aTerm$ is a tautology.
   \end{enumerate}
 \end{definition}
 
-Note that for the \IMM{} model, \ref{cand-leloc-block} is equivalent to: \footnote{If all accesses are morally strong with each other, weak fulfillment
-degenerates to
-\begin{center}
-  $\forall\labelingAct(\cEv)=\DWP[]{x}{}$ either
-  $\cEv \leloc \bEv$ or $\aEv \leloc \cEv$
-\end{center}
+Note that for the \IMM{} model, \ref{cand-leloc-block} is equivalent to:\footnote{If all accesses are morally strong with each other, weak fulfillment
+  degenerates to
+  \begin{center}
+    $\forall\labelingAct(\cEv)=\DWP[]{x}{}$ either
+    $\cEv \leloc \bEv$ or $\aEv \leloc \cEv$
+  \end{center}
 
-If no accesses are morally strong with each other, weak fulfillment
-degenerates to
-\begin{center}
-  $\not\mkern-5mu\exists\labelingAct(\cEv)=\DWP[]{x}{}$ 
-  both $\bEv \ltloc \cEv$ and $\cEv \ltloc \aEv$
-\end{center}
+  If no accesses are morally strong with each other, weak fulfillment
+  degenerates to
+  \begin{center}
+    $\not\mkern-5mu\exists\labelingAct(\cEv)=\DWP[]{x}{}$ 
+    both $\bEv \ltloc \cEv$ and $\cEv \ltloc \aEv$
+  \end{center}
 
-Note that the difference between strong and weak fulfillment is limited to $\leloc$.
-We sometimes write $\lelocstrong$ for strong fulfillment and
-$\lelocweak$ for weak fulfillment.}
+  Note that the difference between strong and weak fulfillment is limited to $\leloc$.
+  We sometimes write $\lelocstrong$ for strong fulfillment and
+  $\lelocweak$ for weak fulfillment.}
 \begin{center}
   if $\bEv\xrfx\aEv$ and $\labeling(\cEv) \rblocks \labeling(\aEv)$ then
   either $\cEv\leloc\bEv$ or $\aEv\leloc\cEv$.
 \end{center}
 
-  % Define $\leexists$ as follows.
-  % \begin{align*}
-  %   \bEv\leexists\aEv &\textwhen                      
-  %   \begin{cases}
-  %     \bEv\leloc\aEv &\text{if}\; \bEv \;\text{is morally strong with}\; \aEv
-  %     \\
-  %     \aEv\not\ltloc\bEv &\text{otherwise}
-  %   \end{cases}
-  % \end{align*}    
-  % A read event $\aEv$ is \emph{strongly fulfilled} if there is a
-  % $\bEv\xrfx\aEv$ and 
-  % \begin{center}
-  %   for any $\cEv$ that can block $\aEv$, either $\cEv\leloc\bEv$ or
-  %   $\aEv\leloc\cEv$.
-  % \end{center}
-  % A read event $\aEv$ is \emph{weakly fulfilled} if there is a
-  % $\bEv\xrfx\aEv$ and 
-  % \begin{center}
-  %   for any $\cEv$ that can block $\aEv$, either $\cEv\leexists\bEv$ or
-  %   $\aEv\leexists\cEv$.
-  % \end{center}
+% Define $\leexists$ as follows.
+% \begin{align*}
+%   \bEv\leexists\aEv &\textwhen                      
+%   \begin{cases}
+%     \bEv\leloc\aEv &\text{if}\; \bEv \;\text{is morally strong with}\; \aEv
+%     \\
+%     \aEv\not\ltloc\bEv &\text{otherwise}
+%   \end{cases}
+% \end{align*}    
+% A read event $\aEv$ is \emph{strongly fulfilled} if there is a
+% $\bEv\xrfx\aEv$ and 
+% \begin{center}
+%   for any $\cEv$ that can block $\aEv$, either $\cEv\leloc\bEv$ or
+%   $\aEv\leloc\cEv$.
+% \end{center}
+% A read event $\aEv$ is \emph{weakly fulfilled} if there is a
+% $\bEv\xrfx\aEv$ and 
+% \begin{center}
+%   for any $\cEv$ that can block $\aEv$, either $\cEv\leexists\bEv$ or
+%   $\aEv\leexists\cEv$.
+% \end{center}
 
 
 
@@ -563,219 +523,11 @@ $(\forall\aEv\in\Event)(\forall\aLoc\in\Loc)$.
 We write $\bEv\ltsync\aEv$ when $\bEv\lesync\aEv$ and $\bEv\neq\aEv$, and similarly
 for $\ltdep$ and $\ltloc$.
 
-\begin{definition}
-  $\aPSS_1$ \emph{refines} $\aPSS_2$ if $\aPSS_1\subseteq\aPSS_2$.
-\end{definition}
-
 \subsection{Semantics}
 
+\input{fig-sem.tex}
 
-\begin{definition}
-  \noindent
-  If $\aPS\in\sSKIP$ then $\aEvs = \emptyset$ and
-  $\aTr{\bEvs}{\bForm} \rimplies \bForm$.
-
-  \noindent
-  If $\aPS \in \sLPAR{\aPSS_1}{\aPSS_2}$ then  
-  $(\exists\aPS_1\in\aPSS_1)$ $(\exists\aPS_2\in\aPSS_2)$
-  \begin{enumerate}[topsep=0pt,label=(\textsc{p}\arabic*),ref=\textsc{p}\arabic*]
-  \item \label{par-E}
-    $\aEvs = (\aEvs_1\cup\aEvs_2)$,
-    ${\ledep}\supseteq\PBR{{\ledep_1}\cup{\ledep_2}}$, 
-    ${\lesync}\supseteq\PBR{{\lesync_1}\cup{\lesync_2}}$, 
-    ${\leloc}\supseteq\PBR{{\leloc_1}\cup{\leloc_2}}$, 
-    ${\rrmw}=\PBR{{\rrmw_1}\cup{\rrmw_2}}$, 
-  \item \label{par-lambda}
-    ${\labeling}=\PBR{{\labeling_1}\cup {\labeling_2}}$, 
-  \item[] \stepcounter{enumi} \labeltext[\textsc{p}3]{}{par-kappa}
-    \begin{enumerate}[leftmargin=0pt]
-    \item \label{par-kappa1} if $\aEv\in\aEvs_1$ then $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)$,
-    \item \label{par-kappa2} if $\aEv\in\aEvs_2$ then $\labelingForm(\aEv) \rimplies \labelingForm_2(\aEv)$,
-    \end{enumerate}
-  \item \label{par-tau}
-    $\aTr{\bEvs}{\bForm} \rimplies \aTr[1]{\bEvs}{\bForm}$,
-  \item \label{par-term}
-    $\aTerm \rimplies \aTerm[1]\land\aTerm[2]$,
-  \item \label{par-disjoint}
-    $\aEvs_1$ and $\aEvs_2$ are disjoint.
-  \end{enumerate}
-  \medskip
-
-  If $\aPS \in \sSEMI{\aPSS_1}{\aPSS_2}$ then
-  $(\exists\aPS_1\in\aPSS_1)$ $(\exists\aPS_2\in\aPSS_2)$
-  \begin{enumerate}[topsep=0pt,label=(\textsc{s}\arabic*),ref=\textsc{s}\arabic*]
-  \item as in \ref{par-E},
-  \item[] \stepcounter{enumi} \labeltext[\textsc{s}2]{}{seq-lambda}
-    \begin{enumerate}[leftmargin=0pt]
-    \item \label{seq-lambda1}
-      if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labeling(\aEv)=\labeling_1(\aEv)$,
-    \item \label{seq-lambda2}
-      if $\aEv\in\aEvs_2\setminus\aEvs_1$ then $\labeling(\aEv)=\labeling_2(\aEv)$,
-    \item \label{seq-lambda12}
-      if $\aEv\in\aEvs_1\cap\aEvs_2$ then $\labeling(\aEv)\in \fmerge{\labeling_1(\aEv)}{\labeling_2(\aEv)}$,
-    \end{enumerate}
-  \item[] \stepcounter{enumi} \labeltext[\textsc{s}3]{}{seq-kappa}
-    \begin{enumerate}[leftmargin=0pt]
-    \item \label{seq-kappa1}
-      if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)$,
-    \item \label{seq-kappa2}
-      if $\aEv\in\aEvs_2\setminus\aEvs_1$ then $\labelingForm(\aEv) \rimplies \labelingForm'_2(\aEv)$,
-    \item \label{seq-kappa12}
-      if $\aEv\in\aEvs_1\cap\aEvs_2$ then $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)\lor\labelingForm'_2(\aEv)$,
-      where
-      $\labelingForm'_2(\aEv)=\aTr[1]{\Cdown{\aEv}}{\labelingForm_2(\aEv})$,\\
-      where $\Cdown{\aEv}=\{ \cEv \mid \cEv \ltdep \aEv \}$ if $\labeling(\aEv)$ is a write,
-      and $\Cdown{\aEv}=\aEvs_1$, otherwise,
-    \item \label{seq-release}
-      if $\labeling_2(\aEv)$ is a $\srelease$ then $\labelingForm(\aEv) \rimplies \aTerm[1]$,
-    \end{enumerate}
-  \item \label{seq-tau}
-    $\aTr{\bEvs}{\bForm} \rimplies \aTr[1]{\bEvs}{\aTr[2]{\bEvs}{\bForm}}$,
-  \item \label{seq-term}
-    $\aTerm \rimplies \aTerm[1]\land\aTr[1]{\aEvs_1}{\aTerm[2]}$,
-  \item[] \stepcounter{enumi} \labeltext[\textsc{s}6]{}{seq-delay}
-    \begin{enumerate}[leftmargin=0pt]
-    \item \label{seq-delay-sync}
-      if 
-      $\labeling_1(\bEv)\rsyncdelays\labeling_2(\aEv)$ then $\bEv\lesync\aEv$,
-    \item \label{seq-delay-co}
-      if 
-      $\labeling_1(\bEv)\rcodelays\labeling_2(\aEv)$ then $\bEv\leloc\aEv$.
-    \end{enumerate}
-  \end{enumerate}
-  \medskip
-
-  \noindent
-  If $\aPS \in \sIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}$ then
-  $(\exists\aPS_1\in\aPSS_1)$ $(\exists\aPS_2\in\aPSS_2)$
-  \begin{enumerate}[topsep=0pt,label=(\textsc{i}\arabic*),ref=\textsc{i}\arabic*]
-  \item as in \ref{par-E},
-  \item 
-    ${\labeling}=\PBR{{\labeling_1}\cup {\labeling_2}}$, 
-  \item[] \stepcounter{enumi} \labeltext[\textsc{i}3]{}{if-kappa}
-    \begin{enumerate}[leftmargin=0pt]
-    \item \label{if-kappa1}
-      if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labelingForm(\aEv) \rimplies \aForm\land\labelingForm_1(\aEv)$,
-    \item \label{if-kappa2}
-      if $\aEv\in\aEvs_2\setminus\aEvs_1$ then $\labelingForm(\aEv) \rimplies \neg\aForm\land\labelingForm_2(\aEv)$, 
-      \item \label{if-kappa12}
-        if $\aEv\in\aEvs_1\cap\aEvs_2$\\ then
-        $\labelingForm(\aEv) \rimplies (\aForm\land\labelingForm_1(\aEv))\lor(\neg\aForm\land\labelingForm_2(\aEv))$,
-      \end{enumerate}
-    \item \label{if-tau}
-      $\aTr{\bEvs}{\bForm} \rimplies (\aForm\land\aTr[1]{\bEvs}{\bForm})\lor(\neg\aForm\land\aTr[2]{\bEvs}{\bForm})$,
-    \item \label{if-term}
-      $\aTerm \rimplies (\aForm\land\aTerm[1])\lor(\neg\aForm\land\aTerm[2])$.
-  \end{enumerate}
-  \medskip
-
-  \noindent
-  If $\aPS\in\sLET{\aReg}{\aExp}$ then $\aEvs = \emptyset$ and
-  $\aTr{\bEvs}{\bForm} \rimplies \bForm[\aExp/\aReg]$.
-
-  \noindent
-  If $\aPS \in \sFENCE[\ascope]{\amode}[\aThrd]$ then
-  \begin{enumerate}[topsep=0pt,label=(\textsc{f}\arabic*),ref=\textsc{f}\arabic*]
-  \item \label{fence-E}
-    if $\bEv,\aEv\in\aEvs$ then $\bEv=\aEv$,
-  \item \label{fence-lambda}
-    $\labelingAct(\aEv) = \DF[\ascope]{\amode}[\aThrd]$,
-    \stepcounter{enumi}
-  \item \label{fence-tau}
-    $\aTr{\bEvs}{\bForm} \rimplies \bForm$,
-  \item \label{fence-term}
-    if $\aEvs=\emptyset$ then $\aTerm \rimplies \FALSE$.
-  \end{enumerate}
-  \medskip
-
-  \noindent
-  If $\aPS \in \sLOAD[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]$ then
-  $(\exists\aVal\in\Val)$
-  \begin{enumerate}[topsep=0pt,label=(\textsc{r}\arabic*),ref=\textsc{r}\arabic*]
-  \item \label{read-E}
-    if $\bEv,\aEv\in\aEvs$ then $\bEv=\aEv$,
-  \item \label{read-lambda}
-    $\labelingAct(\aEv) = \DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]$,      
-    \stepcounter{enumi}
-    \stepcounter{enumi}
-  \item[] \labeltext[\textsc{r}4]{}{read-tau}
-    \begin{enumerate}[leftmargin=0pt]
-    \item \label{read-tau-dep}
-      if $(\aEvs\cap\bEvs)\neq\emptyset$ then
-      \begin{math}
-        \aTr{\bEvs}{\bForm} \rimplies
-        \aVal{=}\uReg{\aEv}
-        \limplies \bForm[\uReg{\aEv}/\aReg]
-      \end{math},    
-    \item \label{read-tau-ind}
-      if $\aEvs\neq\emptyset$ and $(\aEvs\cap\bEvs)=\emptyset$ then
-      \begin{math}
-        \aTr{\bEvs}{\bForm} \rimplies
-        \PBR{\aVal{=}\uReg{\aEv} \lor \aLoc{=}\uReg{\aEv}} \limplies
-        \bForm[\uReg{\aEv}/\aReg],
-      \end{math}
-    \item \label{read-tau-empty}
-      if $\aEvs=\emptyset$ then
-      \begin{math}
-        (\forall\bReg)
-        \aTr{\bEvs}{\bForm} \rimplies
-        \bForm[\bReg/\aReg],
-      \end{math}
-    \end{enumerate}
-  \item \label{read-term}
-    if $\aEvs=\emptyset$ and $\amode\gemode\mACQ$ then $\aTerm \rimplies \FALSE$. 
-  \end{enumerate}
-  \medskip
-
-  \noindent
-  If $\aPS \in \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]$ then
-  $(\exists\aVal\in\Val)$
-  \begin{enumerate}[topsep=0pt,label=(\textsc{w}\arabic*),ref=\textsc{w}\arabic*]
-  \item \label{write-E}
-    if $\bEv,\aEv\in\aEvs$ then $\bEv=\aEv$,
-  \item \label{write-lambda}
-    $\labelingAct(\aEv) = \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]$,
-  \item \label{write-kappa}
-    \begin{math}
-      \labelingForm(\aEv) \rimplies
-      \aExp{=}\aVal
-    \end{math},    
-  \item \label{write-tau}
-    \begin{math}
-      \aTr{\bEvs}{\bForm} \rimplies 
-      \bForm
-    \end{math},
-  \item[] \stepcounter{enumi} \labeltext[\textsc{w}5]{}{write-term}
-    \begin{enumerate}[leftmargin=0pt]
-    \item \label{write-term-empty}
-      if $\aEvs=\emptyset$ then $\aTerm \rimplies \FALSE$,
-    \item \label{write-term-nonempty}
-      if $\aEvs\neq\emptyset$ then $\aTerm \rimplies \aExp{=}\aVal$.
-    \end{enumerate}
-  \end{enumerate}
-
-  \begin{align*}
-    \begin{aligned}
-      \sem[\aThrd]{\LET{\aReg}{\aExp}} &= \sLET{\aReg}{\aExp}
-      \\
-      \sem[\aThrd]{\PR[\amode]{\aLoc}{\aReg}} &= \sLOAD[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]
-      \\
-      \sem[\aThrd]{\PW[\amode]{\aLoc}{\aExp}} &= \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]
-      \\
-      \sem[\aThrd]{\PF[\ascope]{\fmode}} &= \sFENCE[\ascope]{\fmode}[\aThrd]
-    \end{aligned}
-    &&
-    \begin{aligned}
-      \sem[\aThrd]{\SKIP} &= \sSKIP 
-      \\
-      \sem[\aThrd]{\aCmd_1 \LPAR[\bThrd] \aCmd_2} &= \sLPAR{\sem[\bThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
-      \\
-      \sem[\aThrd]{\aCmd_1 \SEMI \aCmd_2} &= \sSEMI{\sem[\aThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
-      \\
-      \sem[\aThrd]{\IF{\aExp}\THEN\aCmd_1\ELSE\aCmd_2\FI} &= \sIFTHEN{\aExp{\neq}0}{\sem[\aThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
-    \end{aligned}
-  \end{align*}
-\end{definition}
+See \reffig{fig:sem}.
 
 In diagrams, we use different shapes and colors for arrows and events.  These
 are included only to help the reader understand why order is included.  We
@@ -784,9 +536,10 @@ adopt the following conventions:
 \item \makebox{$\aEv\xpo\bEv$} arises from control/data/address \emph{dependency} \eqref{seq-kappa},
 \item \makebox{$\aEv\xsync\bEv$} arises from $\rsyncdelaysdef$ \eqref{seq-delay-sync},
 \item \makebox{$\aEv\xwki\bEv$} arises from $\rcodelaysdef$ \eqref{seq-delay-co},
-\item \makebox{$\aEv\xwk\bEv$} arises from \emph{blocking} \eqref{cand-leloc-block},
 \item \makebox{$\aEv\xrf\bEv$} arises from \emph{matching}
-  \eqref{cand-ledep-rf}, \eqref{cand-lesync-rf} and \eqref{cand-leloc-rf}.
+  \eqref{cand-ledep-rf}, \eqref{cand-lesync-rf} and \eqref{cand-leloc-rf},
+\item \makebox{$\aEv\xsyncsc\bEv$} arises from \emph{strong fencing} \eqref{cand-lesync-sc},
+\item \makebox{$\aEv\xwk\bEv$} arises from \emph{blocking} \eqref{cand-leloc-block}.
 \end{itemize}
 
 \begin{definition}
@@ -809,8 +562,7 @@ adopt the following conventions:
         \cExp{=}\cVal
         \land \aExp{=}\aVal
       \end{math},      
-      \stepcounter{enumi}
-    \item[] \labeltext[\textsc{w}4]{}{write-tau-addr}
+    \item[] \setcounter{enumi}{\value{tau}} \labeltextX{4}{w}{write-tau-addr}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{write-tau-dep-addr}
         if $\aEvs\neq\emptyset$ then 
@@ -834,7 +586,7 @@ adopt the following conventions:
         \end{math}  
       \end{enumerate}  
       \stepcounter{enumi}
-    \item[] \labeltext[\textsc{w}5]{}{write-term-addr}
+    \item[] \labeltextX{5}{w}{write-term-addr}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{write-term-nonempty-addr}
         if $\aEvs\neq\emptyset$ then $\aTerm \rimplies \cExp{=}\cVal \land \aExp{=}\aVal$,
@@ -860,7 +612,7 @@ adopt the following conventions:
       \land \cExp{=}\cVal
     \end{math},
     \stepcounter{enumi}
-  \item[] \labeltext[\textsc{r}4]{}{read-tau-addr}
+  \item[] \labeltextX{4}{r}{read-tau-addr}
     \begin{enumerate}[leftmargin=0pt]
     \item \label{read-tau-dep-addr}
       \begin{math}
@@ -905,29 +657,29 @@ adopt the following conventions:
   If $\aPS \in \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]$ then
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$
-  \begin{enumerate}[topsep=0pt,label=(\textsc{w}\arabic*),ref=\textsc{w}\arabic*]
-  \item \label{write-E-ca}
-    if $\cForm_\bEv\land\cForm_\aEv$ is satisfiable then $\bEv=\aEv$,
-  \item \label{write-lambda-ca}
-    $\labelingAct(\aEv) = \DW[\amode]{\aLoc}[\ascope]{\aVal_\aEv}[\aThrd]$,
-  \item \label{write-kappa-ca}
-    \begin{math}
-      \labelingForm(\aEv) \rimplies
-      \cForm_\aEv
-      \land \aExp{=}\aVal_\aEv
-    \end{math},
-    
-    
-  \item \label{write-tau-ca}
-    \begin{math}
-      \aTr{\bEvs}{\bForm} \rimplies 
-      \cForm_\aEv
-      \limplies 
-      \bForm[\aExp/\aLoc]
-    \end{math},
-  \item \label{write-term-ca}
-    $\aTerm \rimplies \cForm_\aEv \limplies \aExp{=}\aVal_\aEv$,
-  \end{enumerate}
+  \begin{multicols}{2}
+    \begin{enumerate}[topsep=0pt,label=(\textsc{w}\arabic*),ref=\textsc{w}\arabic*]
+    \item \label{write-E-ca}
+      if $\cForm_\bEv\land\cForm_\aEv$ is satisfiable then $\bEv=\aEv$,
+    \item \label{write-lambda-ca}
+      $\labelingAct(\aEv) = \DW[\amode]{\aLoc}[\ascope]{\aVal_\aEv}[\aThrd]$,
+    \item \label{write-kappa-ca}
+      \begin{math}
+        \labelingForm(\aEv) \rimplies
+        \cForm_\aEv
+        \land \aExp{=}\aVal_\aEv
+      \end{math},        
+    \item \label{write-tau-ca}
+      \begin{math}
+        \aTr{\bEvs}{\bForm} \rimplies 
+        \cForm_\aEv
+        \limplies 
+        \bForm[\aExp/\aLoc]
+      \end{math},
+    \item \label{write-term-ca}
+      $\aTerm \rimplies \cForm_\aEv \limplies \aExp{=}\aVal_\aEv$,
+    \end{enumerate}
+  \end{multicols}
 
   \medskip
   \noindent
@@ -945,7 +697,7 @@ adopt the following conventions:
       \cForm_\aEv
     \end{math},
     \stepcounter{enumi}
-  \item[] \labeltext[\textsc{r}4]{}{read-tau-ca}
+  \item[] \labeltextX{4}{r}{read-tau-ca}
     \begin{enumerate}[leftmargin=0pt]
     \item \label{read-tau-dependent-ca}
       \begin{math}
@@ -1009,7 +761,7 @@ adopt the following conventions:
         \land \aExp{=}\aVal_\aEv
       \end{math},      
       \stepcounter{enumi}
-    \item[] \labeltext[\textsc{w}4]{}{write-tau-ca-addr}
+    \item[] \labeltextX{4}{w}{write-tau-ca-addr}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{write-tau-dep-ca-addr}
         \begin{math}
@@ -1034,7 +786,7 @@ adopt the following conventions:
         \end{math}  
       \end{enumerate}  
       \stepcounter{enumi}
-    \item[] \labeltext[\textsc{w}5]{}{write-term-ca-addr}
+    \item[] \labeltextX{5}{w}{write-term-ca-addr}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{write-term-nonempty-ca-addr}
         $\aTerm \rimplies \cForm_\aEv \limplies \cExp{=}\cVal_\aEv \land \aExp{=}\aVal_\aEv$,
@@ -1062,7 +814,7 @@ adopt the following conventions:
       \land \cExp{=}\cVal_\aEv
     \end{math},
     \stepcounter{enumi}
-  \item[] \labeltext[\textsc{r}4]{}{read-tau-ca-addr}
+  \item[] \labeltextX{4}{r}{read-tau-ca-addr}
     \begin{enumerate}[leftmargin=0pt]
     \item \label{read-tau-dependent-ca-addr}
       \begin{math}
@@ -1105,7 +857,7 @@ adopt the following conventions:
 \begin{definition}
   Let $\sLOADP{}{}$ be defined as for $\sLOAD{}{}$, adding the constraint:
   \begin{itemize}
-  \item[{\labeltext[\textsc{r}4d]{(\textsc{r}4d)}{read-tau-rmw}}]
+  \item[{\labeltextXX{4d}{r}{read-tau-rmw}}]
     if $(\aEvs\cap\bEvs)=\emptyset$ then
     \begin{math}
       \aTr{\bEvs}{\bForm} \rimplies
@@ -1134,6 +886,198 @@ adopt the following conventions:
     $\bEv\xrmw\aEv$.
   \end{enumerate}
 \end{definition}
+
+
+\section{Observational Refinement}
+
+\begin{lemma}
+  % $\sSEMI{\sSEMI{\aPSS_1}{\aPSS_2}}{\aPSS_3}=\sSEMI{\aPSS_1}{\sSEMI{\aPSS_2}{\aPSS_3}}$
+  $(\aPSS_1\SEMI\aPSS_2)\SEMI\aPSS_3=\aPSS_1\SEMI(\aPSS_2\SEMI\aPSS_3)$
+  and    
+  $\sSEMIX{\aPSS}{\sSKIP}=\aPSS=\sSEMIX{\sSKIP}{\aPSS}$.
+
+  % $\sLPAR{\sLPAR{\aPSS_1}{\aPSS_2}}{\aPSS_3}=\sLPAR{\aPSS_1}{\sLPAR{\aPSS_2}{\aPSS_3}}$
+  $(\aPSS_1\LPAR\aPSS_2)\LPAR\aPSS_3=\aPSS_1\LPAR(\aPSS_2\LPAR\aPSS_3)$
+  and    
+  $\sLPARX{\aPSS}{\sSKIP}=\aPSS$.  
+
+  \vspace{-.5\baselineskip}
+  \begin{proof}
+    Straightforward calculation.  Associativity of $\SEMI\!$ requires
+    disjunction closure \eqref{tr-or}.
+  \end{proof}
+\end{lemma}
+\begin{definition}
+  \label{def:augment}
+  $\aPS_2$ is an \emph{augment} of $\aPS_1$ if
+  \begin{multicols}{3}
+    \begin{enumerate}
+    \item $\aEvs_2=\aEvs_1$,
+    \item $\labelingAct_2(\aEv)=\labelingAct_1(\aEv)$,
+    \item $\labelingForm_2(\aEv) \rimplies \labelingForm_1(\aEv)$,
+    \item $\aTr[2]{\bEvs}{\bForm} \rimplies \aTr[1]{\bEvs}{\bForm}$,
+    \item $\aTerm[2] \rimplies \aTerm[1]$,
+    \item ${\ledep_2}\supseteq{\ledep_1}$,
+    \item ${\lesync_2}\supseteq{\lesync_1}$,
+    \item ${\leloc_2}\supseteq{\leloc_1}$,
+    \item ${\rrmw_2}\supseteq{\rrmw_1}$.
+    \end{enumerate}
+  \end{multicols}
+\end{definition}
+\begin{lemma}
+  % Suppose $\aPS_1\in\sem{\aCmd}$.
+  If $\aPS_1\in\sem{\aCmd}$ and $\aPS_2$  augments $\aPS_1$ then $\aPS_2\in\sem{\aCmd}$.
+  % \item If $\aPS_2$ is a downset of $\aPS_1$ then $\aPS_2\in\sem{\aCmd}$.
+  % \end{lemma}
+
+  \vspace{-.5\baselineskip}
+  \begin{proof}
+    Induction on the definition of $\sem{}$.
+  \end{proof}
+\end{lemma}
+
+
+% A \emph{test}, $\aTest$, is statement that may write location $0$. 
+% A \emph{user program}, $\aUser$, is a statement that never writes location $0$.
+% We define an equivalence using may-testing.  Let $\testThrd$ be a
+% distinguished thread id for tests.  We require that $\testThrd$ does not
+% appear in commands.
+
+\begin{definition}  
+  Let $\pass{\aPS_1}{\aPS_2}$ if there is some top-level pomset in
+  $\sLPAR{\aPS_1}{\aPS_2}$.
+
+  Let $\aPSS_1\suptesteq\aPSS_2$ if $(\forall\aPS_2\in\aPSS_2)$
+  $(\exists\aPS_1\in\aPSS_1)$  %$(\forall\bForm)$ $(\forall\aTest)$:
+  such that 
+  $\aTr[1]{}{\bForm} \rimplies \aTr[2]{}{\bForm}$ and
+  $(\forall\aPS_3)$ 
+  $\pass{\aPS_1}{\aPS_3}$ implies $\pass{\aPS_2}{\aPS_3}$.
+
+  Let $\aPSS_1\suptest\aPSS_2$ if $\aPSS_1\suptesteq\aPSS_2$ and $\aPSS_2\not\suptesteq\aPSS_1$.
+
+  % Let $\aPSS_1\ncomptest\aPSS_2$ if $\aPSS_1\not\suptesteq\aPSS_2$ and $\aPSS_2\not\suptesteq\aPSS_1$.
+
+  Let $\aPSS_1\eqtest\aPSS_2$ if $\aPSS_1\suptesteq\aPSS_2$ and $\aPSS_2\suptesteq\aPSS_1$.
+\end{definition}
+
+Equivalently, we could distinguish the test pomset $\aPS_3$, allowing only it
+to dereference location $0$, and require the top-level pomset in
+$\sLPAR{\aPS_1}{\aPS_2}$ to include an action $\DWP{\REF{0}}{}$.  We use this
+formulation in examples.
+%$\labeling(\aEv')=\DWP{\REF{0}}{}$.
+
+For example,
+\begin{math}
+  \sem{\PW{x}{1}\SEMI\PW{x}{1}}\suptest\sem{\PW{x}{1}}.
+\end{math}
+These are distinguished by the test:
+\begin{gather*}
+  \PR{x}{r} \SEMI
+  \PW{x}{2} \SEMI
+  \PR{x}{s}\SEMI
+  \IF{\aReg {=} \bReg} \THEN \PW{\REF{0}}{1} \FI
+  \\
+  \tag{$\leloc$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a1}{\DR{x}{1}}{}
+      \event{a2}{\DW{x}{2}}{right=of a1}
+      \event{a3}{\DR{x}{1}}{right=of a2}
+      \event{a4}{\DW{\REF{0}}{1}}{right=of a3}
+      \wki{a1}{a2}
+      \wki{a2}{a3}
+    \end{tikzinline}}
+\end{gather*}
+This can be fulfilled by $\sem{\PW{x}{1}\SEMI\PW{x}{1}}$, but not $\sem{\PW{x}{1}}$.
+
+Due to the requirement on predicate transformers, observational refinement is
+sensitive to register names:
+% \begin{math}
+%   \sem{\PR{x}{r}}\not\suptesteq\sem{\PR{x}{s}}.
+% \end{math}
+% We also have
+\begin{math}
+  \sem{\SKIP}\suptest\sem{\LET{r}{1}}.
+\end{math}
+These are distinguished by the precondition
+$\bForm=(r{=}1)$.
+
+On the other hand,
+\begin{math}
+  \sem{\PR{x}{r}\SEMI\PR{x}{r}}\eqtest\sem{\PR{x}{r}}.
+\end{math}
+
+\begin{lemma}
+  If $\aPSS_1\supseteq\aPSS_2$ then $\aPSS_1\suptesteq\aPSS_2$.
+\end{lemma}
+
+Define contexts as follows.
+\begin{align*}
+  \aCtxt
+  \BNFDEF& \hole{}
+  \BNFSEP \IF{\aExp} \THEN \aCtxt_1 \ELSE \aCmd_2 \FI
+  \BNFSEP \IF{\aExp} \THEN \aCmd_1 \ELSE \aCtxt_2 \FI
+  \\[-.5ex]
+  \BNFSEP& \aCtxt_1 \SEMI \aCmd_2
+  \BNFSEP \aCmd_1 \SEMI \aCtxt_2
+  \BNFSEP \aCtxt_1 \LPAR[\bThrd] \aCmd_2
+  \BNFSEP \aCmd_1 \LPAR[\bThrd] \aCtxt_2
+\end{align*}
+\begin{lemma}
+  If $\sem{\aCmd_1}\suptesteq\sem{\aCmd_2}$ then $\sem{\aCtxt\hole{\aCmd_1}}\suptesteq\sem{\aCtxt\hole{\aCmd_2}}$.
+\end{lemma}
+
+
+\section{Merge}
+Let
+$\fmerge{}{}:\Act\times\Act\fun2^{\Act}$
+be defined as follows.
+Let
+\begin{math}
+  \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
+  \DR[\amode\lubmode\bmode]{\aLoc}[\ascope\lubscope\bscope]{\aVal}[\aThrd] \}
+\end{math},
+\begin{math}
+  \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DW[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
+  \DW[\amode\lubmode\bmode]{\aLoc}[\ascope\lubscope\bscope]{\aVal}[\aThrd] \}
+\end{math},
+\begin{math}
+  \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}}{\DR[\bmode\lemode\mRLX]{\aLoc}[\bscope\lescope\ascope]{\aVal}[\aThrd]} = \{
+  \DW[\amode\lubmode\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+\end{math},
+\begin{math}
+  \fmerge{\DF[\ascope]{\amode}[\aThrd]}{\DF[\bscope]{\bmode}[\aThrd]} = \{ \DF [\ascope\lubscope\bscope]{\amode\lubmode\bmode}[\aThrd] \}
+\end{math},
+and
+\begin{math}
+  \fmerge{\aAct}{\bAct} = \emptyset, 
+\end{math}
+otherwise.
+
+If $\aAct_0\in\fmerge{\aAct_1}{\aAct_2}$, then $\aAct_1$ and $\aAct_2$ can
+coalesce, resulting in $\aAct_0$.  This allows optimizations such as
+$(\PW{x}{1}\SEMI \PW{x}{2})$ to $(\PW{x}{2})$ and
+$(\PW{x}{1}\SEMI \PR{x}{r})$ to $(\PW{x}{1}\SEMI \PR{1}{r})$.  For
+associativity of sequential composition, it is important that $\fmerge{}{}$
+always take an upper bound on the modes of the two actions.  For example, it
+would invalidate associativity to allow
+$\DWP{\aLoc}{\aVal}\in\fmerge{\DW{\aLoc}{\aVal}}{\DR[\mACQ]{\aLoc}{\aVal}}$,
+although this is considered safe.\footnote{A list of safe merge operations
+  can be found in \cite[\textsection E]{DBLP:conf/cgo/ChakrabortyV17} and
+  \cite[\textsection7.1]{Kang19}.  For examples of unsafe merges and
+  reorderings, see \cite[\textsection D]{DBLP:conf/cgo/ChakrabortyV17}.}
+
+\begin{enumerate}[topsep=0pt,label=(\textsc{s}\arabic*),ref=\textsc{s}\arabic*]
+\item[] \setcounter{enumi}{\value{lambda}} \labeltextX{2}{s}{seq-lambda-merge}
+  \begin{enumerate}[leftmargin=0pt]
+  \item \label{seq-lambda-merge1}
+    if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labeling(\aEv)=\labeling_1(\aEv)$,
+  \item \label{seq-lambda-merge2}
+    if $\aEv\in\aEvs_2\setminus\aEvs_1$ then $\labeling(\aEv)=\labeling_2(\aEv)$,
+  \item \label{seq-lambda-merge12}
+    if $\aEv\in\aEvs_1\cap\aEvs_2$ then $\labeling(\aEv)\in \fmerge{\labeling_1(\aEv)}{\labeling_2(\aEv)}$,
+  \end{enumerate}
+\end{enumerate}
 
 
 \endinput
