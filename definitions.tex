@@ -1015,13 +1015,12 @@ Define contexts as follows.
 \begin{align*}
   \aCtxt
   \BNFDEF& \hole{}
-  \BNFSEP \IF{\aExp} \THEN \aCtxt_1 \ELSE \aCmd_2 \FI
-  \BNFSEP \IF{\aExp} \THEN \aCmd_1 \ELSE \aCtxt_2 \FI
-  \\[-.5ex]
-  \BNFSEP& \aCtxt_1 \SEMI \aCmd_2
-  \BNFSEP \aCmd_1 \SEMI \aCtxt_2
-  \BNFSEP \aCtxt_1 \LPAR[\bThrd] \aCmd_2
-  \BNFSEP \aCmd_1 \LPAR[\bThrd] \aCtxt_2
+  \BNFSEP \IF{\aExp} \THEN \aCtxt \ELSE \aCmd \FI
+  \BNFSEP \IF{\aExp} \THEN \aCmd \ELSE \aCtxt \FI
+  \BNFSEP \aCtxt \SEMI \aCmd
+  \BNFSEP \aCmd \SEMI \aCtxt
+  \BNFSEP \aCtxt \LPAR[\bThrd] \aCmd
+  \BNFSEP \aCmd \LPAR[\bThrd] \aCtxt
 \end{align*}
 \begin{lemma}
   If $\sem{\aCmd_1}\suptesteq\sem{\aCmd_2}$ then $\sem{\aCtxt\hole{\aCmd_1}}\suptesteq\sem{\aCtxt\hole{\aCmd_2}}$.
