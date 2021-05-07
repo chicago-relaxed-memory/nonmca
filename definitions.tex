@@ -1,4 +1,11 @@
-% \section{Notes}
+r=x; x=r; s=x; 
+||
+x=1; x=2
+
+Quiensence with x=1
+W1 R1 W1 W2
+
+%\section{Notes}
 % GPU stuff:
 % \begin{itemize}
 % \item Vulcan/Alloy
@@ -943,7 +950,7 @@ adopt the following conventions:
 % distinguished thread id for tests.  We require that $\testThrd$ does not
 % appear in commands.
 
-\textcolor{red}{This should be okay:}
+\textcolor{red}{This is okay, but quantifies over all contexts:}
 
 Define contexts as follows.
 \begin{align*}
@@ -1025,6 +1032,24 @@ We should also have
   If $\aPSS_1\supseteq\aPSS_2$ then $\aPSS_1\suptesteq\aPSS_2$.
 \end{lemma}
 
+\textcolor{red}{I'd rather do this:}
+
+\begin{definition}  
+  Let $\pass{\aPSS}{\aTr{}{}}$ if there is some top-level pomset
+  $\aPS_1\in\aPSS$ such that $\aTr{}{}=\aTr[1]{}{}$ and $(\exists\aEv\in\aEvs_1)$ $\labeling_1(\aEv)=\DWP{\REF{0}}{}$.
+
+  Let $\aCmd_1\suptesteq\aCmd_2$ when if %$(\forall \aTest)$
+  $\pass{\sem{\aCmd_2\LPAR\aTest}}{\aTr[2]{}{}}$ then
+  $\pass{\sem{\aCmd_1\LPAR\aTest}}{\aTr[1]{}{}}$ for some 
+  $\aTr[1]{}{}$ such that 
+  $\aTr[1]{}{\bForm} \rimplies \aTr[2]{}{\bForm}$.
+\end{definition}
+
+\begin{lemma}
+  If $\sem{\aCmd_1}\suptesteq\sem{\aCmd_2}$ then $\sem{\aCtxt\hole{\aCmd_1}}\suptesteq\sem{\aCtxt\hole{\aCmd_2}}$.
+\end{lemma}
+
+
 \textcolor{red}{This is too fine:}
 
 \begin{definition}  
@@ -1037,12 +1062,6 @@ We should also have
   $\aTr[1]{}{\bForm} \rimplies \aTr[2]{}{\bForm}$ and
   $(\forall\aPS_3)$ 
   $\pass{\aPS_1}{\aPS_3}$ implies $\pass{\aPS_2}{\aPS_3}$.
-
-  Let $\aPSS_1\suptest\aPSS_2$ if $\aPSS_1\suptesteq\aPSS_2$ and $\aPSS_2\not\suptesteq\aPSS_1$.
-
-  % Let $\aPSS_1\ncomptest\aPSS_2$ if $\aPSS_1\not\suptesteq\aPSS_2$ and $\aPSS_2\not\suptesteq\aPSS_1$.
-
-  Let $\aPSS_1\eqtest\aPSS_2$ if $\aPSS_1\suptesteq\aPSS_2$ and $\aPSS_2\suptesteq\aPSS_1$.
 \end{definition}
 
 % Equivalently, we could distinguish the test pomset $\aPS_3$, allowing only it
@@ -1061,13 +1080,6 @@ There is no pomset $\aPS_1$ from the right such that $\pass{\aPS_1}{\aPS_3}$
 implies $\pass{\aPS_2}{\aPS_3}$, for every $\aPS_3$.  Suppose we pick
 $\aPS_1=\DRP{x}{1}$, then $\aPS_3=\DWP{x}{1}$ fulfills $\aPS_1$ but not
 $\aPS_2$.  The same is true if we pick $\aPS_1=\DRP{x}{2}$.
-
-
-
-% \begin{lemma}
-%   If $\sem{\aCmd_1}\suptesteq\sem{\aCmd_2}$ then $\sem{\aCtxt\hole{\aCmd_1}}\suptesteq\sem{\aCtxt\hole{\aCmd_2}}$.
-% \end{lemma}
-
 
 \section{Merge}
 Let
