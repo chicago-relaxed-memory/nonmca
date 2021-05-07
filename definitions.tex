@@ -988,7 +988,9 @@ These are distinguished by the test:
       \wki{a2}{a3}
     \end{tikzinline}}
 \end{gather*}
-This can be fulfilled by $\sem{\PW{x}{1}\SEMI\PW{x}{1}}$, but not $\sem{\PW{x}{1}}$.
+This is top-level when put in parallel with $\DWP{x}{1}\xwki\DWP{x}{1}$ from
+the left.  But there is no pomset from the right $\sem{\PW{x}{1}}$ that makes
+this top-level.
 
 Due to the requirement on predicate transformers, observational refinement is
 sensitive to register names:
@@ -1002,10 +1004,16 @@ sensitive to register names:
 These are distinguished by the precondition
 $\bForm=(r{=}1)$.
 
-On the other hand,
+We also have
 \begin{math}
-  \sem{\PR{x}{r}\SEMI\PR{x}{r}}\eqtest\sem{\PR{x}{r}}.
+  \sem{\PR{x}{r}\SEMI\PR{x}{r}}\suptest\sem{\PR{x}{r}}.
 \end{math}
+To see that $\sem{\PR{x}{r}\SEMI\PR{x}{r}}\not\subtesteq\sem{\PR{x}{r}}$,
+consider that the left side includes pomset $\aPS_2=(\DRP{x}{1}\DRP{x}{2})$.
+There is no pomset $\aPS_1$ from the right such that $\pass{\aPS_1}{\aPS_3}$ implies
+$\pass{\aPS_2}{\aPS_3}$, for every $\aPS_3$.  Suppose we pick
+$\aPS_1=\DRP{x}{1}$, then $\aPS_3=\DWP{x}{1}$ fulfills $\aPS_1$ but not
+$\aPS_2$.  The same is true if we pick $\aPS_1=\DRP{x}{2}$.
 
 \begin{lemma}
   If $\aPSS_1\supseteq\aPSS_2$ then $\aPSS_1\suptesteq\aPSS_2$.
