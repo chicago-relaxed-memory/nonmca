@@ -888,7 +888,7 @@ adopt the following conventions:
 \end{definition}
 
 
-\section{Observational Refinement}
+\section{Contextual Refinement}
 
 \begin{lemma}
   % $\sSEMI{\sSEMI{\aPSS_1}{\aPSS_2}}{\aPSS_3}=\sSEMI{\aPSS_1}{\sSEMI{\aPSS_2}{\aPSS_3}}$
@@ -943,16 +943,34 @@ adopt the following conventions:
 % distinguished thread id for tests.  We require that $\testThrd$ does not
 % appear in commands.
 
-\begin{definition}  
-  Let $\pass{\aPS_1}{\aPS_2}$ if there is some top-level pomset in
-  $\sLPAR{\aPS_1}{\aPS_2}$.
+\textcolor{red}{This should be okay:}
 
-  Let $\aPSS_1\suptesteq\aPSS_2$ if $(\forall\aPS_2\in\aPSS_2)$
-  $(\exists\aPS_1\in\aPSS_1)$  %$(\forall\bForm)$ $(\forall\aTest)$:
-  such that 
-  $\aTr[1]{}{\bForm} \rimplies \aTr[2]{}{\bForm}$ and
-  $(\forall\aPS_3)$ 
-  $\pass{\aPS_1}{\aPS_3}$ implies $\pass{\aPS_2}{\aPS_3}$.
+Define contexts as follows.
+\begin{align*}
+  \aCtxt
+  \BNFDEF& \hole{}
+  \BNFSEP \IF{\aExp} \THEN \aCtxt \ELSE \aCmd \FI
+  \BNFSEP \IF{\aExp} \THEN \aCmd \ELSE \aCtxt \FI
+  \BNFSEP \aCtxt \SEMI \aCmd
+  \BNFSEP \aCmd \SEMI \aCtxt
+  \BNFSEP \aCtxt \LPAR[\bThrd] \aCmd
+  \BNFSEP \aCmd \LPAR[\bThrd] \aCtxt
+\end{align*}
+
+A \emph{test} is a context that can dereference $0$.
+We disallow dereferencing $0$ in user programs.
+
+% Distinguish the test pomset $\aPS_3$, allowing only it to dereference
+% location $0$, and require the top-level pomset in $\sLPAR{\aPS_1}{\aPS_2}$ to
+% include an action.  We use this formulation in examples.
+
+\begin{definition}  
+  Let $\pass{\aPSS}{}$ if there is some top-level pomset in
+  $\aPSS$ that includes $\DWP{\REF{0}}{}$.
+
+  Let $\aCmd_1\suptesteq\aCmd_2$ if $(\forall \aCtxt)$
+  $\pass{\sem{\aCtxt\hole{\aCmd_2}}}{}$ implies
+  $\pass{\sem{\aCtxt\hole{\aCmd_1}}}{}$.
 
   Let $\aPSS_1\suptest\aPSS_2$ if $\aPSS_1\suptesteq\aPSS_2$ and $\aPSS_2\not\suptesteq\aPSS_1$.
 
@@ -961,18 +979,13 @@ adopt the following conventions:
   Let $\aPSS_1\eqtest\aPSS_2$ if $\aPSS_1\suptesteq\aPSS_2$ and $\aPSS_2\suptesteq\aPSS_1$.
 \end{definition}
 
-Equivalently, we could distinguish the test pomset $\aPS_3$, allowing only it
-to dereference location $0$, and require the top-level pomset in
-$\sLPAR{\aPS_1}{\aPS_2}$ to include an action $\DWP{\REF{0}}{}$.  We use this
-formulation in examples.
-%$\labeling(\aEv')=\DWP{\REF{0}}{}$.
-
 For example,
 \begin{math}
   \sem{\PW{x}{1}\SEMI\PW{x}{1}}\suptest\sem{\PW{x}{1}}.
 \end{math}
 These are distinguished by the test:
 \begin{gather*}
+  \hole{}\LPAR
   \PR{x}{r} \SEMI
   \PW{x}{2} \SEMI
   \PR{x}{s}\SEMI
@@ -992,8 +1005,7 @@ This is top-level when put in parallel with $\DWP{x}{1}\xwki\DWP{x}{1}$ from
 the left.  But there is no pomset from the right $\sem{\PW{x}{1}}$ that makes
 this top-level.
 
-Due to the requirement on predicate transformers, observational refinement is
-sensitive to register names:
+Contextual refinement is sensitive to register names:
 % \begin{math}
 %   \sem{\PR{x}{r}}\not\suptesteq\sem{\PR{x}{s}}.
 % \end{math}
@@ -1001,10 +1013,45 @@ sensitive to register names:
 \begin{math}
   \sem{\SKIP}\suptest\sem{\LET{r}{1}}.
 \end{math}
-These are distinguished by the precondition
-$\bForm=(r{=}1)$.
+These are distinguished by the context
+$\hole{}\SEMI\PW{\REF{0}}{r}$.
 
-We also have
+We should also have
+\begin{math}
+  \sem{\PR{x}{r}\SEMI\PR{x}{r}}\eqtest\sem{\PR{x}{r}}.
+\end{math}
+
+\begin{lemma}
+  If $\aPSS_1\supseteq\aPSS_2$ then $\aPSS_1\suptesteq\aPSS_2$.
+\end{lemma}
+
+\textcolor{red}{This is too fine:}
+
+\begin{definition}  
+  Let $\pass{\aPS_1}{\aPS_2}$ if there is some top-level pomset in
+  $\sLPAR{\aPS_1}{\aPS_2}$.
+
+  Let $\aPSS_1\suptesteq\aPSS_2$ if $(\forall\aPS_2\in\aPSS_2)$
+  $(\exists\aPS_1\in\aPSS_1)$  %$(\forall\bForm)$ $(\forall\aTest)$:
+  such that 
+  $\aTr[1]{}{\bForm} \rimplies \aTr[2]{}{\bForm}$ and
+  $(\forall\aPS_3)$ 
+  $\pass{\aPS_1}{\aPS_3}$ implies $\pass{\aPS_2}{\aPS_3}$.
+
+  Let $\aPSS_1\suptest\aPSS_2$ if $\aPSS_1\suptesteq\aPSS_2$ and $\aPSS_2\not\suptesteq\aPSS_1$.
+
+  % Let $\aPSS_1\ncomptest\aPSS_2$ if $\aPSS_1\not\suptesteq\aPSS_2$ and $\aPSS_2\not\suptesteq\aPSS_1$.
+
+  Let $\aPSS_1\eqtest\aPSS_2$ if $\aPSS_1\suptesteq\aPSS_2$ and $\aPSS_2\suptesteq\aPSS_1$.
+\end{definition}
+
+% Equivalently, we could distinguish the test pomset $\aPS_3$, allowing only it
+% to dereference location $0$, and require the top-level pomset in
+% $\sLPAR{\aPS_1}{\aPS_2}$ to include an action $\DWP{\REF{0}}{}$.  We use this
+% formulation in examples.
+%$\labeling(\aEv')=\DWP{\REF{0}}{}$.
+
+For this, we have
 \begin{math}
   \sem{\PR{x}{r}\SEMI\PR{x}{r}}\suptest\sem{\PR{x}{r}}.
 \end{math}
@@ -1015,24 +1062,11 @@ implies $\pass{\aPS_2}{\aPS_3}$, for every $\aPS_3$.  Suppose we pick
 $\aPS_1=\DRP{x}{1}$, then $\aPS_3=\DWP{x}{1}$ fulfills $\aPS_1$ but not
 $\aPS_2$.  The same is true if we pick $\aPS_1=\DRP{x}{2}$.
 
-\begin{lemma}
-  If $\aPSS_1\supseteq\aPSS_2$ then $\aPSS_1\suptesteq\aPSS_2$.
-\end{lemma}
 
-Define contexts as follows.
-\begin{align*}
-  \aCtxt
-  \BNFDEF& \hole{}
-  \BNFSEP \IF{\aExp} \THEN \aCtxt \ELSE \aCmd \FI
-  \BNFSEP \IF{\aExp} \THEN \aCmd \ELSE \aCtxt \FI
-  \BNFSEP \aCtxt \SEMI \aCmd
-  \BNFSEP \aCmd \SEMI \aCtxt
-  \BNFSEP \aCtxt \LPAR[\bThrd] \aCmd
-  \BNFSEP \aCmd \LPAR[\bThrd] \aCtxt
-\end{align*}
-\begin{lemma}
-  If $\sem{\aCmd_1}\suptesteq\sem{\aCmd_2}$ then $\sem{\aCtxt\hole{\aCmd_1}}\suptesteq\sem{\aCtxt\hole{\aCmd_2}}$.
-\end{lemma}
+
+% \begin{lemma}
+%   If $\sem{\aCmd_1}\suptesteq\sem{\aCmd_2}$ then $\sem{\aCtxt\hole{\aCmd_1}}\suptesteq\sem{\aCtxt\hole{\aCmd_2}}$.
+% \end{lemma}
 
 
 \section{Merge}
