@@ -547,13 +547,13 @@ In diagrams, we use different shapes and colors for arrows and events.  These
 are included only to help the reader understand why order is included.  We
 adopt the following conventions:
 \begin{itemize}  
-\item \makebox{$\aEv\xpo\bEv$} arises from control/data/address \emph{dependency} (\ref{seq-kappa}, definition of $\labelingForm'_2(\aEv)$),
-\item \makebox{$\aEv\xsync\bEv$} arises from $\rsyncdelaysdef$ \eqref{seq-delay-sync},
-\item \makebox{$\aEv\xwki\bEv$} arises from $\rcodelaysdef$ \eqref{seq-delay-co},
-\item \makebox{$\aEv\xrf\bEv$} arises from \emph{matching}
+\item \makebox{$\bEv\xpo\aEv$} arises from control/data/address \emph{dependency} (\ref{seq-kappa}, definition of $\labelingForm'_2(\bEv)$),
+\item \makebox{$\bEv\xsync\aEv$} arises from $\rsyncdelaysdef$ \eqref{seq-delay-sync},
+\item \makebox{$\bEv\xwki\aEv$} arises from $\rcodelaysdef$ \eqref{seq-delay-co},
+\item \makebox{$\bEv\xrf\aEv$} arises from \emph{matching}
   \eqref{cand-ledep-rf}, \eqref{cand-lesync-rf} and \eqref{cand-leloc-rf},
-\item \makebox{$\aEv\xsyncsc\bEv$} arises from \emph{strong fencing} \eqref{cand-lesync-sc},
-\item \makebox{$\aEv\xwk\bEv$} arises from \emph{blocking} \eqref{cand-leloc-block}.
+\item \makebox{$\bEv\xsyncsc\aEv$} arises from \emph{strong fencing} \eqref{cand-lesync-sc},
+\item \makebox{$\bEv\xwk\aEv$} arises from \emph{blocking} \eqref{cand-leloc-block}.
 \end{itemize}
 
 \begin{definition}
@@ -986,8 +986,8 @@ adopt the following conventions:
   \vspace{-.5\baselineskip}
   \begin{proof}
     Straightforward calculation.  Associativity of $\SEMI\!$ requires both
-    conjunction closure \eqref{tr-and} (for termination) and disjunction
-    closure \eqref{tr-or} (for the predicate transformers themselves).  Right
+    conjunction closure (\ref{tr-and}, for termination) and disjunction
+    closure (\ref{tr-or}, for the predicate transformers themselves).  Right
     unit of $\sSKIP$ for $\SEMI\!$ requires \ref{pom-term-tau}.
   \end{proof}
 \end{lemma}
