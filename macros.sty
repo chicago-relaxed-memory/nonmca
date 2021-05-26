@@ -1,3 +1,13 @@
+\newcommand{\DEP@COLOR}[1]{\mathrel{{\color{purple}#1}}}
+\newcommand{\LOC@COLOR}[1]{\mathrel{{\color{red}#1}}}
+\newcommand{\SYNC@COLOR}[1]{\mathrel{{\color{magenta}#1}}}
+\newcommand{\LOGIC@COLOR}[1]{{\color{blue}#1}}
+\newcommand{\LABEL@COLOR}[1]{{\color{green!40!black}#1}}
+\newcommand{\LABEL@COLOR@TEXT}[1]{\textcolor{green!40!black}{#1}}
+\newcommand{\LABEL@COLOR@REL}[1]{\mathrel{\LABEL@COLOR{\textnormal{#1}}}}
+\newcommand{\LABEL@REL}[1]{\mathrel{\textnormal{#1}}}
+
+
 \newcommand{\suptesteq}{\succeq}
 \newcommand{\suptest}{\succ}
 \newcommand{\subtesteq}{\preceq}
@@ -18,37 +28,40 @@
 
 \newcommand{\low}[1]{\llfloor#1\rrfloor}
 \newcommand{\aRel}{R}
-\newcommand{\roverlapsdef}{\mathrel{\textnormal{\emph{overlaps}}}}
-\newcommand{\rmatchesdef}{\mathrel{\textnormal{\emph{matches}}}}
-\newcommand{\rblocksdef}{\mathrel{\textnormal{\emph{blocks}}}}
-\newcommand{\rsfencesdef}{\mathrel{\textnormal{\emph{strongly-fences}}}}
-\newcommand{\rsmatchesdef}{\mathrel{\textnormal{\emph{strongly-matches}}}}
-\newcommand{\rsoverlapsdef}{\mathrel{\textnormal{\emph{strongly-overlaps}}}}
-%\newcommand{\rsmatchesblocksdef}{\mathrel{\textnormal{\emph{strongly-matches/blocks}}}}
-\newcommand{\rdelayspdef}{\mathrel{\textnormal{\emph{delays}}'}}
-\newcommand{\rdelaysdef}{\mathrel{\textnormal{\emph{delays}}}}
-\newcommand{\rcodelaysdef}{\mathrel{\textnormal{\emph{co-delays}}}}
-\newcommand{\rsyncdelaysdef}{\mathrel{\textnormal{\emph{sync-delays}}}}
-\newcommand{\sreaddef}{\mathrel{\textnormal{\emph{read}}}}
-\newcommand{\sreleasedef}{\mathrel{\textnormal{\emph{release}}}}
-\newcommand{\rimpliesdef}{\mathrel{\vDash}}%{\mathrel{\textnormal{\emph{implies}}}}
-\newcommand{\rextendsdef}[2]{\mathrel{\textnormal{\emph{extends}}}\ifnotempty{#1#2}{{#1}\;\allowbreak\textnormal{\emph{and}}\;\allowbreak{#2}}}
+\newcommand{\rsfencesdeftext}{\LABEL@COLOR@TEXT{\emph{strongly-fences}}}
+\newcommand{\rsmatchesdeftext}{\LABEL@COLOR@TEXT{\emph{strongly-matches}}}
+\newcommand{\rsoverlapsdeftext}{\LABEL@COLOR@TEXT{\emph{strongly-overlaps}}}
+\newcommand{\roverlapsdef}{\LABEL@COLOR@REL{\emph{overlaps}}}
+\newcommand{\rmatchesdef}{\LABEL@COLOR@REL{\emph{matches}}}
+\newcommand{\rblocksdef}{\LABEL@COLOR@REL{\emph{blocks}}}
+\newcommand{\rsfencesdef}{\LABEL@COLOR@REL{\emph{strongly-fences}}}
+\newcommand{\rsmatchesdef}{\LABEL@COLOR@REL{\emph{strongly-matches}}}
+\newcommand{\rsoverlapsdef}{\LABEL@COLOR@REL{\emph{strongly-overlaps}}}
+%\newcommand{\rsmatchesblocksdef}{\LABEL@COLOR@REL{\emph{strongly-matches/blocks}}}
+\newcommand{\rdelayspdef}{\LABEL@COLOR@REL{\emph{delays}}'}
+\newcommand{\rdelaysdef}{\LABEL@COLOR@REL{\emph{delays}}}
+\newcommand{\rcodelaysdef}{\LABEL@COLOR@REL{\emph{co-delays}}}
+\newcommand{\rsyncdelaysdef}{\LABEL@COLOR@REL{\emph{sync-delays}}}
+\newcommand{\sreaddef}{\LABEL@COLOR@REL{\emph{read}}}
+\newcommand{\sreleasedef}{\LABEL@COLOR@REL{\emph{release}}}
+\newcommand{\rimpliesdef}{\mathrel{\vDash}}%{\LABEL@COLOR@REL{\emph{implies}}}
+\newcommand{\rextendsdef}[2]{\LABEL@REL{\emph{extends}}\ifnotempty{#1#2}{{#1}\;\allowbreak\textnormal{\emph{and}}\;\allowbreak{#2}}}
 
-\newcommand{\roverlaps}{\mathrel{\textnormal{{overlaps}}}}
-\newcommand{\rmatches}{\mathrel{\textnormal{{matches}}}}
-\newcommand{\rblocks}{\mathrel{\textnormal{{blocks}}}}
-\newcommand{\rsfences}{\mathrel{\textnormal{{strongly-fences}}}}
-\newcommand{\rsmatches}{\mathrel{\textnormal{{strongly-matches}}}}
-\newcommand{\rsoverlaps}{\mathrel{\textnormal{{strongly-overlaps}}}}
-\newcommand{\rsoverlap}{\mathrel{\textnormal{{strongly-overlap}}}}
-\newcommand{\rdelaysp}{\mathrel{\textnormal{{delays}}'}}
-\newcommand{\rdelays}{\mathrel{\textnormal{{delays}}}}
-\newcommand{\rcodelays}{\mathrel{\textnormal{{co-delays}}}}
-\newcommand{\rsyncdelays}{\mathrel{\textnormal{{sync-delays}}}}
-\newcommand{\sread}{\mathrel{\textnormal{{read}}}}
-\newcommand{\srelease}{\mathrel{\textnormal{{release}}}}
-\newcommand{\rimplies}{\mathrel{\vDash}}%{\mathrel{\textnormal{{implies}}}}
-\newcommand{\rextends}[2]{\mathrel{\textnormal{{extends}}}\ifnotempty{#1#2}{{#1}\textand{#2}}}
+\newcommand{\roverlaps}{\LABEL@COLOR@REL{{overlaps}}}
+\newcommand{\rmatches}{\LABEL@COLOR@REL{{matches}}}
+\newcommand{\rblocks}{\LABEL@COLOR@REL{{blocks}}}
+\newcommand{\rsfences}{\LABEL@COLOR@REL{{strongly-fences}}}
+\newcommand{\rsmatches}{\LABEL@COLOR@REL{{strongly-matches}}}
+\newcommand{\rsoverlaps}{\LABEL@COLOR@REL{{strongly-overlaps}}}
+\newcommand{\rsoverlap}{\LABEL@COLOR@REL{{strongly-overlap}}}
+\newcommand{\rdelaysp}{\LABEL@COLOR@REL{{delays}}'}
+\newcommand{\rdelays}{\LABEL@COLOR@REL{{delays}}}
+\newcommand{\rcodelays}{\LABEL@COLOR@REL{{co-delays}}}
+\newcommand{\rsyncdelays}{\LABEL@COLOR@REL{{sync-delays}}}
+\newcommand{\sread}{\LABEL@COLOR@REL{{read}}}
+\newcommand{\srelease}{\LABEL@COLOR@REL{{release}}}
+\newcommand{\rimplies}{\mathrel{\vDash}}%{\LABEL@COLOR@REL{{implies}}}}
+\newcommand{\rextends}[2]{\LABEL@REL{{extends}}\ifnotempty{#1#2}{{#1}\textand{#2}}}
 %\newcommand{\rextends}[2]{\supseteq({#1}\cup{#2})}
 \newcommand{\rsubset}[2]{\subseteq({#1}\cup{#2})}
 
@@ -450,8 +463,8 @@
 \newcommand{\ascope}{\sigma}
 \newcommand{\bscope}{\rho}
 \newcommand{\xscope}{\ascope}
-\newcommand{\sCTA}{{\mathsf{grp}}}
-\newcommand{\sGPU}{{\mathsf{proc}}}
+\newcommand{\sCTA}{{\mathsf{cta}}}
+\newcommand{\sGPU}{{\mathsf{gpu}}}
 \newcommand{\sSYS}{{\mathsf{sys}}}
 \newcommand{\rms}{\mathrel{\mathsf{ms}}}
 \newcommand{\xms}{\mathrel{\smash{\xleftrightarrow{\rms}}}}
@@ -643,7 +656,7 @@
 % \newcommand{\fwrites}{\mathsf{writes}}
 \newcommand{\rreads}{\mathsf{Rd}}
 \newcommand{\rwrites}{\mathsf{Wr}}
-\newcommand{\finternalize}{\tau}%\mathsf{internalize}}
+%\newcommand{\finternalize}{\tau}%\mathsf{internalize}}
 
 \newcommand{\Sub}{\mathcal{S}}
 \newcommand{\beforeSub}{\sigma_1}
@@ -696,10 +709,14 @@
 \newcommand{\TRUE}{\mathsf{tt}}
 \newcommand{\FALSE}{\mkern.6mu\mathsf{ff}\mkern.6mu}
 \newcommand{\Bool}{\mathsf{Bool}}
-\newcommand{\aTr}[3][]{\tau^{#2}_{#1}\ifnotempty{#3}{(#3)}}
-\newcommand{\trd}[2]{\tau_{#1}\ifnotempty{#2}{(#2)}}
 
-\newcommand{\aTerm}[1][]{\checkmark\ifnotempty{#1}{\!_{#1}}}
+\newcommand{\aTr}[3][]{\LOGIC@COLOR{\tau}^{#2}_{#1}\ifnotempty{#3}{(#3)}}
+\newcommand{\trd}[2]{\LOGIC@COLOR{\tau}_{#1}\ifnotempty{#2}{(#2)}}
+\newcommand{\aTerm}[1][]{\LOGIC@COLOR{\checkmark}\ifnotempty{#1}{\!_{#1}}}
+\newcommand{\labelingForm}{\LOGIC@COLOR{\kappa}}%\lambda_{\Formulae}}
+\newcommand{\labeling}{\LABEL@COLOR{\lambda}}
+\newcommand{\labelingAct}{\labeling}
+%\newcommand{\labelingSub}{\Sub}%\lambda_{\Act}}
 
 \newcommand{\Int}{\mathsf{SilentAct}}
 \newcommand{\Ext}{\mathsf{Ext}}
@@ -715,8 +732,8 @@
 %\newcommand{\dAct}{d}
 \newcommand{\DRSC}[2]{\DR[\mSC]{#1}{#2}}
 \newcommand{\DWSC}[2]{\DW[\mSC]{#1}{#2}}
-\newcommand{\DRAcq}[2]{\DR[\mRA]{#1}{#2}}
-\newcommand{\DWRel}[2]{\DW[\mRA]{#1}{#2}}
+\newcommand{\DRAcq}[2]{\DR[\mACQ]{#1}{#2}}
+\newcommand{\DWRel}[2]{\DW[\mREL]{#1}{#2}}
 \newcommand{\DRmode}[2]{\DR[\amode]{#1}{#2}}
 \newcommand{\DWmode}[2]{\DW[\amode]{#1}{#2}}
 %\newcommand{\DRreg}[4][]{\mathsf{R}^{#1}\ifnotempty{#2}{\mkern1mu#2\ifnotempty{#3}{\mkern1mu#3\ifnotempty{#4}{\mkern1mu#4}}}}
@@ -765,25 +782,27 @@
 %% \newcommand{\lt}{\mathrel{{\color{blue}<}}}
 %% \newcommand{\gtN}{\mathrel{{\color{red!50!black}\leq}}}
 %% \newcommand{\geN}{\mathrel{{\color{red!50!black}<}}}
-\newcommand{\lt}{<}
-\newcommand{\gt}{>}
-\newcommand{\gtN}{\leq}
-\newcommand{\gtNsp}{\mathrel{\,\mid\!\!\!>}}
-\newcommand{\ltNsp}{\mathrel{\,\mid\!\!\!<}}
-\newcommand{\geN}{<}
-\newcommand{\lesync}{\le}
-\newcommand{\lesyncpo}{\le_{\mathsf{po}}}
-\newcommand{\ltsync}{<}
-\newcommand{\ledep}{\trianglelefteq}
-\newcommand{\ltdep}{\vartriangleleft}
-\newcommand{\leloc}{\sqsubseteq}
-\newcommand{\ltloc}{\sqsubset}
-\newcommand{\geloc}{\sqsupseteq}
-\newcommand{\gtloc}{\sqsupset}
-\newcommand{\leexists}{\sqsubsetsim}
-\newcommand{\lelocweak}{\mathrel{\sqsubseteq\mkern-6mu\makebox[0pt][r]{\raisebox{2pt}{\small$\scriptscriptstyle\mathsf{w}$}}\mkern2mu}}
-\newcommand{\lelocstrong}{\mathrel{\sqsubseteq\mkern-8mu\makebox[0pt][r]{\raisebox{2pt}{$\scriptscriptstyle\mathsf{s}$}}\mkern4mu}}
-\newcommand{\leloctwo}{\mathrel{\sqsubseteq\mkern-8mu\makebox[0pt][r]{\raisebox{2pt}{\small$\scriptscriptstyle\mathsf{2}$}}\mkern4mu}}
+\let\LATEX@le=\le
+\renewcommand{\le}{\SYNC@COLOR{\LATEX@le}}
+\newcommand{\lt}{\SYNC@COLOR{<}}
+%\newcommand{\gt}{>}
+%\Newcommand{\gtN}{\leq}
+%\Newcommand{\gtNsp}{\mathrel{\,\mid\!\!\!>}}
+% \newcommand{\ltNsp}{\mathrel{\,\mid\!\!\!<}}
+% \newcommand{\geN}{<}
+\newcommand{\lesync}{\SYNC@COLOR{\LATEX@le}}
+\newcommand{\lesyncpo}{\SYNC@COLOR{\LATEX@le_{\mathsf{po}}}}
+\newcommand{\ltsync}{\SYNC@COLOR{<}}
+\newcommand{\ledep}{\DEP@COLOR{\trianglelefteq}}
+\newcommand{\ltdep}{\DEP@COLOR{\vartriangleleft}}
+\newcommand{\leloc}{\LOC@COLOR{\sqsubseteq}}
+\newcommand{\ltloc}{\LOC@COLOR{\sqsubset}}
+% \newcommand{\geloc}{\LOC@COLOR{\sqsupseteq}}
+% \newcommand{\gtloc}{\LOC@COLOR{\sqsupset}}
+\newcommand{\leexists}{\LOC@COLOR{\sqsubsetsim}}
+\newcommand{\lelocweak}{\LOC@COLOR{\sqsubseteq\mkern-6mu\makebox[0pt][r]{\raisebox{2pt}{\small$\scriptscriptstyle\mathsf{w}$}}\mkern2mu}}
+\newcommand{\lelocstrong}{\LOC@COLOR{\sqsubseteq\mkern-8mu\makebox[0pt][r]{\raisebox{2pt}{$\scriptscriptstyle\mathsf{s}$}}\mkern4mu}}
+\newcommand{\leloctwo}{\LOC@COLOR{\sqsubseteq\mkern-8mu\makebox[0pt][r]{\raisebox{2pt}{\small$\scriptscriptstyle\mathsf{2}$}}\mkern4mu}}
 % \newcommand{\lelocweak}{\mathrel{\smash{\overset{\mathsf{w}}{\sqsubseteq}}}}
 % \newcommand{\lelocstrong}{\mathrel{\smash{\overset{\mathsf{s}}{\sqsubseteq}}}}
 % \newcommand{\leloctwo}{\mathrel{\smash{\overset{\mathsf{2}}{\sqsubseteq}}}}
@@ -809,10 +828,6 @@
 % \newcommand{\geN}{\mathrel{{\color{red!50!black}\lessdot}}}
 
 \newcommand{\Alphabet}{\Sigma}
-\newcommand{\labeling}{\lambda}
-\newcommand{\labelingForm}{\kappa}%\lambda_{\Formulae}}
-\newcommand{\labelingAct}{\lambda}%\lambda_{\Act}}
-\newcommand{\labelingSub}{\Sub}%\lambda_{\Act}}
 
 \newcommand{\RF}{\mathsf{RF}}
 
@@ -914,14 +929,17 @@
 \newcommand{\sTHEN}{\allowbreak,\,}
 \newcommand{\sELSE}{\allowbreak,\,}
 \newcommand{\sFI}{)}
-\NewDocumentCommand\sIFTHEN{m m m}{\textnormal{\textit{IF}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2,\,\allowbreak#3)}}
-\NewDocumentCommand\sPAR{m m}{#1\PAR#2}
-\NewDocumentCommand\sRPAR{m O{} m}{#1\RPAR[#2]#3}
-\NewDocumentCommand\sLPARX{m O{} m}{#1\LPAR[#2]#3}
-\NewDocumentCommand\sSEMIX{m m}{#1\SEMI#2}
+\NewDocumentCommand\sIFTHEN{m m m}{\textnormal{\textit{IF}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2\ifnotempty{#3}{,\,\allowbreak#3})}}
+\NewDocumentCommand\xIFTHEN{m m m}{\IF{#1}\THEN#2\ifnotempty{#3}{\ELSE#3}\FI}
+\NewDocumentCommand\IFTHEN{m m m}{\IF{#1}\THEN#2\ifnotempty{#3}{\ELSE#3}\FI}
+%\NewDocumentCommand\sPAR{m m}{#1\PAR#2}
+% \NewDocumentCommand\sRPAR{m O{} m}{#1\RPAR[#2]#3}
 \NewDocumentCommand\sLPAR{m O{} m}{\textnormal{\textit{PAR}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak\ifnotempty{#2}{#2,\,\allowbreak}#3)}}
+\NewDocumentCommand\xLPAR{m O{} m}{#1\LPAR[#2]#3}
+\NewDocumentCommand\xLPARP{m O{} m}{(#1\LPAR[#2]#3)}
 \NewDocumentCommand\sSEMI{m m}{\textnormal{\textit{SEQ}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2)}}
-\NewDocumentCommand\sSEQ{m m}{\textnormal{\textit{SEQ}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2)}}
+\NewDocumentCommand\xSEMI{m m}{{#1}\SEMI{#2}}
+\NewDocumentCommand\xSEMIP{m m}{({#1}\SEMI{#2})}
 % \NewDocumentCommand\sPAR{m O{} m O{}}{\sRPAR{#1}[#2]{#3}[#4]}
 \NewDocumentCommand\sLET{m m O{}}{\textnormal{\textit{LET}}\ifnotempty{#1}{\allowbreak(#1,\,\allowbreak#2)_{#3}}}
 \newcommand{\sEXPAND}[1]{\textnormal{\textit{EXPAND}}\ifnotempty{#1}{\allowbreak(#1)}}
@@ -952,23 +970,25 @@
 \newcommand{\notify}[1]{\mathsf{notify}\,#1}
 \newcommand{\notified}[1]{\mathsf{notified}\,#1}
 \newcommand{\wait}[1]{\mathsf{wait}\,#1}
-\newcommand{\reorder}{\mathrel{\bowtie}}
-\newcommand{\reorderlt}{\mathrel{\ltimes}}%\xleftrightarrow{}}%\mathrel\leftrightarrow}
-\newcommand{\reorderca}{\mathrel{\ltimes}_{\mathsf{ca}}}%\xleftrightarrow{\mathsf{co}}}
-\newcommand{\reordersc}{\mathrel{\ltimes}_{\mathsf{sc}}}%\xleftrightarrow{\mathsf{co}}}
-\newcommand{\eqreordersc}{\mathrel{\bowtie}_{\mathsf{sc}}}%\xleftrightarrow{\mathsf{co}}}
-\newcommand{\eqreorderloc}{\mathrel{\bowtie}_{\mathsf{loc}}}%\xleftrightarrow{\mathsf{co}}}
-\newcommand{\eqreorderco}{\mathrel{\bowtie}_{\mathsf{co}}}%\xleftrightarrow{\mathsf{co}}}
-\newcommand{\reorderco}{\mathrel{\ltimes}_{\mathsf{co}}}%\xleftrightarrow{\mathsf{co}}}
-\newcommand{\reorderlws}{\mathrel{\ltimes}_{\mathsf{lws}}}%\xleftrightarrow{\mathsf{co}}}
-\newcommand{\reorderloc}{\mathrel{\ltimes}_{\mathsf{loc}}}%\xleftrightarrow{\mathsf{co}}}
-\newcommand{\reorderra}{\mathrel{\ltimes}_{\mathsf{sync}}}%\xleftrightarrow{\mathsf{sync}}}%\mathrel{\smash{\overset{\mathsf{ra}}{\leftrightarrow}}}}
-\newcommand{\reorderRLX}{\mathrel{\smash{\overset{\mRLX}{\leftrightarrow}}}}
-\newcommand{\reorderSC}{\mathrel{\smash{\overset{\mSC}{\leftrightarrow}}}}
-\newcommand{\quietForm}{\mathsf{Q}}
-\newcommand{\preForm} {\kappa}
-\newcommand{\reorderDepForm}{xxx}
-\newcommand{\reorderIndForm}{\rho}
+
+\newcommand{\reorder}{\mathrel{\LABEL@COLOR{\bowtie}}}
+\newcommand{\reorderlt}{\mathrel{\LABEL@COLOR{\ltimes}}}%\xleftrightarrow{}}%\mathrel\leftrightarrow}
+\newcommand{\reorderca}{\mathrel{\LABEL@COLOR{\ltimes}}_{\mathsf{\LABEL@COLOR{ca}}}}%\xleftrightarrow{\mathsf{co}}}
+\newcommand{\reordersc}{\mathrel{\LABEL@COLOR{\ltimes}}_{\mathsf{\LABEL@COLOR{sc}}}}%\xleftrightarrow{\mathsf{co}}}
+\newcommand{\eqreordersc}{\mathrel{\LABEL@COLOR{\bowtie}}_{\mathsf{\LABEL@COLOR {sc}}}}%\xleftrightarrow{\mathsf{co}}}
+\newcommand{\eqreorderloc}{\mathrel{\LABEL@COLOR{\bowtie}}_{\mathsf{\LABEL@COLOR {loc}}}}%\xleftrightarrow{\mathsf{co}}}
+\newcommand{\eqreorderco}{\mathrel{\LABEL@COLOR{\bowtie}}_{\mathsf{\LABEL@COLOR {co}}}}%\xleftrightarrow{\mathsf{co}}}
+\newcommand{\reorderco}{\mathrel{\LABEL@COLOR{\ltimes}}_{\mathsf{\LABEL@COLOR {co}}}}%\xleftrightarrow{\mathsf{co}}}
+\newcommand{\reorderlws}{\mathrel{\LABEL@COLOR{\ltimes}}_{\mathsf{\LABEL@COLOR {lws}}}}%\xleftrightarrow{\mathsf{co}}}
+\newcommand{\reorderloc}{\mathrel{\LABEL@COLOR{\ltimes}}_{\mathsf{\LABEL@COLOR {loc}}}}%\xleftrightarrow{\mathsf{co}}}
+\newcommand{\reorderra}{\mathrel{\LABEL@COLOR{\ltimes}}_{\mathsf{\LABEL@COLOR {sync}}}}%\xleftrightarrow{\mathsf{sync}}}%\mathrel{\smash{\overset{\mathsf{ra}}{\leftrightarrow}}}}
+\newcommand{\reorderRLX}{\mathrel{\LABEL@COLOR{\smash{\overset{\mRLX}{\leftrightarrow}}}}}
+\newcommand{\reorderSC}{\mathrel{\LABEL@COLOR{\smash{\overset{\mSC}{\leftrightarrow}}}}}
+
+%\newcommand{\quietForm}{\mathsf{Q}}
+%\newcommand{\preForm} {\kappa}
+% \newcommand{\reorderDepForm}{xxx}
+% \newcommand{\reorderIndForm}{\rho}
 
 \newcommand{\aChan}{\alpha}
 \newcommand{\bChan}{\beta}
@@ -1109,6 +1129,10 @@
 \newcommand{\graywk}[3][]{\draw[graywk,#1](#2)to(#3);}
 % \newcommand{\graypo}[3][]{}
 % \newcommand{\graywk}[3][]{}
+\tikzstyle{liftrmw} = [->,dashed,thick,color=gray,]
+%\tikzstyle{liftrmw} = [-latex,double,\wkicolor]
+\newcommand{\liftrmw}[3][]{\draw[liftrmw,#1](#2)to(#3);}
+\newcommand{\xliftrmw}{\xarrowtikz{liftrmw}{\;\;}}%
 
 \tikzstyle{xo} = [-stealth,dotted,thick,color=gray!20!black,]
 \tikzstyle{xright} = [out=-0,in=0,looseness=1.5,]
@@ -1134,9 +1158,6 @@
 %\tikzstyle{close} = [-latex,double,line width=.7pt,color=\rfcolor,postaction={draw,-,\synccolor,line width=.7pt,shorten <=0pt,shorten >=5.5pt},]
 % \newcommand{\close}[3][]{\draw[close,#1](#2)to(#3);}
 % \newcommand{\xclose}{\xarrowtikz{close}{\;\;}}%
-\tikzstyle{liftrmw} = [-latex,double,\wkicolor]
-\newcommand{\liftrmw}[3][]{\draw[liftrmw,#1](#2)to(#3);}
-\newcommand{\xliftrmw}{\xarrowtikz{liftrmw}{\;\;}}%
 
 \tikzstyle{pox} = [-latex,thick,color=\pocolor,]
 \NewDocumentCommand \pox {O{} m O{} m} {\draw[pox,#1](#2) to [auto,#3] node {$\scriptstyle\mathsf{po}$}  (#4);}

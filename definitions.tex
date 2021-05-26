@@ -1,9 +1,9 @@
-r=x; x=r; s=x; 
-||
-x=1; x=2
+% r=x; x=r; s=x; 
+% ||
+% x=1; x=2
 
-Quiensence with x=1
-W1 R1 W1 W2
+% Quiensence with x=1
+% W1 R1 W1 W2
 
 %\section{Notes}
 % GPU stuff:
@@ -177,19 +177,22 @@ $\aForm$ is \emph{unsatisfiable} if $\aForm\vDash\FALSE$.
 
 
 
+We also require that there are subsets of actions, distinguishing
+$\sreaddef$ and $\sreleasedef$ actions. 
 We require several binary relations between actions, detailed in the next
 subsection: 
 $\roverlapsdef$, 
-$\rsoverlapsdef$,
+\rsoverlapsdeftext,
 $\rmatchesdef$, 
-$\rsmatchesdef$, 
-$\rsfencesdef$, 
+\rsmatchesdeftext, 
+\rsfencesdeftext, 
 $\rblocksdef$, 
 $\rsyncdelaysdef$
 and $\rcodelaysdef$.
-We also require that there is a subsets of actions, distinguishing
-$\sreaddef$ and $\sreleasedef$ actions, and an operator
-$\fmerge{}{}:\Act\times\Act\fun2^{\Act}$.
+We require that
+$\rsoverlaps$ implies $\roverlaps$
+and that 
+$\rsmatches$ implies $\rmatches$ implies $\rblocks$ implies $\roverlaps$.
 
 
 \subsection{Actions}
@@ -367,7 +370,7 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
   \begin{enumerate}[,label=(\textsc{m}\arabic*),ref=\textsc{m}\arabic*]
     \makecounter{BE}
   \item \label{pom-E} \makecounter{E}
-    $\Event\subset\AllEvents$ is a set of \emph{events},
+    $\Event\subseteq\AllEvents$ is a set of \emph{events},
     \makecounter{Blambda}
   \item \label{pom-lambda} \makecounter{lambda}
     $\labeling: \Event \fun \Act$ defines a \emph{label} for each event,
@@ -379,7 +382,11 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
     $\aTr{}{}:2^{\AllEvents}\fun\Formulae \fun\Formulae$ is a \emph{family of predicate transformers} over $\aEvs$, 
     \makecounter{Bterm}
   \item \label{pom-term} \makecounter{term}
-    $\aTerm:\Formulae$ defines a \emph{termination condition},
+    $\aTerm:\Formulae$ is a \emph{termination condition}, such that 
+    \begin{enumerate}
+    \item \label{pom-term-tau}
+      $\aTr{}{\TRUE}\rimplies\aTerm$,
+    \end{enumerate}
     \makecounter{Bledep}
   \item \label{pom-ledep} \makecounter{ledep}
     ${\ledep} : (\Event\times\Event)$ is a partial order capturing \emph{dependency},
@@ -540,7 +547,7 @@ In diagrams, we use different shapes and colors for arrows and events.  These
 are included only to help the reader understand why order is included.  We
 adopt the following conventions:
 \begin{itemize}  
-\item \makebox{$\aEv\xpo\bEv$} arises from control/data/address \emph{dependency} \eqref{seq-kappa},
+\item \makebox{$\aEv\xpo\bEv$} arises from control/data/address \emph{dependency} (\ref{seq-kappa}, definition of $\labelingForm'_2(\aEv)$),
 \item \makebox{$\aEv\xsync\bEv$} arises from $\rsyncdelaysdef$ \eqref{seq-delay-sync},
 \item \makebox{$\aEv\xwki\bEv$} arises from $\rcodelaysdef$ \eqref{seq-delay-co},
 \item \makebox{$\aEv\xrf\bEv$} arises from \emph{matching}
@@ -895,23 +902,93 @@ adopt the following conventions:
 \end{definition}
 
 
-\section{Contextual Refinement}
+\section{Properties}
 
 \begin{lemma}
-  % $\sSEMI{\sSEMI{\aPSS_1}{\aPSS_2}}{\aPSS_3}=\sSEMI{\aPSS_1}{\sSEMI{\aPSS_2}{\aPSS_3}}$
-  $(\aPSS_1\SEMI\aPSS_2)\SEMI\aPSS_3=\aPSS_1\SEMI(\aPSS_2\SEMI\aPSS_3)$
-  and    
-  $\sSEMIX{\aPSS}{\sSKIP}=\aPSS=\sSEMIX{\sSKIP}{\aPSS}$.
+  \begin{math}
+    \aPSS
+    =
+    \xLPARP{\aPSS}{\sSKIP}
+    =
+    \xSEMIP{\aPSS}{\sSKIP}
+    =
+    \xSEMIP{\sSKIP}{\aPSS}
+  \end{math}
 
-  % $\sLPAR{\sLPAR{\aPSS_1}{\aPSS_2}}{\aPSS_3}=\sLPAR{\aPSS_1}{\sLPAR{\aPSS_2}{\aPSS_3}}$
-  $(\aPSS_1\LPAR\aPSS_2)\LPAR\aPSS_3=\aPSS_1\LPAR(\aPSS_2\LPAR\aPSS_3)$
-  and    
-  $\sLPARX{\aPSS}{\sSKIP}=\aPSS$.  
+  \begin{math}
+    \xLPAR{\xLPARP{\aPSS_1}{\aPSS_2}}{\aPSS_3}
+    =
+    \xLPAR{\aPSS_1}{\xLPARP{\aPSS_2}{\aPSS_3}}
+  \end{math}
+
+  \begin{math}
+    \xSEMI{\xSEMIP{\aPSS_1}{\aPSS_2}}{\aPSS_3}
+    =
+    \xSEMI{\aPSS_1}{\xSEMIP{\aPSS_2}{\aPSS_3}}
+  \end{math}
+
+  \begin{math}
+    \xIFTHEN{\aForm}{
+      \xIFTHEN{\bForm}{\aPSS_1}{}
+    }{}
+    =
+    \xIFTHEN{\aForm\land\bForm}{\aPSS_1}{}
+  \end{math}
+
+  \begin{math}
+    \xSEMI{
+      \xIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}
+    }{
+      \aPSS_3
+    }
+    =
+    \xIFTHEN{\aForm}{
+      \xSEMI{\aPSS_1}{\aPSS_3}
+    }{
+      \xSEMI{\aPSS_2}{\aPSS_3}
+    }
+  \end{math}
+
+  \begin{math}
+    \xSEMI{
+      \aPSS_1
+    }{
+      \xIFTHEN{\aForm}{\aPSS_2}{\aPSS_3}
+    }
+    =
+    \xIFTHEN{\aForm}{
+      \xSEMI{\aPSS_1}{\aPSS_2}
+    }{
+      \xSEMI{\aPSS_1}{\aPSS_3}
+    }
+  \end{math}
+
+  \begin{math}
+    \xIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}
+    \supseteq
+    \xSEMI{
+      \xIFTHEN{\aForm}{\aPSS_1}{}
+    }{
+      \xIFTHEN{\lnot\aForm}{\aPSS_2}{}
+    }
+  \end{math}
+
+  \begin{math}
+    \xIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}
+    \supseteq
+    \xSEMI{
+      \xIFTHEN{\lnot\aForm}{\aPSS_2}{}
+    }{
+      \xIFTHEN{\aForm}{\aPSS_1}{}
+    }
+  \end{math}
 
   \vspace{-.5\baselineskip}
   \begin{proof}
-    Straightforward calculation.  Associativity of $\SEMI\!$ requires
-    disjunction closure \eqref{tr-or}.
+    Straightforward calculation.  Associativity of $\SEMI\!$ requires both
+    conjunction closure \eqref{tr-and} (for termination) and disjunction
+    closure \eqref{tr-or} (for the predicate transformers themselves).  Right
+    unit of $\sSKIP$ for $\SEMI\!$ requires \ref{pom-term-tau}.
   \end{proof}
 \end{lemma}
 \begin{definition}
@@ -950,162 +1027,80 @@ adopt the following conventions:
 % distinguished thread id for tests.  We require that $\testThrd$ does not
 % appear in commands.
 
-\textcolor{red}{This is okay, but quantifies over all contexts:}
+\section{Merge}
 
-Define contexts as follows.
+Inspired by \cite[\textsection6.2]{DBLP:journals/pacmpl/ChakrabortyV19}
+
+$\fmerge{}{}:\Act\times\Act\fun2^{\Act}$ be defined as follows, where
+$\bmode\lemode\amode$, using the order on modes from
+\textsection\ref{sec:actions}.
 \begin{align*}
-  \aCtxt
-  \BNFDEF& \hole{}
-  \BNFSEP \IF{\aExp} \THEN \aCtxt \ELSE \aCmd \FI
-  \BNFSEP \IF{\aExp} \THEN \aCmd \ELSE \aCtxt \FI
-  \BNFSEP \aCtxt \SEMI \aCmd
-  \BNFSEP \aCmd \SEMI \aCtxt
-  \BNFSEP \aCtxt \LPAR[\bThrd] \aCmd
-  \BNFSEP \aCmd \LPAR[\bThrd] \aCtxt
+  \begin{aligned}[t]
+    \fmerge{\DW[\bmode]{\aLoc}[\ascope]{\bVal}[\aThrd]}{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
+    &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+    \\
+    \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
+    &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+    \\
+    \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
+    &= \{ \DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+  \end{aligned}
+  &&
+  \begin{aligned}[t]
+    \fmerge{\DF[\ascope]{\amode}[\aThrd]}{\DF[\ascope]{\bmode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
+    \\
+    \fmerge{\DF[\ascope]{\bmode}[\aThrd]}{\DF[\ascope]{\amode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
+    \\
+    \fmerge{\aAct}{\bAct} &= \emptyset, \textotherwise
+  \end{aligned}
 \end{align*}
 
-A \emph{test} is a context that can dereference $0$.
-We disallow dereferencing $0$ in user programs.
 
-% Distinguish the test pomset $\aPS_3$, allowing only it to dereference
-% location $0$, and require the top-level pomset in $\sLPAR{\aPS_1}{\aPS_2}$ to
-% include an action.  We use this formulation in examples.
+% Let
+% \begin{itemize}
+% \item
+%   \begin{math}
+%     \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
+%     \DR[\amode\lubmode\bmode]{\aLoc}[\ascope\lubscope\bscope]{\aVal}[\aThrd] \}
+%   \end{math},
+% \item
+%   \begin{math}
+%     \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DW[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
+%     \DW[\amode\lubmode\bmode]{\aLoc}[\ascope\lubscope\bscope]{\aVal}[\aThrd] \}
+%   \end{math},
+% \item
+%   \begin{math}
+%     \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}}{\DR[\bmode\lemode\mRLX]{\aLoc}[\bscope\lescope\ascope]{\aVal}[\aThrd]} = \{
+%     \DW[\amode\lubmode\bmode]{\aLoc}[\ascope\lubscope\bscope]{\aVal}[\aThrd] \}
+%   \end{math},
+% \item
+%   \begin{math}
+%     \fmerge{\DF[\ascope]{\amode}[\aThrd]}{\DF[\bscope]{\bmode}[\aThrd]} = \{ \DF [\ascope\lubscope\bscope]{\amode\lubmode\bmode}[\aThrd] \}
+%   \end{math}, 
+% \item
+%   \begin{math}
+%     \fmerge{\aAct}{\bAct} = \emptyset, 
+%   \end{math}
+%   otherwise.
+% \end{itemize}
 
-\begin{definition}  
-  Let $\pass{\aPSS}{}$ if there is some top-level pomset in
-  $\aPSS$ that includes $\DWP{\REF{0}}{}$.
-
-  Let $\aCmd_1\suptesteq\aCmd_2$ if $(\forall \aCtxt)$
-  $\pass{\sem{\aCtxt\hole{\aCmd_2}}}{}$ implies
-  $\pass{\sem{\aCtxt\hole{\aCmd_1}}}{}$.
-
-  Let $\aPSS_1\suptest\aPSS_2$ if $\aPSS_1\suptesteq\aPSS_2$ and $\aPSS_2\not\suptesteq\aPSS_1$.
-
-  % Let $\aPSS_1\ncomptest\aPSS_2$ if $\aPSS_1\not\suptesteq\aPSS_2$ and $\aPSS_2\not\suptesteq\aPSS_1$.
-
-  Let $\aPSS_1\eqtest\aPSS_2$ if $\aPSS_1\suptesteq\aPSS_2$ and $\aPSS_2\suptesteq\aPSS_1$.
-\end{definition}
-
-For example,
-\begin{math}
-  \sem{\PW{x}{1}\SEMI\PW{x}{1}}\suptest\sem{\PW{x}{1}}.
-\end{math}
-These are distinguished by the test:
-\begin{gather*}
-  \hole{}\LPAR
-  \PR{x}{r} \SEMI
-  \PW{x}{2} \SEMI
-  \PR{x}{s}\SEMI
-  \IF{\aReg {=} \bReg} \THEN \PW{\REF{0}}{1} \FI
-  \\
-  \tag{$\leloc$}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a1}{\DR{x}{1}}{}
-      \event{a2}{\DW{x}{2}}{right=of a1}
-      \event{a3}{\DR{x}{1}}{right=of a2}
-      \event{a4}{\DW{\REF{0}}{1}}{right=of a3}
-      \wki{a1}{a2}
-      \wki{a2}{a3}
-    \end{tikzinline}}
-\end{gather*}
-This is top-level when put in parallel with $\DWP{x}{1}\xwki\DWP{x}{1}$ from
-the left.  But there is no pomset from the right $\sem{\PW{x}{1}}$ that makes
-this top-level.
-
-Contextual refinement is sensitive to register names:
-% \begin{math}
-%   \sem{\PR{x}{r}}\not\suptesteq\sem{\PR{x}{s}}.
-% \end{math}
-% We also have
-\begin{math}
-  \sem{\SKIP}\suptest\sem{\LET{r}{1}}.
-\end{math}
-These are distinguished by the context
-$\hole{}\SEMI\PW{\REF{0}}{r}$.
-
-We should also have
-\begin{math}
-  \sem{\PR{x}{r}\SEMI\PR{x}{r}}\eqtest\sem{\PR{x}{r}}.
-\end{math}
-
-\begin{lemma}
-  If $\aPSS_1\supseteq\aPSS_2$ then $\aPSS_1\suptesteq\aPSS_2$.
-\end{lemma}
-
-\textcolor{red}{I'd rather do this:}
-
-\begin{definition}  
-  Let $\pass{\aPSS}{\aTr{}{}}$ if there is some top-level pomset
-  $\aPS_1\in\aPSS$ such that $\aTr{}{}=\aTr[1]{}{}$ and $(\exists\aEv\in\aEvs_1)$ $\labeling_1(\aEv)=\DWP{\REF{0}}{}$.
-
-  Let $\aCmd_1\suptesteq\aCmd_2$ when if %$(\forall \aTest)$
-  $\pass{\sem{\aCmd_2\LPAR\aTest}}{\aTr[2]{}{}}$ then
-  $\pass{\sem{\aCmd_1\LPAR\aTest}}{\aTr[1]{}{}}$ for some 
-  $\aTr[1]{}{}$ such that 
-  $\aTr[1]{}{\bForm} \rimplies \aTr[2]{}{\bForm}$.
-\end{definition}
-
-\begin{lemma}
-  If $\sem{\aCmd_1}\suptesteq\sem{\aCmd_2}$ then $\sem{\aCtxt\hole{\aCmd_1}}\suptesteq\sem{\aCtxt\hole{\aCmd_2}}$.
-\end{lemma}
-
-
-\textcolor{red}{This is too fine:}
-
-\begin{definition}  
-  Let $\pass{\aPS_1}{\aPS_2}$ if there is some top-level pomset in
-  $\sLPAR{\aPS_1}{\aPS_2}$.
-
-  Let $\aPSS_1\suptesteq\aPSS_2$ if $(\forall\aPS_2\in\aPSS_2)$
-  $(\exists\aPS_1\in\aPSS_1)$  %$(\forall\bForm)$ $(\forall\aTest)$:
-  such that 
-  $\aTr[1]{}{\bForm} \rimplies \aTr[2]{}{\bForm}$ and
-  $(\forall\aPS_3)$ 
-  $\pass{\aPS_1}{\aPS_3}$ implies $\pass{\aPS_2}{\aPS_3}$.
-\end{definition}
-
-% Equivalently, we could distinguish the test pomset $\aPS_3$, allowing only it
-% to dereference location $0$, and require the top-level pomset in
-% $\sLPAR{\aPS_1}{\aPS_2}$ to include an action $\DWP{\REF{0}}{}$.  We use this
-% formulation in examples.
-%$\labeling(\aEv')=\DWP{\REF{0}}{}$.
-
-For this, we have
-\begin{math}
-  \sem{\PR{x}{r}\SEMI\PR{x}{r}}\suptest\sem{\PR{x}{r}}.
-\end{math}
-To see that $\sem{\PR{x}{r}\SEMI\PR{x}{r}}\not\subtesteq\sem{\PR{x}{r}}$,
-consider that the left side includes pomset $\aPS_2=(\DRP{x}{1}\DRP{x}{2})$.
-There is no pomset $\aPS_1$ from the right such that $\pass{\aPS_1}{\aPS_3}$
-implies $\pass{\aPS_2}{\aPS_3}$, for every $\aPS_3$.  Suppose we pick
-$\aPS_1=\DRP{x}{1}$, then $\aPS_3=\DWP{x}{1}$ fulfills $\aPS_1$ but not
-$\aPS_2$.  The same is true if we pick $\aPS_1=\DRP{x}{2}$.
-
-\section{Merge}
-Let
-$\fmerge{}{}:\Act\times\Act\fun2^{\Act}$
-be defined as follows.
-Let
-\begin{math}
-  \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
-  \DR[\amode\lubmode\bmode]{\aLoc}[\ascope\lubscope\bscope]{\aVal}[\aThrd] \}
-\end{math},
-\begin{math}
-  \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DW[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
-  \DW[\amode\lubmode\bmode]{\aLoc}[\ascope\lubscope\bscope]{\aVal}[\aThrd] \}
-\end{math},
-\begin{math}
-  \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}}{\DR[\bmode\lemode\mRLX]{\aLoc}[\bscope\lescope\ascope]{\aVal}[\aThrd]} = \{
-  \DW[\amode\lubmode\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-\end{math},
-\begin{math}
-  \fmerge{\DF[\ascope]{\amode}[\aThrd]}{\DF[\bscope]{\bmode}[\aThrd]} = \{ \DF [\ascope\lubscope\bscope]{\amode\lubmode\bmode}[\aThrd] \}
-\end{math},
-and
-\begin{math}
-  \fmerge{\aAct}{\bAct} = \emptyset, 
-\end{math}
-otherwise.
+% \begin{itemize}
+% \item
+%   \begin{math}
+%     \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
+%     \DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+%   \end{math},
+% \item
+%   \begin{math}
+%     \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DW[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
+%     \DW[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd] \}
+%   \end{math},
+% \item
+%   \begin{math}
+%     \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}}{\DR[\bmode]{\aLoc}[\bscope\lescope\ascope]{\aVal}[\aThrd]} = \{
+%     \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+%   \end{math},
+% \end{itemize}
 
 If $\aAct_0\in\fmerge{\aAct_1}{\aAct_2}$, then $\aAct_1$ and $\aAct_2$ can
 coalesce, resulting in $\aAct_0$.  This allows optimizations such as
@@ -1120,6 +1115,7 @@ although this is considered safe.\footnote{A list of safe merge operations
   \cite[\textsection7.1]{Kang19}.  For examples of unsafe merges and
   reorderings, see \cite[\textsection D]{DBLP:conf/cgo/ChakrabortyV17}.}
 
+Then we can replace \ref{seq-lambda}-\ref{seq-kappa} in \reffig{fig:sem} by:
 \begin{enumerate}[topsep=0pt,label=(\textsc{s}\arabic*),ref=\textsc{s}\arabic*]
 \item[] \setcounter{enumi}{\value{lambda}} \labeltextX{2}{s}{seq-lambda-merge}
   \begin{enumerate}[leftmargin=0pt]
@@ -1130,8 +1126,21 @@ although this is considered safe.\footnote{A list of safe merge operations
   \item \label{seq-lambda-merge12}
     if $\aEv\in\aEvs_1\cap\aEvs_2$ then $\labeling(\aEv)\in \fmerge{\labeling_1(\aEv)}{\labeling_2(\aEv)}$,
   \end{enumerate}
+\item[] \setcounter{enumi}{\value{kappa}} \labeltextX{3}{s}{seq-kappa-merge}
+  \begin{enumerate}[leftmargin=0pt]
+  \item \label{seq-kappa-merge1}
+    if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)$,
+  \item \label{seq-kappa-merge2}
+    if $\aEv\in\aEvs_2\setminus\aEvs_1$ then $\labelingForm(\aEv) \rimplies \labelingForm'_2(\aEv)$,
+  \item \label{seq-kappa-merge12}
+    if $\aEv\in\aEvs_1\cap\aEvs_2$ then either
+    \begin{itemize}
+    \item $\labeling(\aEv)=\labeling_1(\aEv)=\labeling_2(\aEv)$ and $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)\lor\labelingForm'_2(\aEv)$,
+    \item $\labeling(\aEv)=\labeling_1(\aEv)\neq\labeling_2(\aEv)$ and $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)$,
+    \item $\labeling(\aEv)=\labeling_2(\aEv)\neq\labeling_1(\aEv)$ and $\labelingForm(\aEv) \rimplies \labelingForm'_2(\aEv)$.
+    \end{itemize}
+  \end{enumerate}
 \end{enumerate}
-
 
 \endinput
 \subsection{Generalized access modes}

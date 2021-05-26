@@ -114,25 +114,30 @@
   \medskip
 
   \noindent
-  If $\aPS\in\sLET{\aReg}{\aExp}$ then $\aEvs = \emptyset$ and
-  $\aTr{\bEvs}{\bForm} \rimplies \bForm[\aExp/\aReg]$.
-  \medskip
-  
-  \noindent
-  If $\aPS \in \sFENCE[\ascope]{\amode}[\aThrd]$ then
+  If $\aPS \in \sIFTHEN{\aForm}{\aPSS_1}{}$ then
+  $(\exists\aPS_1\in\aPSS_1)$ %$(\exists\aPS_2\in\sSKIP)$
   \begin{multicols}{2}
-    \begin{enumerate}[topsep=0pt,label=(\textsc{f}\arabic*),ref=\textsc{f}\arabic*]
-    \item \label{fence-E}
-      if $\bEv,\aEv\in\aEvs$ then $\bEv=\aEv$,
-    \item \label{fence-lambda}
-      $\labelingAct(\aEv) = \DF[\ascope]{\amode}[\aThrd]$,
-      \setcounter{enumi}{\value{Btau}}
-    \item \label{fence-tau}
-      $\aTr{\bEvs}{\bForm} \rimplies \bForm$,
-    \item \label{fence-term}
-      if $\aEvs=\emptyset$ then $\aTerm \rimplies \FALSE$.
+    \begin{enumerate}[topsep=0pt,label=(\textsc{it}\arabic*),ref=\textsc{it}\arabic*]
+    \item \label{if-then-E}
+      \labeltextXX{2}{it}{if-then-lambda}
+      \labeltextXX{6}{it}{if-then-ledep}
+      \labeltextXX{7}{it}{if-then-lesync}
+      \labeltextXX{8}{it}{if-then-leloc}
+      \labeltextXX{9}{it}{if-then-rmw} from $\aPS_1$
+    \setcounter{enumi}{\value{Bkappa}}
+    \item \label{if-then-kappa}
+      $\labelingForm(\aEv) \rimplies \aForm\land\labelingForm_1(\aEv)$,
+    \item \label{if-then-tau}
+      $\aTr{\bEvs}{\bForm} \rimplies (\aForm\land\aTr[1]{\bEvs}{\bForm})\lor(\neg\aForm\land\bForm)$,
+    \item \label{if-then-term}
+      $\aTerm \rimplies (\aForm\land\aTerm[1])\lor\neg\aForm$.
     \end{enumerate}
   \end{multicols}
+  \medskip
+
+  \noindent
+  If $\aPS\in\sLET{\aReg}{\aExp}$ then $\aEvs = \emptyset$ and
+  $\aTr{\bEvs}{\bForm} \rimplies \bForm[\aExp/\aReg]$.
   \medskip
 
   \noindent
@@ -147,14 +152,14 @@
     \item[] \setcounter{enumi}{\value{tau}} \labeltextX{4}{r}{read-tau}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{read-tau-dep}
-        if $(\aEvs\cap\bEvs)\neq\emptyset$ then
+        if $\aEvs\neq\emptyset$ and $(\aEvs\cap\bEvs)\neq\emptyset$ then
         \begin{math}
           \aTr{\bEvs}{\bForm} \rimplies
           \aVal{=}\uReg{\aEv}
           \limplies \bForm[\uReg{\aEv}/\aReg]
         \end{math},    
       \item \label{read-tau-ind}
-        if $\aEvs\neq\emptyset$ and $(\aEvs\cap\bEvs)=\emptyset$ then\\
+        if $\aEvs\neq\emptyset$ and $(\aEvs\cap\bEvs)=\emptyset$ then
         \begin{math}
           \aTr{\bEvs}{\bForm} \rimplies
           \PBR{\aVal{=}\uReg{\aEv} \lor \aLoc{=}\uReg{\aEv}} \limplies
@@ -200,6 +205,23 @@
       \item \label{write-term-nonempty}
         if $\aEvs\neq\emptyset$ then $\aTerm \rimplies \aExp{=}\aVal$.
       \end{enumerate}
+    \end{enumerate}
+  \end{multicols}
+  \medskip
+  
+  \noindent
+  If $\aPS \in \sFENCE[\ascope]{\amode}[\aThrd]$ then
+  \begin{multicols}{2}
+    \begin{enumerate}[topsep=0pt,label=(\textsc{f}\arabic*),ref=\textsc{f}\arabic*]
+    \item \label{fence-E}
+      if $\bEv,\aEv\in\aEvs$ then $\bEv=\aEv$,
+    \item \label{fence-lambda}
+      $\labelingAct(\aEv) = \DF[\ascope]{\amode}[\aThrd]$,
+      \setcounter{enumi}{\value{Btau}}
+    \item \label{fence-tau}
+      $\aTr{\bEvs}{\bForm} \rimplies \bForm$,
+    \item \label{fence-term}
+      if $\aEvs=\emptyset$ then $\aTerm \rimplies \FALSE$.
     \end{enumerate}
   \end{multicols}
 
