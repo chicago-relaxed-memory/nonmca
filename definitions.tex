@@ -1230,6 +1230,28 @@ Consider
   \IF{\BANG\aExp}\THEN\PW{x}{2}\FI
 \end{math}
 
+To make this work, you need the ability to merge with multiple events.
+\begin{align*}
+  \begin{gathered}[t]
+    \PW{x}{1}\SEMI
+    \IF{\aExp}\THEN\PW{x}{2}\FI
+    \\
+    \hbox{\begin{tikzinline}[node distance=.5em]
+        \event{a}{\lnot\aExp\mid\DW{x}{1}}{}
+        \event{b}{\aExp\mid\DW{x}{2}}{below=of a}
+      \end{tikzinline}}    
+  \end{gathered}
+  &&
+  \begin{gathered}[t]
+    \IF{\BANG\aExp}\THEN\PW{x}{2}\FI
+    \\
+    \hbox{\begin{tikzinline}[node distance=.5em]
+        \event{a}{\lnot\aExp\mid\DW{x}{2}}{}
+      \end{tikzinline}}    
+  \end{gathered}  
+\end{align*}
+
+
 \endinput
 \subsection{Generalized access modes}
 This is an option.
