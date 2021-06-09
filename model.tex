@@ -2442,22 +2442,22 @@ Write $\bEv\moral\aEv$ if they conflict and are morally strong
 
 \begin{definition}
   A \emph{pomset with preconditions} is a tuple
-  $(\Event, \labeling, {\lesync}, {\ledep}, {\leloc})$ where
+  $(\aEvs, \labeling, {\lesync}, {\ledep}, {\leloc})$ where
   \begin{description}
-  \item[{\labeltextsc[m1]{(m1)}{m1}}] $\Event$ is a set of \emph{events}
+  \item[{\labeltextsc[m1]{(m1)}{m1}}] $\aEvs$ is a set of \emph{events}
   \item[{\labeltextsc[m2]{(m2)}{m2}}]
-    $\labeling: \Event \fun (\Formulae\times\Act)$ is a \emph{labeling} from
+    $\labeling: \aEvs \fun (\Formulae\times\Act)$ is a \emph{labeling} from
     which we derive functions
     \begin{itemize}
-    \item $\labelingForm:\Event\fun\Formulae$
+    \item $\labelingForm:\aEvs\fun\Formulae$
       \emph{(formulae)} % include $r{=}v$ $x{=}v$
-    \item $\labelingAct:\Event\fun\Act$
+    \item $\labelingAct:\aEvs\fun\Act$
       \emph{(actions)} %include $\DW{x}{v}$, $\DR{x}{v}$, and $\DSTOP$
     \end{itemize}
   \item[{\labeltextsc[m3]{(m3)}{m3}}]
-    ${\lesync} \subseteq (\Event\times\Event)$,
-    ${\ledep} \subseteq (\Event\times\Event)$, and
-    ${\leloc} \subseteq (\Event\times\Event)$ are partial orders
+    ${\lesync} \subseteq (\aEvs\times\aEvs)$,
+    ${\ledep} \subseteq (\aEvs\times\aEvs)$, and
+    ${\leloc} \subseteq (\aEvs\times\aEvs)$ are partial orders
   \item[{\labeltextsc[m4]{(m4)}{m-consistency}}] $\bigwedge_{\aEv}\labelingForm(\aEv)$ is satisfiable \emph{(consistency)}
   \item[{\labeltextsc[m5]{(m5)}{m-causal-strengthening}}] if $\bEv\ledep\aEv$ then $\labelingForm(\aEv)$ implies $\labelingForm(\bEv)$ \emph{(causal strengthening)} 
   \item[{\labeltextsc[m6]{(m6)}{m-strong}}] if $\bEv\lesync\aEv$ then $\bEv\ledep\aEv$
@@ -2555,9 +2555,9 @@ Prefixing is as in OOPSLA, using $\lesync$ for order everywhere except
 \ref{5b}, which has $\leloc$.
 \begin{definition}
   Let $\aPS'\in(\aForm \mid \aAct) \prefix \aPSS$ when
-  $(\exists\aPS\in\aPSS)$ $(\forall\aEv\in\Event)$
+  $(\exists\aPS\in\aPSS)$ $(\forall\aEv\in\aEvs)$
   \begin{description}
-  \item[{\labeltextsc[P1]{(P1)}{1}}] $\Event' = \Event \cup \{\bEv\}$
+  \item[{\labeltextsc[P1]{(P1)}{1}}] $\aEvs' = \aEvs \cup \{\bEv\}$
   \item[{\labeltextsc[P2]{(P2)}{2}}] ${\lesync'}\supseteq{\lesync}$,
     ${\ledep'}\supseteq{\ledep}$, and ${\leloc'}\supseteq{\leloc}$
   \item[{\labeltextsc[P3]{(P3a)}{3a}\labeltextsc[P3]{}{3}}]%
@@ -2565,7 +2565,7 @@ Prefixing is as in OOPSLA, using $\lesync$ for order everywhere except
   \item[{\labeltextsc[P3b]{(P3b)}{3b}}] $\labelingAct'(\bEv) = \aAct$
   \item[{\labeltextsc[P4a]{(P4a)}{4a}\labeltextsc[P4]{}{4}}]%
     $\labelingForm'(\bEv)$ implies
-    $\aForm\land(\bEv\not\in\Event\lor\labelingForm(\bEv))$
+    $\aForm\land(\bEv\not\in\aEvs\lor\labelingForm(\bEv))$
   \item[{\labeltextsc[P4b]{(P4b)}{4b}}] if $\bEv\neq(\DR[]{..)}{}\mkern79mu$
     then $\aEv=\bEv$ or $\labelingForm'(\aEv)$ implies $\labelingForm(\aEv)$
   \item[{\labeltextsc[P4c]{(P4c)}{4c}}] if
@@ -2608,27 +2608,27 @@ Prefixing is as in OOPSLA, using $\lesync$ for order everywhere except
 % \end{definition}
 % \begin{definition}
 %   Let $\aPS\phantom{'}\in(\aForm \guard \aPSS)\mkern16mu$ when
-%   $\phantom{(\exists}\aPS\in\aPSS$ and $(\forall\aEv\in\Event)$
+%   $\phantom{(\exists}\aPS\in\aPSS$ and $(\forall\aEv\in\aEvs)$
 %   $\labelingForm(\aEv)$ implies $\aForm$
 % \end{definition}
 
 % \begin{definition}
 %   Let $\aPS'\in(\aPSS[M/x])\mkern2mu$ when $(\exists\aPS\in\aPSS$)\\\qquad
-%   $\Event' = \Event$, ${\lesync'} = {\lesync}$, $\labelingAct' = \labelingAct$, and
-%   $(\forall\aEv\in\Event')$ $\labelingForm'(\aEv) = \labelingForm(\aEv)[M/x]$
+%   $\aEvs' = \aEvs$, ${\lesync'} = {\lesync}$, $\labelingAct' = \labelingAct$, and
+%   $(\forall\aEv\in\aEvs')$ $\labelingForm'(\aEv) = \labelingForm(\aEv)[M/x]$
 % \end{definition}
 % \begin{definition}
 %   Let $\aPS' \in (\aPSS^1 \parallel \aPSS^2)$ when
 %   $(\exists\aPS^1 \in \aPSS^1)$ $(\exists\aPS^2 \in \aPSS^2)$
-%   \\% $\aPS^1$ is completed exactly when $\aPS^2$ is completed, there is at most one termination in $\Event'$,
-%   \qquad $\Event' = \Event^1 \cup \Event^2$,
-%   ${\lesync'}\supseteq{\lesync^1}\cup{\lesync^2}$, and $(\forall\aEv\in\Event')$ either
+%   \\% $\aPS^1$ is completed exactly when $\aPS^2$ is completed, there is at most one termination in $\aEvs'$,
+%   \qquad $\aEvs' = \aEvs^1 \cup \aEvs^2$,
+%   ${\lesync'}\supseteq{\lesync^1}\cup{\lesync^2}$, and $(\forall\aEv\in\aEvs')$ either
 %   \begin{gather*}
 %     \begin{aligned}
-%       \aEv \not\in \Event^2,\; \labelingAct'(\aEv) &= \labelingAct^1(\aEv)
+%       \aEv \not\in \aEvs^2,\; \labelingAct'(\aEv) &= \labelingAct^1(\aEv)
 %       \textand \labelingForm'(\aEv) \textimplies \labelingForm^1(\aEv),
 %       \\[-1ex]
-%       \aEv \not\in \Event^1,\; \labelingAct'(\aEv) &= \labelingAct^2(\aEv)
+%       \aEv \not\in \aEvs^1,\; \labelingAct'(\aEv) &= \labelingAct^2(\aEv)
 %       \textand \labelingForm'(\aEv) \textimplies
 %       \labelingForm^2(\aEv),\textor
 %       \\[-1ex]

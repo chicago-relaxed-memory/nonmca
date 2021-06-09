@@ -4,7 +4,7 @@
 % Fri 1 Oct 2021 Notification
 
 \RequirePackage{amssymb}  %% bizarre error previous def of Bbbk if after documentclass
-\documentclass[acmsmall,screen]{acmart}\settopmatter{printfolios=true}
+\documentclass[acmsmall,screen,anonymous,review]{acmart}\settopmatter{printfolios=true}
 \hypersetup{bookmarksnumbered,bookmarksopen=true,bookmarksdepth=3}
 \settopmatter{printfolios=true}
 \AtEndPreamble{%
@@ -22,18 +22,18 @@
 \bibliographystyle{ACM-Reference-Format}
 \citestyle{acmauthoryear}   %% For author/year citations
 
-% \setcopyright{rightsretained}
-% \acmPrice{?}
-% \acmDOI{?}
-% \acmYear{2021}
-% \copyrightyear{2021}
-% \acmSubmissionID{1}
+\setcopyright{rightsretained}
+\acmPrice{}
+\acmDOI{}
+\acmYear{2022}
+\copyrightyear{2022}
+\acmSubmissionID{}
 \acmJournal{PACMPL}
-% \acmVolume{1}
-% \acmNumber{POPL}
-% \acmArticle{1}
-% \acmMonth{1}
-% \startPage{1}
+\acmVolume{0}
+\acmNumber{POPL}
+\acmArticle{0}
+\acmMonth{1}
+\startPage{1}
 
 \usepackage{macros}
 % \makeatletter
@@ -46,25 +46,7 @@
 
 \begin{document}
 
-\title{Weak Pomsets}
-% \author{Radha Jagadeesan}
-% \orcid{0000-0002-4525-1589}
-% \affiliation{
-%   %\department{School of Computing}
-%   \institution{DePaul University}
-%   \city{Chicago}
-%   \country{USA}
-% }
-% %\email{rjagadeesan@cs.depaul.edu}
-
-% \author{Alan Jeffrey}
-% \orcid{0000-0001-6342-0318}
-% \affiliation{
-%   \institution{Mozilla Research and the Servo Project}
-%   \city{Chicago}
-%   \country{USA}
-% }
-% %\email{ajeffrey@mozilla.com}
+\title{A Unified Memory Model for Heterogenous Systems}
 
 % \author{James Riely}
 % \orcid{0000-0002-8731-1463}
@@ -76,9 +58,11 @@
 % }
 % %\email{jriely@cs.depaul.edu}
 
-%\maketitle
+\maketitle
+%\input{intro.tex}
 \input{definitions.tex}
-\input{model.tex}
+%\input{drf.tex}
+%\input{model.tex}
 %\input{popo.tex}
 \clearpage
 \bibliography{bib}

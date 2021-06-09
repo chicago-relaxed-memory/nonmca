@@ -132,6 +132,13 @@ Top level programs run with thread \ID{} $\topThrd$.  In examples, we usually
 drop thread \ID{}s.  We use the symmetric $\PAR$ operator when there is no
 continuation after the parallel composition.
 
+We use common syntax sugar, such as \emph{extended expressions}, $\aEExp$,
+which include memory locations.  For example, if $\aEExp$ includes a single
+occurrence of $\aLoc$, then $\bLoc\GETS\aEExp\SEMI \aCmd$ is shorthand for
+$\aReg\GETS\aLoc\SEMI\bLoc\GETS\aEExp[\aReg/\aLoc]\SEMI \aCmd$.  Each
+occurrence of $\aLoc$ in an extended expression corresponds to an separate
+read.  We also write $\IF{\aExp} \THEN \aCmd \FI$ as shorthand for
+$\IF{\aExp} \THEN \aCmd\ELSE \SKIP\FI$.
 
 The semantics is built from the following.
 \begin{itemize}
@@ -305,7 +312,7 @@ $\sreleasedef$ actions.  Actions $\DRP{}{}$ are $\sreaddef$ actions.
     $\aThrd_1=\xThrd_2$, or
     \labeltext[2]{}{moral-nonlocal}
     \item $\amode_1,\xmode_2\neq\mWK$,
-    \item if $\ascope_1=\sCTA$ or $\xscope_2=\sCTA$ then $\aThrd_1\xcta\xThrd_2$, and
+    \item if $\ascope_1=\sCTA$ or $\xscope_2=\sCTA$ then $\aThrd_1\xcta\xThrd_2$, %and
     \item if $\ascope_1=\sGPU$ or $\xscope_2=\sGPU$ then $\aThrd_1\xgpu\xThrd_2$.
     \end{enumerate}
   \end{multicols}
@@ -366,17 +373,21 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
 \begin{definition}
   \label{def:pomset}
   A \emph{pomset with predicate transformers} 
-  is a tuple $(\Event, \labeling, \labelingForm, \aTr{}{}, {\aTerm}, {\ledep}, {\lesync}, {\leloc}, {\rrmw})$ where
+  is a tuple $(\aEvs, \labeling, \labelingForm, \aTr{}{}, {\aTerm}, {\ledep}, {\lesync}, {\leloc}, {\rrmw})$ where
   \begin{enumerate}[,label=(\textsc{m}\arabic*),ref=\textsc{m}\arabic*]
     \makecounter{BE}
   \item \label{pom-E} \makecounter{E}
-    $\Event\subseteq\AllEvents$ is a set of \emph{events},
+    $\aEvs\subseteq\AllEvents$ is a set of \emph{events},
     \makecounter{Blambda}
   \item \label{pom-lambda} \makecounter{lambda}
-    $\labeling: \Event \fun \Act$ defines a \emph{label} for each event,
+    $\labeling: \aEvs \fun \Act$ defines a \emph{label} for each event,
     \makecounter{Bkappa}
   \item \label{pom-kappa} \makecounter{kappa}
-    $\labelingForm:\aEvs\fun\Formulae$ defines a \emph{precondition} for each event,
+    $\labelingForm:\aEvs\fun\Formulae$ defines a \emph{precondition} for each event, such that
+    \begin{enumerate}
+    \item \label{pom-kappa-sat}
+      $\labelingForm(\aEv)$ is satisfiable,
+    \end{enumerate}
     \makecounter{Btau}
   \item \label{pom-tau} \makecounter{tau}
     $\aTr{}{}:2^{\AllEvents}\fun\Formulae \fun\Formulae$ is a \emph{family of predicate transformers} over $\aEvs$, 
@@ -385,17 +396,17 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
     $\aTerm:\Formulae$ is a \emph{termination condition}, such that 
     \begin{enumerate}
     \item \label{pom-term-tau}
-      $\aTr{}{\TRUE}\rimplies\aTerm$,
+      $\aTerm\rimplies\aTr{}{\TRUE}$,
     \end{enumerate}
     \makecounter{Bledep}
   \item \label{pom-ledep} \makecounter{ledep}
-    ${\ledep} : (\Event\times\Event)$ is a partial order capturing \emph{dependency},
+    ${\ledep} : (\aEvs\times\aEvs)$ is a partial order capturing \emph{dependency},
     \makecounter{Blesync}
   \item \label{pom-lesync} \makecounter{lesync}
-    ${\lesync} : (\Event\times\Event)$ is a partial order capturing \emph{synchronization}, 
+    ${\lesync} : (\aEvs\times\aEvs)$ is a partial order capturing \emph{synchronization}, 
     \makecounter{Bleloc}
   \item \label{pom-leloc} \makecounter{leloc}
-    ${\leloc} : (\Event\times\Event)$ is a partial order capturing \emph{per-location order}, such that 
+    ${\leloc} : (\aEvs\times\aEvs)$ is a partial order capturing \emph{per-location order}, such that 
     \begin{enumerate}
     \item \label{pom-leloc-lesync}
       if $\labeling(\bEv)\roverlaps\labeling(\aEv)$ 
@@ -403,7 +414,7 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
     \end{enumerate}
     \makecounter{Brmw}
   \item \label{pom-rmw} \makecounter{rmw}
-    ${\rrmw} : \Event\fun\Event$ is a partial function capturing read-modify-write \emph{atomicity}, such that
+    ${\rrmw} : \aEvs\fun\aEvs$ is a partial function capturing read-modify-write \emph{atomicity}, such that
     \begin{enumerate}
     \item \label{pom-rmw-block}
       if $\bEv\xrmw\aEv$ then $\labeling(\aEv) \rblocks \labeling(\bEv)$,
@@ -439,11 +450,14 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
   % \end{math}
 
   A pomset is a \emph{candidate} if there is an injective relation
-  ${\rrfx} : \Event\times\Event$, capturing \emph{reads-from}, such that
+  ${\rrfx} : \aEvs\times\aEvs$, capturing \emph{reads-from}, such that
   \begin{enumerate}[,label=(\textsc{c}\arabic*),ref=\textsc{c}\arabic*]
-    \setcounter{enumi}{\value{Blambda}}
-  \item \label{cand-lambda}
-    if $\bEv\xrfx\aEv$ then $\labeling(\bEv) \rmatches \labeling(\aEv)$,
+    \setcounter{enumi}{\value{lambda}}
+  \item[] 
+    \begin{enumerate}[leftmargin=0pt]
+    \item \label{cand-rf}
+      if $\bEv\xrfx\aEv$ then $\labeling(\bEv) \rmatches \labeling(\aEv)$,
+    \end{enumerate}
     \setcounter{enumi}{\value{Bledep}}
   \item \label{cand-ledep-rf}
     if $\bEv\xrfx\aEv$ then $\bEv \ledep \aEv$,
@@ -467,11 +481,15 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
     \end{enumerate}
   \end{enumerate}
 
-  A candidate pomset with $\rrfx$ is \emph{top-level} if
-  \begin{enumerate}[,label=(\textsc{t}\arabic*),ref=\textsc{t}\arabic*]
-    \setcounter{enumi}{\value{Blambda}}
-  \item \label{top-rf}
-    if $\labeling(\aEv)$ is a $\sread$ then there is some $\bEv\xrfx\aEv$,
+  A candidate pomset with $\rrfx$ is \emph{complete} if
+  \begin{enumerate}[,label=(\textsc{c}\arabic*),ref=\textsc{c}\arabic*]
+    \setcounter{enumi}{\value{lambda}}
+  \item[] 
+    \begin{enumerate}[leftmargin=0pt]
+      \stepcounter{enumii}
+    \item \label{top-rf}
+      if $\labeling(\aEv)$ is a $\sread$ then there is some $\bEv\xrfx\aEv$,
+    \end{enumerate}
     \setcounter{enumi}{\value{Bkappa}}
   \item \label{top-kappa}
     $\labelingForm(\aEv)$ is a tautology (for every $\aEv\in\aEvs$),
@@ -530,16 +548,26 @@ Note that for the \IMM{} model, \ref{cand-leloc-block} is equivalent to:\footnot
 
 Let $\aPS$ range over pomsets, and $\aPSS$ over sets of pomsets.
 
-We lift terminology from actions to events.  For example, we say that $\aEv$
-writes $\aLoc$ if $\labeling(\aEv)$ writes $\aLoc$.  We also drop quantifiers
+We drop quantifiers
 when clear from context, such as
-$(\forall\aEv\in\Event)(\forall\aLoc\in\Loc)$.
+$(\forall\aEv\in\aEvs)(\forall\aLoc\in\Loc)$.
 We write $\bEv\ltsync\aEv$ when $\bEv\lesync\aEv$ and $\bEv\neq\aEv$, and similarly
 for $\ltdep$ and $\ltloc$.
+We sometimes use projection functions---for example, if
+$\labeling(\aEv)=\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]$ then 
+$\labelingThrd(\aEv)=\aThrd$,
+$\labelingMode(\aEv)=\amode$,
+$\labelingScope(\aEv)=\ascope$,
+$\labelingLoc(\aEv)=\aLoc$,
+$\labelingVal(\aEv)=\aVal$.
+
+% We lift terminology from actions to events---for example, we say that $\aEv$
+% writes $\aLoc$ if $\labeling(\aEv)$ writes $\aLoc$.
 
 \subsection{Semantics}
 
 \input{fig-sem.tex}
+\input{fig-sem2.tex}
 
 See \reffig{fig:sem}.
 
@@ -556,9 +584,10 @@ adopt the following conventions:
 \item \makebox{$\bEv\xwk\aEv$} arises from \emph{blocking} \eqref{cand-leloc-block}.
 \end{itemize}
 
+\subsection{Address Calculation}
+\label{sec:semaddr}
 \begin{definition}
   \label{def:semaddr}
-  Address Calculation.
 
   \noindent
   If $\aPS \in \sSTORE[\amode]{\cExp}[\ascope]{\aExp}[\aThrd]$ then
@@ -663,10 +692,11 @@ adopt the following conventions:
 \end{definition}
 
 
+\subsection{If-closure}
+\label{sec:semca}
 \begin{definition}
   \label{def:semca}
-  If-closure
-  
+    
   \noindent
   If $\aPS \in \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]$ then
   $(\exists\aVal:\aEvs\fun\Val)$
@@ -752,10 +782,12 @@ adopt the following conventions:
     if $\aEvs=\emptyset$ and $\amode\neq\mRLX$ then $\aTerm \rimplies \FALSE$. 
   \end{enumerate}
 \end{definition}
+
+\subsection{Address Calculation and If-closure}
+\label{sec:semcaaddr}
+
 \begin{definition}
   \label{def:semcaaddr}
-  Both.
-  
   \noindent
   If $\aPS \in \sSTORE[\amode]{\cExp}[\ascope]{\aExp}[\aThrd]$ then
   $(\exists\cVal:\aEvs\fun\Val)$
@@ -905,114 +937,143 @@ adopt the following conventions:
 \section{Properties}
 
 \begin{lemma}
-  \begin{math}
-    \aPSS
-    =
-    \xLPARP{\aPSS}{\sSKIP}
-    =
-    \xSEMIP{\aPSS}{\sSKIP}
-    =
-    \xSEMIP{\sSKIP}{\aPSS}
-  \end{math}
+  \label{lem:monoid}
+  \begin{enumerate*}[label=(\alph*),ref=\alph*]
+  \item \label{monoid:unit}
+    \begin{math}
+      \aPSS
+      =
+      \xLPARP{\aPSS}{\sSKIP}
+      =
+      \xSEMIP{\aPSS}{\sSKIP}
+      =
+      \xSEMIP{\sSKIP}{\aPSS}.
+    \end{math}
 
-  \begin{math}
-    \xLPAR{\xLPARP{\aPSS_1}{\aPSS_2}}{\aPSS_3}
-    =
-    \xLPAR{\aPSS_1}{\xLPARP{\aPSS_2}{\aPSS_3}}
-  \end{math}
+  \\\item \label{monoid:par}
+    \begin{math}
+      \xLPAR{\xLPARP{\aPSS_1}{\aPSS_2}}{\aPSS_3}
+      =
+      \xLPAR{\aPSS_1}{\xLPARP{\aPSS_2}{\aPSS_3}}.
+    \end{math}
 
-  \begin{math}
-    \xSEMI{\xSEMIP{\aPSS_1}{\aPSS_2}}{\aPSS_3}
-    =
-    \xSEMI{\aPSS_1}{\xSEMIP{\aPSS_2}{\aPSS_3}}
-  \end{math}
+  \\\item \label{monoid:seq}
+    \begin{math}
+      \xSEMI{\xSEMIP{\aPSS_1}{\aPSS_2}}{\aPSS_3}
+      =
+      \xSEMI{\aPSS_1}{\xSEMIP{\aPSS_2}{\aPSS_3}}.
+    \end{math}
 
-  \begin{math}
-    \xIFTHEN{\aForm}{
-      \xIFTHEN{\bForm}{\aPSS_1}{}
-    }{}
-    =
-    \xIFTHEN{\aForm\land\bForm}{\aPSS_1}{}
-  \end{math}
-
-  \begin{math}
-    \xSEMI{
+  \\\item
+    \begin{math} \label{monoid:ifelse:if:if}
       \xIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}
-    }{
-      \aPSS_3
-    }
-    =
-    \xIFTHEN{\aForm}{
-      \xSEMI{\aPSS_1}{\aPSS_3}
-    }{
-      \xSEMI{\aPSS_2}{\aPSS_3}
-    }
-  \end{math}
+      =
+      \xSEMI{
+        \xIFTHEN{\aForm}{\aPSS_1}{}
+      }{
+        \xIFTHEN{\lnot\aForm}{\aPSS_2}{}
+      }
+      =
+      \xSEMI{
+        \xIFTHEN{\lnot\aForm}{\aPSS_2}{}
+      }{
+        \xIFTHEN{\aForm}{\aPSS_1}{}
+      }.
+    \end{math}
 
-  \begin{math}
-    \xSEMI{
+  \\\item \label{monoid:if:dead}
+    \begin{math}
+      \xIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}
+      =
       \aPSS_1
-    }{
-      \xIFTHEN{\aForm}{\aPSS_2}{\aPSS_3}
-    }
-    =
-    \xIFTHEN{\aForm}{
-      \xSEMI{\aPSS_1}{\aPSS_2}
-    }{
-      \xSEMI{\aPSS_1}{\aPSS_3}
-    }
-  \end{math}
+    \end{math}
+    if $\aForm$ is a tautology.
 
-  \begin{math}
-    \xIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}
-    \supseteq
-    \xSEMI{
-      \xIFTHEN{\aForm}{\aPSS_1}{}
-    }{
-      \xIFTHEN{\lnot\aForm}{\aPSS_2}{}
-    }
-  \end{math}
+  \\\item \label{monoid:if:if}
+    \begin{math}
+      \xIFTHEN{\aForm}{
+        \xIFTHEN{\bForm}{\aPSS}{}
+      }{}
+      =
+      \xIFTHEN{\aForm\land\bForm}{\aPSS}{}.
+    \end{math}
 
-  \begin{math}
-    \xIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}
-    \supseteq
-    \xSEMI{
-      \xIFTHEN{\lnot\aForm}{\aPSS_2}{}
-    }{
-      \xIFTHEN{\aForm}{\aPSS_1}{}
-    }
-  \end{math}
+  \\\item \label{monoid:if:seq}
+    \begin{math}
+      \xIFTHEN{\aForm}{
+        \xSEMI{\aPSS_1}{\aPSS_3}
+      }{
+        \xSEMI{\aPSS_2}{\aPSS_3}
+      }
+      \supseteq
+      \xSEMI{
+        \xIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}
+      }{
+        \aPSS_3
+      }.
+    \end{math}
 
+  \\\item \label{monoid:seq:if}
+    \begin{math}
+      \xIFTHEN{\aForm}{
+        \xSEMI{\aPSS_1}{\aPSS_2}
+      }{
+        \xSEMI{\aPSS_1}{\aPSS_3}
+      }
+      \supseteq
+      \xSEMI{
+        \aPSS_1
+      }{
+        \xIFTHEN{\aForm}{\aPSS_2}{\aPSS_3}
+      }.
+    \end{math}
+
+  \\\item \label{monoid:if:elim}
+    \begin{math}
+      \xIFTHEN{\aForm}{\aPSS}{\aPSS}
+      \supseteq
+      \aPSS.
+    \end{math}
+  \end{enumerate*}      
   \vspace{-.5\baselineskip}
   \begin{proof}
-    Straightforward calculation.  Associativity of $\SEMI\!$ requires both
-    conjunction closure (\ref{tr-and}, for termination) and disjunction
-    closure (\ref{tr-or}, for the predicate transformers themselves).  Right
-    unit of $\sSKIP$ for $\SEMI\!$ requires \ref{pom-term-tau}.
+    Straightforward calculation.
+    \eqref{monoid:unit} requires \ref{pom-term-tau} for
+    the termination condition in $\xSEMIP{\aPSS}{\sSKIP}$.
+
+    \eqref{monoid:seq} requires both
+    conjunction closure (\ref{tr-and}, for the termination condition) and disjunction
+    closure (\ref{tr-or}, for the predicate transformers themselves).
+
+    \eqref{monoid:ifelse:if:if} requires \ref{seq-delay-sync} and \ref{seq-delay-co} not impose order
+    when $\labelingForm_1(\bEv) \land \labelingForm_2(\aEv)$ is
+    unsatisfiable, which in turn requires that $\labelingForm$ calculates
+    \emph{weakest} preconditions, rather than simple preconditions (see \cite{semicolon}).
+
+    \eqref{monoid:if:dead} requires \ref{pom-kappa-sat}.
+
+    In \textsection\ref{sec:semca}, we refine the semantics to validate the
+    reverse inclusions for \eqref{monoid:if:seq}, \eqref{monoid:seq:if}, and
+    \eqref{monoid:if:elim}.
   \end{proof}
 \end{lemma}
 \begin{definition}
   \label{def:augment}
   $\aPS_2$ is an \emph{augment} of $\aPS_1$ if
-  \begin{multicols}{3}
+  \begin{multicols}{4}
     \begin{enumerate}
     \item $\aEvs_2=\aEvs_1$,
     \item $\labelingAct_2(\aEv)=\labelingAct_1(\aEv)$,
-    \item $\labelingForm_2(\aEv) \rimplies \labelingForm_1(\aEv)$,
-    \item $\aTr[2]{\bEvs}{\bForm} \rimplies \aTr[1]{\bEvs}{\bForm}$,
-    \item $\aTerm[2] \rimplies \aTerm[1]$,
-    \item ${\ledep_2}\supseteq{\ledep_1}$,
-    \item ${\lesync_2}\supseteq{\lesync_1}$,
-    \item ${\leloc_2}\supseteq{\leloc_1}$,
-    \item ${\rrmw_2}\supseteq{\rrmw_1}$.
+    \item $\labelingForm_2(\aEv) \riff \labelingForm_1(\aEv)$,
+    \item $\aTr[2]{\bEvs}{\bForm}\riff \aTr[1]{\bEvs}{\bForm}$,
+    \item $\aTerm[2] \riff \aTerm[1]$,
+    \item ${\rrfx_2}\supseteq{\rrfx_1}$,
+    \item ${\le_2}\supseteq{\le_1}$.
     \end{enumerate}
   \end{multicols}
 \end{definition}
 \begin{lemma}
-  % Suppose $\aPS_1\in\sem{\aCmd}$.
   If $\aPS_1\in\sem{\aCmd}$ and $\aPS_2$  augments $\aPS_1$ then $\aPS_2\in\sem{\aCmd}$.
-  % \item If $\aPS_2$ is a downset of $\aPS_1$ then $\aPS_2\in\sem{\aCmd}$.
-  % \end{lemma}
 
   \vspace{-.5\baselineskip}
   \begin{proof}
@@ -1027,7 +1088,7 @@ adopt the following conventions:
 % distinguished thread id for tests.  We require that $\testThrd$ does not
 % appear in commands.
 
-\section{Merge}
+\section{Access Elimination}
 
 Inspired by \cite[\textsection6.2]{DBLP:journals/pacmpl/ChakrabortyV19}
 
@@ -1135,12 +1196,39 @@ Then we can replace \ref{seq-lambda}-\ref{seq-kappa} in \reffig{fig:sem} by:
   \item \label{seq-kappa-merge12}
     if $\aEv\in\aEvs_1\cap\aEvs_2$ then either
     \begin{itemize}
-    \item $\labeling(\aEv)=\labeling_1(\aEv)=\labeling_2(\aEv)$ and $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)\lor\labelingForm'_2(\aEv)$,
-    \item $\labeling(\aEv)=\labeling_1(\aEv)\neq\labeling_2(\aEv)$ and $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)$,
-    \item $\labeling(\aEv)=\labeling_2(\aEv)\neq\labeling_1(\aEv)$ and $\labelingForm(\aEv) \rimplies \labelingForm'_2(\aEv)$.
+    \item $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)\land\labelingForm'_2(\aEv)$, or
+    \item $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)\lor\labelingForm'_2(\aEv)$ and $\labeling(\aEv)=\labeling_1(\aEv)=\labeling_2(\aEv)$.
     \end{itemize}
   \end{enumerate}
 \end{enumerate}
+
+Should be allowed:
+\begin{math}
+  \IF{\aExp}\THEN\PW{x}{1}\FI\SEMI\PW{x}{2}.
+\end{math}
+Not allowed:
+\begin{math}
+  \PW{x}{1}\SEMI\IF{\aExp}\THEN\PW{x}{2}\FI.
+\end{math}
+
+Should be allowed:
+\begin{math}
+  \PW{x}{1}\SEMI\IF{\aExp}\THEN\PR{x}{r}\FI.
+\end{math}
+Not allowed:
+\begin{math}
+  \IF{\aExp}\THEN\PW{x}{1}\FI\SEMI\PR{x}{r}.
+\end{math}
+
+Associativity is a pain.
+Consider
+\begin{math}
+  \PW{x}{1}
+  \SEMI
+  \IF{\aExp}\THEN\PW{x}{2}\FI
+  \SEMI
+  \IF{\BANG\aExp}\THEN\PW{x}{2}\FI
+\end{math}
 
 \endinput
 \subsection{Generalized access modes}
