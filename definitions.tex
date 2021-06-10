@@ -1088,34 +1088,104 @@ adopt the following conventions:
 % distinguished thread id for tests.  We require that $\testThrd$ does not
 % appear in commands.
 
-\section{Access Elimination}
+\section{Access Elimination and ``Monotonicity''}
+% For writes, change the label rules of sequential composition to:
+% \begin{enumerate}
+% \item %\label{par-lambda1}
+%   if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labeling(\aEv) = \labeling_1(\aEv)$, 
+% \item %\label{par-lambda2}
+%   if $\aEv\in\aEvs_2\setminus\aEvs_1$ then $\labeling(\aEv) = \labeling_2(\aEv)$,
+% \item %\label{par-lambda2}
+%   if $\aEv\in\aEvs_1\cap\aEvs_2$ then $\labeling(\aEv) \in \fmerge{\labeling_1(\aEv)}{\labeling_2(\aEv)}$.
+% \end{enumerate}
 
-Inspired by \cite[\textsection6.2]{DBLP:journals/pacmpl/ChakrabortyV19}
+% \begin{definition}
+%   %   Fences use the three point order:
+%   %   \begin{math}
+%   %     \fREL \ltmode \mSC
+%   %   \end{math}
+%   %   and 
+%   %   \begin{math}
+%   %     \fACQ \ltmode \mSC.
+%   %   \end{math}
+%   \noindent    
+%   \begin{align*}
+%     \fmerge{\DR[\amode]{\aLoc}{\aVal}}{\DR[\bmode]{\aLoc}{\aVal}} &= \{ \DR[\amode\lubmode\bmode]{\aLoc}{\aVal} \}
+%     \\
+%     \fmerge{\DW[\amode]{\aLoc}{\aVal}}{\DW[\bmode]{\aLoc}{\bVal}} &= \{ \DW[\amode\lubmode\bmode]{\aLoc}{\bVal} \}
+%     \\
+%     \fmerge{\DF{\amode}}{\DF{\bmode}} &= \{ \DF{\amode\lubmode\bmode} \}
+%     \\
+%     \fmerge{\aAct}{\bAct} &= \emptyset, \textotherwise
+%   \end{align*}
+% \end{definition}  
+As noted in \textsection\ref{sec:ex:term}, the semantics of \reffig{fig:sem}
+validates elimination of irrelevant relaxed reads.  In
+\textsection\ref{sec:semreg}, we discussed redundant read elimination.
+\reffig{fig:sem} also validates elimination of writes of the same value.
+However, \reffig{fig:sem} does not validate general write elimination, where,
+for example, $(\PW{x}{1}\SEMI\PW{x}{2})$ is refined to $\PW{x}{2}$.
+Nor does it validate store forwarding, where, 
+for example, $(\PW{x}{1}\SEMI\PR{x}{r})$ is refined to $(\PW{x}{1}\SEMI\LET{r}{1})$.
 
-$\fmerge{}{}:\Act\times\Act\fun2^{\Act}$ be defined as follows, where
-$\bmode\lemode\amode$, using the order on modes from
-\textsection\ref{sec:actions}.
-\begin{align*}
-  \begin{aligned}[t]
-    \fmerge{\DW[\bmode]{\aLoc}[\ascope]{\bVal}[\aThrd]}{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
-    &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-    \\
-    \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
-    &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-    \\
-    \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
-    &= \{ \DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-  \end{aligned}
-  &&
-  \begin{aligned}[t]
-    \fmerge{\DF[\ascope]{\amode}[\aThrd]}{\DF[\ascope]{\bmode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
-    \\
-    \fmerge{\DF[\ascope]{\bmode}[\aThrd]}{\DF[\ascope]{\amode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
-    \\
-    \fmerge{\aAct}{\bAct} &= \emptyset, \textotherwise
-  \end{aligned}
-\end{align*}
+Elimination can be justified in pomset by \emph{merging} actions with
+different labels.  A list of safe merges can be found in \cite[\textsection
+E]{DBLP:conf/cgo/ChakrabortyV17} and \cite[\textsection7.1]{Kang19}.  For
+examples of unsafe merges and reorderings, see \cite[\textsection
+D]{DBLP:conf/cgo/ChakrabortyV17}.
+See also \cite[\textsection6.2]{DBLP:journals/pacmpl/ChakrabortyV19}
 
+Read-read and fence-fence merges can be handled by ``monotonicity'': allowing
+actions to put down stronger modes in the model.  Then they can merge on the
+nose.
+
+Sad: read elimination can't be done the nice way using
+\begin{math}
+  \aTr{\bEvs}{\bForm} \riff \aLoc{=}\aReg  \limplies  \bForm
+\end{math}
+for \ref{read-tau-empty} because there may be a release-acquire pair between
+the read and the matching write.
+
+Let $\fmerge{}{}:\Act\times\Act\fun2^{\Act}$ be defined as follows.
+% where $\bmode\lemode\amode$, using the order on modes from
+% \textsection\ref{sec:actions}.
+\begin{displaymath}
+  \fmerge{\aAct}{\bAct}=
+  \begin{cases}
+    \aAct &
+    \textif  \aAct=\DWP[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]
+    \textand \bAct=\DRP[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]
+    \;\textand\; \bmode\lemode\amode
+    \\
+    \bAct &
+    \textif  \aAct=\DWP[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]
+    \textand \bAct=\DWP[\bmode]{\aLoc}[\ascope]{\bVal}[\aThrd]
+    \textand \amode\lemode\bmode
+    \\
+    \emptyset & \textotherwise    
+  \end{cases}
+\end{displaymath}
+(If we have ``monotonicity'' then we can require $\amode=\bmode$.)
+% \begin{align*}
+%   \begin{aligned}[t]
+%     \fmerge{\DW[\bmode]{\aLoc}[\ascope]{\bVal}[\aThrd]}{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
+%     &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+%     \\
+%     \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
+%     &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+%     \\
+%     \fmerge{\aAct}{\bAct} &= \emptyset, \textotherwise
+%   \end{aligned}
+%   &&
+%   \begin{aligned}[t]
+%     \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
+%     &= \{ \DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+%     \\
+%     \fmerge{\DF[\ascope]{\amode}[\aThrd]}{\DF[\ascope]{\bmode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
+%     \\
+%     \fmerge{\DF[\ascope]{\bmode}[\aThrd]}{\DF[\ascope]{\amode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
+%   \end{aligned}
+% \end{align*}
 
 % Let
 % \begin{itemize}
@@ -1171,10 +1241,7 @@ associativity of sequential composition, it is important that $\fmerge{}{}$
 always take an upper bound on the modes of the two actions.  For example, it
 would invalidate associativity to allow
 $\DWP{\aLoc}{\aVal}\in\fmerge{\DW{\aLoc}{\aVal}}{\DR[\mACQ]{\aLoc}{\aVal}}$,
-although this is considered safe.\footnote{A list of safe merge operations
-  can be found in \cite[\textsection E]{DBLP:conf/cgo/ChakrabortyV17} and
-  \cite[\textsection7.1]{Kang19}.  For examples of unsafe merges and
-  reorderings, see \cite[\textsection D]{DBLP:conf/cgo/ChakrabortyV17}.}
+although this is considered safe.
 
 Then we can replace \ref{seq-lambda}-\ref{seq-kappa} in \reffig{fig:sem} by:
 \begin{enumerate}[topsep=0pt,label=(\textsc{s}\arabic*),ref=\textsc{s}\arabic*]
@@ -1193,44 +1260,47 @@ Then we can replace \ref{seq-lambda}-\ref{seq-kappa} in \reffig{fig:sem} by:
     if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)$,
   \item \label{seq-kappa-merge2}
     if $\aEv\in\aEvs_2\setminus\aEvs_1$ then $\labelingForm(\aEv) \rimplies \labelingForm'_2(\aEv)$,
+  % \item \label{seq-kappa-merge12}
+  %   if $\aEv\in\aEvs_1\cap\aEvs_2$ then either (Correct for write-write, using if-closure) (Wrong for write-read)
+  %   \begin{itemize}
+  %   \item $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)\land\labelingForm'_2(\aEv)$, or
+  %   \item $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)\lor\labelingForm'_2(\aEv)$ and $\labeling(\aEv)=\labeling_1(\aEv)=\labeling_2(\aEv)$.
+  %   \end{itemize}
   \item \label{seq-kappa-merge12}
     if $\aEv\in\aEvs_1\cap\aEvs_2$ then either
     \begin{itemize}
-    \item $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)\land\labelingForm'_2(\aEv)$, or
-    \item $\labelingForm(\aEv) \rimplies \labelingForm_1(\aEv)\lor\labelingForm'_2(\aEv)$ and $\labeling(\aEv)=\labeling_1(\aEv)=\labeling_2(\aEv)$.
+    \item $\labeling(\aEv)=\labeling_1(\aEv)=\labeling_2(\aEv)$ and
+      $\labelingForm(\aEv) \riff \labelingForm_1(\aEv)\lor\labelingForm'_2(\aEv)$, 
+    \item $\labeling(\aEv)=\labeling_1(\aEv)\neq\labeling_2(\aEv)$ and
+      $\labelingForm(\aEv) \riff \labelingForm_1(\aEv)$ and
+      $\labelingForm_2'(\aEv) \rimplies \labelingForm_1(\aEv)$
+      (write-read),
+    \item $\labeling(\aEv)=\labeling_2(\aEv)\neq\labeling_1(\aEv)$ and
+      $\labelingForm(\aEv) \riff \labelingForm_1(\aEv) \riff \labelingForm_2'(\aEv)$
+      (write-write).
     \end{itemize}
   \end{enumerate}
 \end{enumerate}
 
-Should be allowed:
+Full merge:
 \begin{math}
-  \IF{\aExp}\THEN\PW{x}{1}\FI\SEMI\PW{x}{2}.
+  \IF{\aExp}\THEN\PW{x}{1}\FI\SEMI\PW{x}{2}
 \end{math}
-Not allowed:
+can become
 \begin{math}
-  \PW{x}{1}\SEMI\IF{\aExp}\THEN\PW{x}{2}\FI.
-\end{math}
-
-Should be allowed:
-\begin{math}
-  \PW{x}{1}\SEMI\IF{\aExp}\THEN\PR{x}{r}\FI.
-\end{math}
-Not allowed:
-\begin{math}
-  \IF{\aExp}\THEN\PW{x}{1}\FI\SEMI\PR{x}{r}.
+  \PW{x}{2}.
 \end{math}
 
-Associativity is a pain.
-Consider
+Partial merge:
 \begin{math}
-  \PW{x}{1}
-  \SEMI
-  \IF{\aExp}\THEN\PW{x}{2}\FI
-  \SEMI
-  \IF{\BANG\aExp}\THEN\PW{x}{2}\FI
+  \PW{x}{1}\SEMI\IF{\aExp}\THEN\PW{x}{2}\FI
+\end{math}
+can become
+\begin{math}
+  \IF{\aExp}\THEN\PW{x}{2}\ELSE\PW{x}{1}\FI.
 \end{math}
 
-To make this work, you need the ability to merge with multiple events.
+To get associativity, you need the ability to merge with multiple events.
 \begin{align*}
   \begin{gathered}[t]
     \PW{x}{1}\SEMI
@@ -1250,6 +1320,120 @@ To make this work, you need the ability to merge with multiple events.
       \end{tikzinline}}    
   \end{gathered}  
 \end{align*}
+This is asymmetric.  We don't expect to merge all three events in the following:
+\begin{align*}
+  \begin{gathered}[t]
+    \IF{\BANG\aExp}\THEN\PW{x}{2}\FI
+    \\
+    \hbox{\begin{tikzinline}[node distance=.5em]
+        \event{a}{\lnot\aExp\mid\DW{x}{2}}{}
+      \end{tikzinline}}    
+  \end{gathered}  
+  &&
+  \begin{gathered}[t]
+    \PW{x}{1}\SEMI
+    \IF{\aExp}\THEN\PW{x}{2}\FI
+    \\
+    \hbox{\begin{tikzinline}[node distance=.5em]
+        \event{a}{\lnot\aExp\mid\DW{x}{1}}{}
+        \event{b}{\aExp\mid\DW{x}{2}}{below=of a}
+      \end{tikzinline}}    
+  \end{gathered}
+\end{align*}
+
+
+Full merge:
+\begin{math}
+  \PW{x}{1}\SEMI\IF{\aExp}\THEN\PR{x}{r}\FI
+\end{math}
+can become
+\begin{math}
+  \PW{x}{1}\SEMI\IF{\aExp}\THEN\LET{r}{1}\FI.
+\end{math}
+
+Partial merge:
+\begin{math}
+  \IF{\aExp}\THEN\PW{x}{1}\FI\SEMI\PR{x}{r}
+\end{math}
+can become
+\begin{math}
+  \IF{\aExp}\THEN\PW{x}{1}\SEMI\LET{r}{1}\ELSE\PR{x}{r}\FI.
+\end{math}
+
+I don't think we need multi-merge for write-read.  Reads only affect the
+world via the predicate transformer.  Any conditional surrounding a read is
+baked into the predicate transformer, and so does not to persist in the
+preconditions of the actions themselves after the merge.  Consider
+\begin{math}
+  \LET{r}{1}\SEMI\PW{x}{2}\SEMI\IF{\aExp}\THEN\PR{x}{r}\FI.
+\end{math}
+This can safely transform to 
+\begin{math}
+  \LET{r}{1}\SEMI\PW{x}{2}\SEMI\IF{\aExp}\THEN\LET{r}{2}\FI.
+\end{math}
+
+\begin{align*}
+  \begin{gathered}[t]
+    \IF{\BANG\aExp}\THEN\PW{x}{1}\FI\SEMI
+    \IF{\aExp}\THEN\PR{x}{r}\FI
+    \\
+    \hbox{\begin{tikzinline}[node distance=.5em]
+        \event{a}{\lnot\aExp\mid\DW{x}{1}}{}
+        \event{b}{\aExp\mid\DR{x}{1}}{below=of a}
+      \end{tikzinline}}    
+  \end{gathered}
+  &&
+  \begin{gathered}[t]
+    \IF{\BANG\aExp}\THEN\PR{x}{s}\FI
+    \\
+    \hbox{\begin{tikzinline}[node distance=.5em]
+        \event{a}{\lnot\aExp\mid\DR{x}{1}}{}
+      \end{tikzinline}}    
+  \end{gathered}  
+\end{align*}
+\begin{align*}
+  \begin{gathered}[t]
+    \PW{x}{1}\SEMI
+    \IF{\aExp}\THEN\PR{x}{r}\FI
+    \\
+    \hbox{\begin{tikzinline}[node distance=.5em]
+        \event{a}{\DW{x}{1}}{}
+      \end{tikzinline}}    
+  \end{gathered}
+  &&
+  \begin{gathered}[t]
+    \IF{\BANG\aExp}\THEN\PR{x}{s}\FI
+    \\
+    \hbox{\begin{tikzinline}[node distance=.5em]
+        \event{a}{\lnot\aExp\mid\DR{x}{1}}{}
+      \end{tikzinline}}    
+  \end{gathered}  
+\end{align*}
+\begin{align*}
+  \begin{gathered}[t]
+    \PW{x}{1}
+    \\
+    \hbox{\begin{tikzinline}[node distance=.5em]
+        \event{a}{\DW{x}{1}}{}
+      \end{tikzinline}}    
+  \end{gathered}
+  &&
+  \begin{gathered}[t]
+    \IF{\aExp}\THEN\PR{x}{r}\FI\SEMI
+    \IF{\BANG\aExp}\THEN\PR{x}{s}\FI
+    \\
+    \hbox{\begin{tikzinline}[node distance=.5em]
+        \event{a}{\DR{x}{1}}{}
+      \end{tikzinline}}    
+  \end{gathered}  
+\end{align*}
+
+
+Idea for multi-merge.  Use $\aEvs_1'\subseteq\aEvs_1$, with a function
+$\fcoalesce{}:\aEvs_1\fun\aEvs_1'$ that shows how events merge.  Require that
+the events that coalesce have disjoint preconditions.  Then each of them has
+to merge into the same event from $\aEvs_2$ using the merge function.
+
 
 
 \endinput
