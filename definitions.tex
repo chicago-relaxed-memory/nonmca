@@ -348,11 +348,11 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
   \begin{multicols}{2}
     \begin{enumerate}[,label=(\textsc{x}\arabic*),ref=\textsc{x}\arabic*]
     \item \label{tr-false}
-      $\aTr{}{\FALSE}$ is $\FALSE$,    
+      $\aTr{}{\FALSE}\riff\FALSE$,    
     \item \label{tr-and}
-      $\aTr{}{\bForm_1\land\bForm_2}$ is $\aTr{}{\bForm_1}\land\aTr{}{\bForm_2}$,    
+      $\aTr{}{\bForm_1\land\bForm_2}\riff\aTr{}{\bForm_1}\land\aTr{}{\bForm_2}$,    
     \item \label{tr-or}
-      $\aTr{}{\bForm_1\lor\bForm_2}$ is $\aTr{}{\bForm_1}\lor\aTr{}{\bForm_2}$, 
+      $\aTr{}{\bForm_1\lor\bForm_2}\riff\aTr{}{\bForm_1}\lor\aTr{}{\bForm_2}$, 
     \item \label{tr-implies}
       if $\aForm \rimplies \bForm$, then $\aTr{}{\aForm} \rimplies
       \aTr{}{\bForm}$.
@@ -367,7 +367,7 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
   such that if $\cEvs \cap \aEvs \subseteq \bEvs$ then
   $\aTr{\cEvs}{\bForm} \rimplies \aTr{\bEvs}{\bForm}$.
 
-  We write $\aTr{}{}$ as an abbreviation of $\aTr{\aEvs}{}$.
+  We write $\aTr{}{\bForm}$ as an abbreviation of $\aTr{\aEvs}{\bForm}$.
 \end{definition}
 
 \begin{definition}
@@ -792,7 +792,7 @@ adopt the following conventions:
         &\riff
         \textstyle\bigwedge_{\aEv\in\aEvs\cap\bEvs}
         \cForm_\aEv
-        \limplies \aVal_\aEv{=}\uReg{\aEv}
+        \limplies (\aVal_\aEv{=}\uReg{\aEv})
         \limplies \bForm[\uReg{\aEv}/\aReg]
         \\[-1ex]
         &\land        
@@ -946,9 +946,9 @@ adopt the following conventions:
         \emptyForm
         \land
         \bigwedge_{\aEv\in\aEvs}
-        {
-          \cForm_\aEv
-          \limplies
+        \cForm_\aEv
+        \limplies
+        \PBR{
           \cExp{=}\cVal_\aEv \land\aExp{=}\aVal_\aEv
         }.
       \end{math}
@@ -1250,15 +1250,16 @@ adopt the following conventions:
 
 \section{Dead Store Elimination, Store Forwarding, and Monotonicity}
 
-We validate ``monotonicity'' by updating the rules for read, write and fence:
+We validate ``monotonicity'' by updating the rules for read, write and fence
+to include $(\exists\bmode\gemode\amode)$:
 \begin{multicols}{3}
   \begin{enumerate}
   \item[\eqref{read-lambda}]
-    $\labelingAct(\aEv) = \DR[\gemode\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]$,
+    $\labelingAct(\aEv) = \DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]$,
   \item[\eqref{write-lambda}]
-    $\labelingAct(\aEv) = \DW[\gemode\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]$,
+    $\labelingAct(\aEv) = \DW[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]$,
   \item[\eqref{fence-lambda}]
-    $\labelingAct(\aEv) = \DF[\ascope]{\gemode\amode}[\aThrd]$.
+    $\labelingAct(\aEv) = \DF[\ascope]{\bmode}[\aThrd]$.
   \end{enumerate}
 \end{multicols}
 One could do the same for scopes.
@@ -1267,13 +1268,13 @@ One could do the same for scopes.
 The semantics already validates:
 \begin{itemize}
 \item $\sem{\PW{\aLoc}{\aExp}\SEMI\PW{\aLoc}{\aExp}}\supseteq\sem{\PW{\aLoc}{\aExp}}$
-\item $\sem{\PR{\aLoc}{\aReg}\SEMI\PR{\aLoc}{\bReg}}\supseteq\sem{\PR{\aLoc}{\aReg}\SEMI\LET{\bReg}{\aReg}}$
+\item $\sem{\PR{\aLoc}{\bReg}\SEMI\PR{\aLoc}{\aReg}}\supseteq\sem{\PR{\aLoc}{\bReg}\SEMI\LET{\aReg}{\bReg}}$
 \item $\sem{\PR{\aLoc}{\aReg}}\supseteq\sem{\SKIP}$
 \end{itemize}
 It does not validate:
 \begin{itemize}
 \item $\sem{\PW{\aLoc}{\aExp}\SEMI\PW{\aLoc}{\bExp}}\supseteq\sem{\PW{\aLoc}{\bExp}}$
-\item $\sem{\PW{\aLoc}{\aExp}\SEMI\PR{\aLoc}{\aReg}}\supseteq\sem{\PW{\aLoc}{\aExp}\SEMI\LET{\aReg}{\aReg}}$
+\item $\sem{\PW{\aLoc}{\aExp}\SEMI\PR{\aLoc}{\aReg}}\supseteq\sem{\PW{\aLoc}{\aExp}\SEMI\LET{\aReg}{\aExp}}$
 \end{itemize}
 
 
@@ -1636,9 +1637,12 @@ Another example:
 Idea for multi-merge.  Use $\aEvs_1'\subseteq\aEvs_1$, with a surjective function
 $\fcoalesce{}:\aEvs_1\fun\aEvs_1'$ that shows how writes merge.
 \begin{itemize}
-\item Require that if $\fcoalesce{\cEv}=\bEv$ then $\fcoalesce{\bEv}=\bEv$.
-\item Thus $\aEvs_1\setminus\aEvs_1'=\{\cEv\in\aEvs_1\mid\fcoalesce{\cEv}\neq\cEv\}$. (I think)
-\item Require that if $\cEv\in(\aEvs_1\setminus\aEvs_1')$ then $\fcoalesce{\cEv}\in(\aEvs_1'\cap\aEvs_2)$.
+\item Require that $(\forall\bEv\in\aEvs_1')$ $\fcoalesce{\bEv}=\bEv$.
+% \item Require that if $\fcoalesce{\cEv}=\bEv$ then $\fcoalesce{\bEv}=\bEv$.
+% \item Thus $\aEvs_1\setminus\aEvs_1'=\{\cEv\in\aEvs_1\mid\fcoalesce{\cEv}\neq\cEv\}$. (I think)
+\item Require that if $\cEv\in(\aEvs_1\setminus\aEvs_1')$ then
+  $\fcoalesce{\cEv}\in\aEvs_2$---and therefore
+  $\fcoalesce{\cEv}\in(\aEvs_1'\cap\aEvs_2)$.
 \item Take $\aEvs=\aEvs_1'\cup\aEvs_2$.
 \end{itemize}
 Require that the writes that coalesce have disjoint preconditions.
@@ -1680,27 +1684,27 @@ specified above.
 \end{enumerate}
 
 
-Maybe this works for dealing with fence-fence and read-read???
-\begin{align*}
-  \begin{aligned}[t]
-    \fmerge{\DW[\bmode]{\aLoc}[\ascope]{\bVal}[\aThrd]}{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
-    &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-    \\
-    \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
-    &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-    \\
-    \fmerge{\aAct}{\bAct} &= \emptyset, \textotherwise
-  \end{aligned}
-  &&
-  \begin{aligned}[t]
-    \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
-    &= \{ \DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-    \\
-    \fmerge{\DF[\ascope]{\amode}[\aThrd]}{\DF[\ascope]{\bmode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
-    \\
-    \fmerge{\DF[\ascope]{\bmode}[\aThrd]}{\DF[\ascope]{\amode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
-  \end{aligned}
-\end{align*}
+% Maybe this works for dealing with fence-fence and read-read???
+% \begin{align*}
+%   \begin{aligned}[t]
+%     \fmerge{\DW[\bmode]{\aLoc}[\ascope]{\bVal}[\aThrd]}{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
+%     &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+%     \\
+%     \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
+%     &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+%     \\
+%     \fmerge{\aAct}{\bAct} &= \emptyset, \textotherwise
+%   \end{aligned}
+%   &&
+%   \begin{aligned}[t]
+%     \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
+%     &= \{ \DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
+%     \\
+%     \fmerge{\DF[\ascope]{\amode}[\aThrd]}{\DF[\ascope]{\bmode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
+%     \\
+%     \fmerge{\DF[\ascope]{\bmode}[\aThrd]}{\DF[\ascope]{\amode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
+%   \end{aligned}
+% \end{align*}
 
 
 \endinput
