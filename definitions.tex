@@ -140,25 +140,44 @@ occurrence of $\aLoc$ in an extended expression corresponds to an separate
 read.  We also write $\IF{\aExp} \THEN \aCmd \FI$ as shorthand for
 $\IF{\aExp} \THEN \aCmd\ELSE \SKIP\FI$.
 
+% Throughout \textsection\ref{sec:intro}--\ref{sec:tool} we 
+% require that
+% \begin{itemize}
+% \item each register is assigned at most once in a program.
+%   % \end{itemize}
+%   % In \textsection\ref{sec:complications} and following, we
+%   % require instead that
+%   % \begin{itemize}
+%   % \end{itemize}
+% \end{itemize}
+% In \textsection\ref{sec:additional}, we drop this restriction, requiring
+% instead that
+% \begin{itemize}
+% \item there are registers
+%   $\uRegs{\AllEvents}=\{\uReg{\aEv}\mid\aEv\in\AllEvents\}$, that do not
+%   appear in programs: $\aCmd[\bExp/\uReg{\aEv}]=\aCmd$.
+% \end{itemize}
+
+
 The semantics is built from the following.
 \begin{itemize}
 \item a set of \emph{events} $\AllEvents$, ranged over by $\aEv$, $\bEv$,
-  $\cEv$, $\dEv$, 
-\item a set of \emph{actions} $\Act$, ranged over by $\aAct$, 
+  $\cEv$, %$\dEv$,
+  and subsets ranged over by $\aEvs$, $\bEvs$, $\cEvs$,  
 \item a set of \emph{logical formulae} $\Formulae$, ranged over by $\aForm$,
-  $\bForm$, $\cForm$.
+  $\bForm$, $\cForm$,
+\item a set of \emph{actions} $\Act$, ranged over by $\aAct$, $\bAct$, 
+\item a family of \emph{quiescence symbols} $\Q{\aLoc}$, indexed by location.
 \end{itemize}
-Subsets of $\AllEvents$ are ranged over by $\aEvs$, $\bEvs$, $\cEvs$,
-$\dEvs$.
 
-
+We require that
 \begin{itemize}
 \item registers include %\emph{event registers}
   $\uRegs{\AllEvents}=\{\uReg{\aEv}\mid\aEv\in\AllEvents\}$ which do not appear in commands:
   $\aCmd[\bExp/\uReg{\aEv}]=\aCmd$,
-\item formulae include equalities $(\aExp{=}\bExp)$ and $(\aLoc{=}\aExp)$,
+\item formulae include $\TRUE$, $\FALSE$, $\Q{\aLoc}$, and the equalities $(\aExp{=}\bExp)$ and $(\aLoc{=}\aExp)$,
 \item formulae are closed under negation, conjunction, disjunction, and
-  substitutions $[\aExp/\aReg]$, $[\aExp/\aLoc]$,
+  substitutions $[\aExp/\aReg]$, $[\aExp/\aLoc]$, $[\aForm/\Q{\aLoc}]$,
 \item there is a relation $\rimpliesdef$ between
   formulae, capturing entailment, 
 \item $\rimpliesdef$ has the expected semantics for $=$, $\lnot$, $\land$, $\lor$,
@@ -184,22 +203,27 @@ $\aForm$ is \emph{unsatisfiable} if $\aForm\vDash\FALSE$.
 
 
 
-We also require that there are subsets of actions, distinguishing
-$\sreaddef$ and $\sreleasedef$ actions. 
+We also require that there is a subset of actions, distinguishing
+$\sreaddef$ %and $\sreleasedef$
+actions. 
 We require several binary relations between actions, detailed in the next
 subsection: 
+$\rsyncdelaysdef$,
+$\rcodelaysdef$,
+\rsmatchesdeftext, 
+$\rmatchesdef$, 
+$\rblocksdef$, 
 $\roverlapsdef$, 
 \rsoverlapsdeftext,
-$\rmatchesdef$, 
-\rsmatchesdeftext, 
 \rsfencesdeftext, 
-$\rblocksdef$, 
-$\rsyncdelaysdef$
-and $\rcodelaysdef$.
 We require that
-$\rsoverlaps$ implies $\roverlaps$
-and that 
-$\rsmatches$ implies $\rmatches$ implies $\rblocks$ implies $\roverlaps$.
+\begin{gather*}
+  {\rsmatches}\subseteq {\rmatches}\subseteq {\rblocks}\subseteq {\roverlaps}
+  \supseteq{\rsoverlaps}.
+\end{gather*}
+% $\rsoverlaps$ implies $\roverlaps$
+% and that 
+% $\rsmatches$ implies $\rmatches$ implies $\rblocks$ implies $\roverlaps$.
 
 
 \subsection{Actions}
@@ -293,8 +317,9 @@ We say $\aAct \rsyncdelaysdef \bAct$ if
   \end{math}
   but this is not sound for Arm or \IMM{}.}
 
-Let $\DWP[\gemode\mREL]{}{}$ and $\DFP{\gemode\fREL}$ be
-$\sreleasedef$ actions.  Actions $\DRP{}{}$ are $\sreaddef$ actions.
+% Let $\DWP[\gemode\mREL]{}{}$ and $\DFP{\gemode\fREL}$ be
+% $\sreleasedef$ actions.
+Actions $\DRP{}{}$ are $\sreaddef$ actions.
 
 \begin{definition}
   We assume two equivalences:
@@ -347,8 +372,8 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
   $\aTr{}{}:\Formulae\fun\Formulae$ such that
   \begin{multicols}{2}
     \begin{enumerate}[,label=(\textsc{x}\arabic*),ref=\textsc{x}\arabic*]
-    \item \label{tr-false}
-      $\aTr{}{\FALSE}\riff\FALSE$,    
+    % \item \label{tr-false}
+    %   $\aTr{}{\FALSE}\riff\FALSE$,    
     \item \label{tr-and}
       $\aTr{}{\bForm_1\land\bForm_2}\riff\aTr{}{\bForm_1}\land\aTr{}{\bForm_2}$,    
     \item \label{tr-or}
@@ -467,7 +492,8 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
     \item \label{cand-lesync-rf}
       if $\bEv'\lesync\bEv\xrfx\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$,
     \item \label{cand-lesync-sc}
-      if $\labeling(\bEv) \rsfences \labeling(\aEv)$ then either $\bEv\lesync\aEv$ or $\aEv\lesync\bEv$,
+      if $\labeling(\bEv) \rsfences \labeling(\aEv)$ then either $\bEv\lesync\aEv$ or $\aEv\lesync\bEv$, 
+      \todo{Is this right?}
     \end{enumerate}
     \setcounter{enumi}{\value{leloc}}
   \item[] 
@@ -588,6 +614,7 @@ adopt the following conventions:
 \label{sec:semaddr}
 \begin{definition}
   \label{def:semaddr}
+  %Let $\semaddr{}$ be defined as in \reffig{fig:seq}, changing $\sSTORE{}{}$ and $\sLOAD{}{}$:
 
   \noindent
   If $\aPS \in \sSTORE[\amode]{\cExp}[\ascope]{\aExp}[\aThrd]$ then
@@ -596,7 +623,7 @@ adopt the following conventions:
   \begin{multicols}{2}
     \begin{enumerate}[topsep=0pt,label=(\textsc{w}\arabic*),ref=\textsc{w}\arabic*]
     \item \label{write-E-addr}
-      if $\bEv,\aEv\in\aEvs$ then $\bEv=\aEv$,
+      if $\fcard{\aEvs}\leq1$,
     \item \label{write-lambda-addr}
       $\labelingAct(\aEv) = \DW[\amode]{\REF{\cVal}}[\ascope]{\aVal}[\aThrd]$,
     \item \label{write-kappa-addr}
@@ -605,29 +632,33 @@ adopt the following conventions:
         \cExp{=}\cVal
         \land \aExp{=}\aVal
       \end{math},      
-    \item[] \setcounter{enumi}{\value{tau}} \labeltextX{4}{w}{write-tau-addr}
+      \stepcounter{enumi}
+    \item[] \labeltext[\textsc{w}4]{}{write-tau-addr}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{write-tau-dep-addr}
         if $\aEvs\neq\emptyset$ then 
-        \begin{math}
+        \makebox[0pt][l]{\begin{math}
           \aTr{\bEvs}{\bForm} \riff 
           (\cExp{=}\cVal)
           \limplies 
-          \bForm[\aExp/\REF{\cVal}]
-        \end{math},
+          \bForm[\aExp/\REF{\cVal}][\aExp{=}\aVal/\Q{\REF{\cVal}}]
+        \end{math},}
       \item \label{write-tau-empty-addr}
-        if $\aEvs=\emptyset$ then \\
+        if $\aEvs=\emptyset$ then
+        \makebox[0pt][l]{\begin{math}
+          (\forall\dVal)
+        \end{math}        
         \begin{math}
           \aTr{\bEvs}{\bForm} \riff 
-          (\forall\dVal)
           (\cExp{=}\dVal)
           \limplies 
           \bForm
-          [\aExp/\REF{\dVal}]
-        \end{math}  
-      \end{enumerate}  
+          [\aExp/\REF{\dVal}][\FALSE/\Q{\REF{\dVal}}],
+        \end{math}}
+      \end{enumerate}
+      \columnbreak
       \stepcounter{enumi}
-    \item[] \labeltextX{5}{w}{write-term-addr}
+    \item[] \labeltext[\textsc{w}5]{}{write-term-addr}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{write-term-nonempty-addr}
         if $\aEvs\neq\emptyset$ then $\aTerm \riff \cExp{=}\cVal \land \aExp{=}\aVal$,
@@ -642,49 +673,55 @@ adopt the following conventions:
   If $\aPS \in \sLOAD[\amode]{\aReg}[\ascope]{\cExp}[\aThrd]$ then
   $(\exists\cVal\in\Val)$
   $(\exists\aVal\in\Val)$
-  \begin{enumerate}[topsep=0pt,label=(\textsc{r}\arabic*),ref=\textsc{r}\arabic*]
-  \item \label{read-E-addr}
-    if $\bEv,\aEv\in\aEvs$ then $\bEv=\aEv$,
-  \item \label{read-lambda-addr}
-    $\labelingAct(\aEv) = \DR[\amode]{\REF{\cVal}}[\ascope]{\aVal}[\aThrd]$
-  \item \label{read-kappa-addr}
-    \begin{math}
-      \labelingForm(\aEv) 
-      \riff \cExp{=}\cVal
-    \end{math},
-    \stepcounter{enumi}
-  \item[] \labeltextX{4}{r}{read-tau-addr}
-    \begin{enumerate}[leftmargin=0pt]
-    \item \label{read-tau-dep-addr}
+  \begin{multicols}{2}
+    \begin{enumerate}[topsep=0pt,label=(\textsc{r}\arabic*),ref=\textsc{r}\arabic*]
+    \item \label{read-E-addr}
+      if $\fcard{\aEvs}\leq1$,
+    \item \label{read-lambda-addr}
+      $\labelingAct(\aEv) = \DR[\amode]{\REF{\cVal}}[\ascope]{\aVal}[\aThrd]$
+    \item \label{read-kappa-addr}
       \begin{math}
-        (\forall\aEv\in\aEvs\cap\bEvs)
-      \end{math}
-      \begin{math}
-        \aTr{\bEvs}{\bForm} \riff
-        (\cExp{=}\cVal\limplies\aVal{=}\uReg{\aEv})
-        \limplies \bForm[\uReg{\aEv}/\aReg]
-      \end{math},      
-    \item \label{read-tau-ind-addr}
-      \begin{math}
-        (\forall\aEv\in\aEvs\setminus\bEvs)
-      \end{math}
-      \begin{math}
-        \aTr{\bEvs}{\bForm} \riff
-        \PBR{(\cExp{=}\cVal\limplies\aVal{=}\uReg{\aEv}) \lor (\cExp{=}\cVal\limplies\REF{\cVal}{=}\uReg{\aEv})}
-        \limplies
-        \bForm[\uReg{\aEv}/\aReg]
-      \end{math},      
-    \item \label{read-tau-empty-addr}
-      \begin{math}
-        (\forall\bReg)
-      \end{math}
-      if $\aEvs=\emptyset$ then 
-      \begin{math}
-        \aTr{\bEvs}{\bForm} \riff 
-        \bForm[\bReg/\aReg],
-      \end{math}  
-    \end{enumerate}
-      \stepcounter{enumi}    
+        \labelingForm(\aEv) 
+        \riff
+        \cExp{=}\cVal
+        \land \Q{\REF{\cVal}}
+      \end{math},
+      \stepcounter{enumi}
+    \item[] \labeltext[\textsc{r}4]{}{read-tau-addr}
+      \begin{enumerate}[leftmargin=0pt]
+      \item \label{read-tau-dep-addr}
+        if $\aEv\in\aEvs$ and $\aEv\in\bEvs$ then
+        % \begin{math}
+        %   (\forall\aEv\in\aEvs\cap\bEvs)
+        % \end{math}
+        \makebox[0pt][l]{\begin{math}
+            \aTr{\bEvs}{\bForm} \riff
+            (\cExp{=}\cVal\limplies\aVal{=}\uReg{\aEv})
+            \limplies \bForm[\uReg{\aEv}/\aReg]
+          \end{math},}
+      \item \label{read-tau-ind-addr}
+        if $\aEv\in\aEvs$ and $\aEv\not\in\bEvs$ then
+        % \begin{math}
+        %   (\forall\aEv\in\aEvs\setminus\bEvs)
+        % \end{math}
+        \makebox[0pt][l]{\begin{math}
+            \aTr{\bEvs}{\bForm} \riff
+            \PBR{(\cExp{=}\cVal\limplies\aVal{=}\uReg{\aEv}) \lor (\cExp{=}\cVal\limplies\REF{\cVal}{=}\uReg{\aEv})}
+            \limplies
+            \bForm[\uReg{\aEv}/\aReg]
+          \end{math},}
+        \columnbreak
+      \item \label{read-tau-empty-addr}
+        if $\aEvs=\emptyset$ then 
+        \begin{math}
+          (\forall\bReg)
+        \end{math}
+        \begin{math}
+          \aTr{\bEvs}{\bForm} \riff 
+          \bForm[\bReg/\aReg],
+        \end{math}  
+      \end{enumerate}  
+      \stepcounter{enumi}
     \item[] \labeltext[\textsc{r}5]{}{read-term-addr}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{read-term-nonempty-addr}
@@ -692,9 +729,10 @@ adopt the following conventions:
       \item \label{read-term-empty-addr}
         if $\aEvs=\emptyset$ and $\amode\gemode\mACQ$ then $\aTerm \riff \FALSE$. 
       \end{enumerate}      
-  % \item \label{read-term-addr}
-  %   if $\aEvs=\emptyset$ and $\amode\neq\mRLX$ then $\aTerm \riff \FALSE$. 
-  \end{enumerate}
+    % \item \label{read-term-addr}
+    %   if $\aEvs=\emptyset$ and $\amode\neq\mRLX$ then $\aTerm \riff \FALSE$. 
+    \end{enumerate}
+  \end{multicols}
 \end{definition}
 
 
@@ -702,116 +740,162 @@ adopt the following conventions:
 \label{sec:semca}
 
 \begin{definition}
+  \label{def:semca}
   \label{def:partition}
   Let $\aEvs\subseteq\AllEvents$ and $\cForm:\aEvs\fun\Formulae$ and
   $\emptyForm\in\Formulae$.  We say that $\cForm$ \emph{partitions}
   $\emptyForm$ if
-  \begin{multicols}{2}
-    \begin{itemize}
+  %\begin{multicols}{2}
+    \begin{enumerate*}
     % \item $\cForm_\aEv$ is satisfiable,
     \item if $\cForm_\aEv\land\cForm_\bEv$ is satisfiable then $\aEv=\bEv$,
     % \item $\cForm_\aEv\rimplies\emptyForm$,
     % \item $\lnot\emptyForm\lor\bigvee_{\aEv\in\aEvs}\cForm_\aEv$ is a tautology.
     \item $\emptyForm\riff\bigvee_{\aEv\in\aEvs}\cForm_\aEv$.
-    \end{itemize}
-  \end{multicols}
-\end{definition}
+    \end{enumerate*}
+  %\end{multicols}
+  %Let $\semca{}$ be defined as in \reffig{fig:seq}, changing $\sSTORE{}{}$ and $\sLOAD{}{}$:
 
-\begin{definition}
-  \label{def:semca}
-    
+  
   \noindent
   If $\aPS \in \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]$ then
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$
   $(\exists\emptyForm\in\Formulae)$
   \begin{multicols}{2}
-    \begin{enumerate}[topsep=0pt,label=(\textsc{w}\arabic*),ref=\textsc{w}\arabic*]
-    \item \label{write-E-ca}
-      $\cForm$ partitions $\emptyForm$,
-    \item \label{write-lambda-ca}
-      $\labelingAct(\aEv) = \DW[\amode]{\aLoc}[\ascope]{\aVal_\aEv}[\aThrd]$,
-    \item \label{write-kappa-ca}
-      \begin{math}
-        \labelingForm(\aEv) \riff
-        \cForm_\aEv
-        \land \aExp{=}\aVal_\aEv
-      \end{math},        
-    \item \label{write-tau-ca}
-      \begin{math}
+  \begin{enumerate}[topsep=0pt,label=(\textsc{w}\arabic*),ref=\textsc{w}\arabic*]
+  \item \label{write-E-ca}
+    $\cForm$ partitions $\emptyForm$,
+    %if $\cForm_\bEv\land\cForm_\aEv$ is satisfiable then $\bEv=\aEv$,
+  \item \label{write-lambda-ca}
+    $\labelingAct(\aEv) = \DW[\amode]{\aLoc}[\ascope]{\aVal_\aEv}[\aThrd]$,
+  \item \label{write-kappa-ca}
+    \begin{math}
+      \labelingForm(\aEv) \riff
+      \cForm_\aEv
+      \land \aExp{=}\aVal_\aEv
+    \end{math},
+    
+    
+  \item \label{write-tau-ca}
+    % \begin{math}
+    %   %   (\forall\aEv\in\aEvs\cap\bEvs)
+    %   (\forall\aEv\in\aEvs)
+    % \end{math}
+    % \begin{math}
+    %   \aTr{\bEvs}{\bForm} \riff 
+    %   \cForm_\aEv
+    %   \limplies 
+    %   \bForm[\aExp/\aLoc]
+    % \end{math},
+    \begin{math}
+      \begin{aligned}[t]
         \aTr{\bEvs}{\bForm} \riff
-        %\bigwedge_{\aEv\in\aEvs}
-        {
-          % \cForm_\aEv
-          % \limplies
-          \bForm[\aExp/\aLoc]
-        }
-      \end{math},
-    \item \label{write-term-ca}
-      \begin{math}        
-        \aTerm \riff
-        % (\bigvee_{\aEv\in\aEvs}\cForm_\aEv)
-        % \land
-        \emptyForm
+        &\textstyle\bigwedge_{\aEv\in\aEvs}
+        \cForm_\aEv
+        \limplies 
+        \bForm[\aExp/\aLoc][\aExp{=}\aVal_\aEv/\Q{\aLoc}]
+        \\[-.5ex]
         \land
-        \bigwedge_{\aEv\in\aEvs}
-        {
-          \cForm_\aEv
-          \limplies
-          \aExp{=}\aVal_\aEv
-        }.
-      \end{math}
-    \end{enumerate}
+        &
+        \lnot \emptyForm
+        % \textstyle (\bigwedge_{\aEv\in\aEvs}\lnot\cForm_\aEv)
+        \limplies 
+        \bForm[\aExp/\aLoc][\FALSE/\Q{\aLoc}]
+      \end{aligned}
+    \end{math}
+    % \item
+    %   \begin{math}    
+    %     (\forall\aEv\in\aEvs\setminus\bEvs)
+    %   \end{math}
+    %   $\aTr{\bEvs}{\bForm}$ implies
+    %   \begin{math}
+    %     \cForm_\aEv
+    %     \limplies {
+    %     \bForm
+    %     [\aExp/\aLoc]
+    %       %     \DS{\aLoc}{\amode}
+    %       %     [\FALSE/\Q{}]
+    %   }
+    %   \end{math}
+    % \item
+    %   $\aTr{\bEvs}{\bForm}$ implies
+    %   \begin{math}
+    %     (\!\not\exists\aEv\in\aEvs \suchthat \cForm_\aEv)
+    %     \limplies {
+    %     \bForm
+    %     [\aExp/\aLoc]
+    %       %     \DS{\aLoc}{\amode}
+    %       %     [\FALSE/\Q{}]
+    %   }
+    %   \end{math}.
+  \item \label{write-term-ca}
+    \begin{math}
+      \aTerm \riff
+      \emptyForm
+      %\PBR{\bigvee_{\aEv\in\aEvs}\cForm_\aEv}
+      \land
+      \PBR{\bigwedge_{\aEv\in\aEvs}\cForm_\aEv \limplies \aExp{=}\aVal_\aEv}.
+    \end{math}
+    % \stepcounter{enumi}
+    % \item[] \labeltext[\textsc{w}5]{}{write-term-ca}
+    %   \begin{enumerate}[leftmargin=0pt]
+    %   \item \label{write-term-nonempty-ca}
+    %     $\aTerm \riff \cForm_\aEv \limplies \aExp{=}\aVal_\aEv$,
+    %   \item \label{write-term-empty-ca}
+    %     $\aTerm \riff \bigvee_{\aEv\in\aEvs}\cForm_\aEv$.
+    %   \end{enumerate}
+  \end{enumerate}
   \end{multicols}
 
   \medskip
   \noindent
+  \begin{minipage}{1.0\linewidth}
   If $\aPS \in \sLOAD[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]$ then
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$ 
   $(\exists\emptyForm\in\Formulae)$
-  %\begin{multicols}{2}
+  \begin{multicols}{2}
   \begin{enumerate}[topsep=0pt,label=(\textsc{r}\arabic*),ref=\textsc{r}\arabic*]
   \item \label{read-E-ca}
     $\cForm$ partitions $\emptyForm$,
+    %if $\cForm_\bEv\land\cForm_\aEv$ is satisfiable then $\bEv=\aEv$,
   \item \label{read-lambda-ca}
     $\labelingAct(\aEv) = \DR[\amode]{\aLoc}[\ascope]{\aVal_\aEv}[\aThrd]$
   \item \label{read-kappa-ca}
     \begin{math}
-      \labelingForm(\aEv) \riff
+      \labelingForm(\aEv) \riff      
       \cForm_\aEv
+      \land\Q{\aLoc}
     \end{math},
-  \item   \label{read-tau-ca}
-    % \begin{math}
-    %   \aTr{\bEvs}{\bForm}
-    % \end{math}
-    % \\
+  \item \label{read-tau-ca}
     \begin{math}
       \begin{aligned}[t]
-      \aTr{\bEvs}{\bForm}
-        &\riff
-        \textstyle\bigwedge_{\aEv\in\aEvs\cap\bEvs}
+        (\forall\bReg)
+        \aTr{\bEvs}{\bForm} \riff
+        &\textstyle\bigwedge_{\aEv\in\aEvs\cap\bEvs}
         \cForm_\aEv
-        \limplies (\aVal_\aEv{=}\uReg{\aEv})
+        \limplies \aVal_\aEv{=}\uReg{\aEv}
         \limplies \bForm[\uReg{\aEv}/\aReg]
-        \\[-1ex]
-        &\land        
-        \textstyle\bigwedge_{\aEv\in\aEvs\setminus\bEvs}
+        \\[-.5ex]
+        \land
+        &\textstyle\bigwedge_{\aEv\in\aEvs\setminus\bEvs}
         \cForm_\aEv 
         \limplies
         \PBR{\aVal_\aEv{=}\uReg{\aEv} \lor \aLoc{=}\uReg{\aEv}}
         \limplies
         \bForm[\uReg{\aEv}/\aReg]
-        \\[-1ex]
-        &\land        
+        \\[-.5ex]
+        \land
+        &
         \lnot\emptyForm
+        % \textstyle (\bigwedge_{\aEv\in\aEvs}\lnot\cForm_\aEv)
         \limplies 
-        (\forall\bReg)
-        \bForm[\bReg/\aReg],
+        \bForm[\bReg/\aReg]
       \end{aligned}
     \end{math}
-  %   \stepcounter{enumi}
-  % \item[] \labeltextX{4}{r}{read-tau-ca}
+    \columnbreak
+  % \item[] \labeltext[\textsc{r}4]{}{read-tau-ca}
   %   \begin{enumerate}[leftmargin=0pt]
   %   \item \label{read-tau-dependent-ca}
   %     \begin{math}
@@ -843,6 +927,7 @@ adopt the following conventions:
   %     \end{math}
   %     \begin{math}
   %       \aTr{\bEvs}{\bForm} \riff 
+  %       % (\!\not\exists\aEv\in\aEvs \suchthat \cForm_\aEv)
   %       (\bigwedge_{\aEv\in\aEvs}\lnot\cForm_\aEv)
   %       \limplies 
   %       \bForm[\bReg/\aReg],
@@ -852,18 +937,60 @@ adopt the following conventions:
     \item[] \labeltext[\textsc{r}5]{}{read-term-ca}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{read-term-nonempty-ca}
-        if $\amode\lemode\mRLX$ then $\aTerm \riff \TRUE$. 
+        if $\amode\lemode\mRLX$ then $\aTerm \riff \TRUE$,
       \item \label{read-term-empty-ca}
         if $\amode\gemode\mACQ$ then
         \begin{math}
           \aTerm \riff
-          \emptyForm
+          \emptyForm.
+          %\bigvee_{\aEv\in\aEvs}\cForm_\aEv.
         \end{math}
       \end{enumerate}      
   % \item \label{read-term-ca}
   %   if $\aEvs=\emptyset$ and $\amode\neq\mRLX$ then $\aTerm \riff \FALSE$. 
   \end{enumerate}
-  %\end{multicols}
+  % \begin{multicols}{2}
+  %   \noindent
+  %   And either
+  %   \begin{enumerate}[topsep=0pt,label=(\textsc{r}\arabic*),ref=\textsc{r}\arabic*]
+  %     \setcounter{enumi}{1}
+  %   \item \label{read-lambda-x}
+  %     $\labelingAct(\aEv) = \DR[\amode]{\aLoc}[\ascope]{\aVal_\aEv}[\aThrd]$
+  %   \item \label{read-kappa-x}
+  %     \begin{math}
+  %       \labelingForm(\aEv) \riff
+  %       \cForm_\aEv
+  %     \end{math},
+  %   \end{enumerate}
+  %   or $\amode\neq\mRLX$ and
+  %   \begin{enumerate}[topsep=0pt,label=(\textsc{d}\arabic*),ref=\textsc{d}\arabic*]
+  %     \setcounter{enumi}{1}
+  %   \item \label{read-lambda-x}
+  %     $\labelingAct(\aEv) = \DR[\mRLX]{\aLoc}[\ascope]{\aVal_\aEv}[\aThrd]$
+  %   \item \label{read-kappa-x}
+  %     \begin{math}
+  %       \labelingForm(\aEv) \riff
+  %       \cForm_\aEv\land \aLoc{=}\aVal_\aEv
+  %     \end{math},
+  %   \end{enumerate}
+  \end{multicols}
+  \end{minipage}
+  % \medskip
+  % Could make \textsc{d}4b:
+  % \begin{math}
+  %   (\forall\aEv\in\aEvs\setminus\bEvs)
+  % \end{math}
+  % \begin{math}
+  %   \aTr{\bEvs}{\bForm} \riff
+  %   \cForm_\aEv 
+  %   \limplies
+  %   \PBR{\aVal_\aEv{=}\uReg{\aEv} \land \aLoc{=}\uReg{\aEv}}
+  %   \limplies
+  %   \bForm[\uReg{\aEv}/\aReg][\uReg{\aEv}/\aLoc]
+  % \end{math},
+  % \medskip Similarly, let $\frf{\semca{}}$ be defined as for $\frf{\semrr{}}$
+  % in \refdef{def:sem:frf}, with these definitions of $\sSTORE{}{}$ and
+  % $\sLOAD{}{}$.
 \end{definition}
 
 \subsection{Address Calculation and If-closure}
@@ -871,13 +998,15 @@ adopt the following conventions:
 
 \begin{definition}
   \label{def:semcaaddr}
+  %Let $\semcaaddr{}$ be defined as in \reffig{fig:seq}, changing $\sSTORE{}{}$ and $\sLOAD{}{}$:
+
   \noindent
   If $\aPS \in \sSTORE[\amode]{\cExp}[\ascope]{\aExp}[\aThrd]$ then
-  $(\exists\cVal:\aEvs\fun\Val)$%
-  $(\exists\aVal:\aEvs\fun\Val)$%
-  $(\exists\cForm:\aEvs\fun\Formulae)$%
+  $(\exists\cVal:\aEvs\fun\Val)$
+  $(\exists\aVal:\aEvs\fun\Val)$
+  $(\exists\cForm:\aEvs\fun\Formulae)$
   $(\exists\emptyForm\in\Formulae)$
-  %\begin{multicols}{2}
+  \begin{multicols}{2}
     \begin{enumerate}[topsep=0pt,label=(\textsc{w}\arabic*),ref=\textsc{w}\arabic*]
     \item \label{write-E-ca-addr}
       $\cForm$ partitions $\emptyForm$,
@@ -891,85 +1020,84 @@ adopt the following conventions:
         \land \cExp{=}\cVal_\aEv
         \land \aExp{=}\aVal_\aEv
       \end{math},      
-    \item \label{write-tau-ca-addr}
+    \item
     \begin{math}
+      (\forall\dVal)
       \begin{aligned}[t]
-      \aTr{\bEvs}{\bForm}
-        &\riff
-        \textstyle\bigwedge_{\aEv\in\aEvs}
+        \aTr{\bEvs}{\bForm} \riff
+        &\textstyle\bigwedge_{\aEv\in\aEvs}
         \cForm_\aEv
-        \limplies (\cExp{=}\cVal_\aEv)
+        \limplies (\cExp{=}\cVal)
         \limplies 
-        \bForm[\aExp/\REF{\cVal_\aEv}]
-        \\[-1ex]
-        &\land        
-        \lnot\emptyForm
-        \limplies 
-        (\forall\dVal)
-        (\cExp{=}\dVal)
-        \limplies 
-        \bForm
-        [\aExp/\REF{\dVal}],
-        \end{aligned}
-    \end{math}
-      
-    %  \stepcounter{enumi}
-    % \item[] \labeltextX{4}{w}{write-tau-ca-addr}
-    %   \begin{enumerate}[leftmargin=0pt]
-    %   \item \label{write-tau-dep-ca-addr}
-    %     \begin{math}
-    %       \aTr{\bEvs}{\bForm} \riff 
-    %       \cForm_\aEv
-    %       \limplies (\cExp{=}\cVal)
-    %       \limplies 
-    %       \bForm[\aExp/\REF{\cVal}]
-    %     \end{math},
-    %   \item \label{write-tau-empty-ca-addr}
-    %     \begin{math}
-    %       (\forall\dVal)
-    %     \end{math}
-    %     \\
-    %     \begin{math}
-    %       \aTr{\bEvs}{\bForm} \riff 
-    %       (\bigwedge_{\aEv\in\aEvs}\lnot\cForm_\aEv)
-    %       \limplies (\cExp{=}\dVal)
-    %       \limplies 
-    %       \bForm
-    %       [\aExp/\REF{\dVal}]
-    %     \end{math}  
-    %   \end{enumerate}  
-    \item \label{write-term-ca-addr}
-      \begin{math}        
-        \aTerm \riff
-        % (\bigvee_{\aEv\in\aEvs}\cForm_\aEv)
-        % \land
-        \emptyForm
+        \bForm[\aExp/\aLoc][\aExp{=}\aVal_\aEv/\Q{\aLoc}]
+        \\[-.5ex]
         \land
-        \bigwedge_{\aEv\in\aEvs}
-        \cForm_\aEv
-        \limplies
-        \PBR{
-          \cExp{=}\cVal_\aEv \land\aExp{=}\aVal_\aEv
-        }.
+        &
+        \lnot\emptyForm
+        %\textstyle (\bigwedge_{\aEv\in\aEvs}\lnot\cForm_\aEv)
+        \limplies (\cExp{=}\dVal)
+        \limplies 
+        \bForm[\aExp/\aLoc][\FALSE/\Q{\aLoc}]
+      \end{aligned}
+    \end{math}
+    \columnbreak
+    % \stepcounter{enumi}
+    % \item[] \labeltext[\textsc{w}4]{}{write-tau-ca-addr}
+      % \begin{enumerate}[leftmargin=0pt]
+      % \item \label{write-tau-dep-ca-addr}
+      %   \begin{math}
+      %     \aTr{\bEvs}{\bForm} \riff 
+      %     \cForm_\aEv
+      %     \limplies (\cExp{=}\cVal)
+      %     \limplies 
+      %     \bForm[\aExp/\REF{\cVal}]
+      %   \end{math},
+      % \item \label{write-tau-empty-ca-addr}
+      %   \begin{math}
+      %     (\forall\dVal)
+      %   \end{math}
+      %   \begin{math}
+      %     \aTr{\bEvs}{\bForm} \riff 
+      %     % (\!\not\exists\aEv\in\aEvs \suchthat \cForm_\aEv)
+      %     (\bigwedge_{\aEv\in\aEvs}\lnot\cForm_\aEv)
+      %     \limplies (\cExp{=}\dVal)
+      %     \limplies 
+      %     \bForm
+      %     [\aExp/\REF{\dVal}]
+      %   \end{math}  
+      % \end{enumerate}  
+    \item \label {write-term-ca-addr}
+      \begin{math}
+        \aTerm \riff
+        \emptyForm
+        % \PBR{\bigvee_{\aEv\in\aEvs}\cForm_\aEv}
+        \land
+        \PBR{\bigwedge_{\aEv\in\aEvs}\cForm_\aEv \limplies \cExp{=}\cVal_\aEv \land\aExp{=}\aVal_\aEv}.
       \end{math}
-    %   \stepcounter{enumi}
-    % \item[] \labeltextX{5}{w}{write-term-ca-addr}
+    % \stepcounter{enumi}
+    % \item[] \labeltext[\textsc{w}5]{}{write-term-ca-addr}
     %   \begin{enumerate}[leftmargin=0pt]
     %   \item \label{write-term-nonempty-ca-addr}
     %     $\aTerm \riff \cForm_\aEv \limplies \cExp{=}\cVal_\aEv \land \aExp{=}\aVal_\aEv$,
     %   \item \label{write-term-empty-ca-addr}
-    %     $\aTerm \riff \bigvee_{\aEv\in\aEvs}\cForm_\aEv$.
+    %     \begin{math}
+    %       \aTerm \riff
+    %       \emptyForm.
+    %       %\bigvee_{\aEv\in\aEvs}\cForm_\aEv.
+    %     \end{math}
     %   \end{enumerate}
     \end{enumerate}
-  %\end{multicols}
+  \end{multicols}
 
   \medskip
   \noindent
+  \begin{minipage}{1.0\linewidth}
   If $\aPS \in \sLOAD[\amode]{\aReg}[\ascope]{\cExp}[\aThrd]$ then
   $(\exists\cVal:\aEvs\fun\Val)$
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$ 
   $(\exists\emptyForm\in\Formulae)$
+  \begin{multicols}{2}
   \begin{enumerate}[topsep=0pt,label=(\textsc{r}\arabic*),ref=\textsc{r}\arabic*]
   \item \label{read-E-ca-addr}
     $\cForm$ partitions $\emptyForm$,
@@ -981,34 +1109,36 @@ adopt the following conventions:
       \labelingForm(\aEv) \riff
       \cForm_\aEv
       \land \cExp{=}\cVal_\aEv
+      \land \Q{\REF{\cVal}}
     \end{math},
   \item \label{read-tau-ca-addr}
     \begin{math}
       \begin{aligned}[t]
-      \aTr{\bEvs}{\bForm}
-        &\riff
-        \textstyle\bigwedge_{\aEv\in\aEvs\cap\bEvs}
+        (\forall\bReg)
+        \aTr{\bEvs}{\bForm} \riff
+        &\textstyle\bigwedge_{\aEv\in\aEvs\cap\bEvs}
         \cForm_\aEv
         \limplies (\cExp{=}\cVal_\aEv\limplies\aVal_\aEv{=}\uReg{\aEv})
         \limplies \bForm[\uReg{\aEv}/\aReg]
-        \\[-1ex]
-        &\land        
-        \textstyle\bigwedge_{\aEv\in\aEvs\setminus\bEvs}
+        \\[-.5ex]
+        \land
+        &\textstyle\bigwedge_{\aEv\in\aEvs\setminus\bEvs}
         \cForm_\aEv 
         \limplies
         \PBR{(\cExp{=}\cVal_\aEv\limplies\aVal_\aEv{=}\uReg{\aEv}) \lor (\cExp{=}\cVal_\aEv\limplies\REF{\cVal}{=}\uReg{\aEv})}
         \limplies
         \bForm[\uReg{\aEv}/\aReg]
-        \\[-1ex]
-        &\land        
+        \\[-.5ex]
+        \land
+        &
         \lnot\emptyForm
+        %\textstyle (\bigwedge_{\aEv\in\aEvs}\lnot\cForm_\aEv)
         \limplies 
-        (\forall\bReg)
         \bForm[\bReg/\aReg],
       \end{aligned}
     \end{math}
-  %  \stepcounter{enumi}
-  % \item[] \labeltextX{4}{r}{read-tau-ca-addr}
+  % \stepcounter{enumi}
+  % \item[] \labeltext[\textsc{r}4]{}{read-tau-ca-addr}
   %   \begin{enumerate}[leftmargin=0pt]
   %   \item \label{read-tau-dependent-ca-addr}
   %     \begin{math}
@@ -1043,21 +1173,28 @@ adopt the following conventions:
   %       \bForm[\bReg/\aReg],
   %     \end{math}  
   %   \end{enumerate}  
+    \columnbreak
       \stepcounter{enumi}
-    \item[] \labeltext[\textsc{r}5]{}{read-term-ca}
+    \item[] \labeltext[\textsc{r}5]{}{read-term-ca-addr}
       \begin{enumerate}[leftmargin=0pt]
-      \item \label{read-term-nonempty-ca}
-        if $\amode\lemode\mRLX$ then $\aTerm \riff \TRUE$. 
-      \item \label{read-term-empty-ca}
+      \item \label{read-term-nonempty-ca-addr}
+        if $\amode\lemode\mRLX$ then $\aTerm \riff \TRUE$,
+      \item \label{read-term-empty-ca-addr}
         if $\amode\gemode\mACQ$ then
         \begin{math}
           \aTerm \riff
-          \emptyForm
+          \emptyForm.
+          %\bigvee_{\aEv\in\aEvs}\cForm_\aEv.
         \end{math}
       \end{enumerate}      
   % \item \label{read-term-ca-addr}
   %   if $\aEvs=\emptyset$ and $\amode\neq\mRLX$ then $\aTerm \riff \FALSE$. 
   \end{enumerate}
+  \end{multicols}
+  \end{minipage}
+  % \medskip Similarly, let $\frf{\semaddr{}}$ be defined as for $\frf{\semrr{}}$
+  % in \refdef{def:sem:frf}, with these definitions of $\sSTORE{}{}$ and
+  % $\sLOAD{}{}$.
 \end{definition}
 
 \begin{definition}
@@ -1093,160 +1230,6 @@ adopt the following conventions:
   \end{enumerate}
 \end{definition}
 
-
-\section{Properties}
-
-\begin{lemma}
-  \label{lem:monoid}
-  \begin{enumerate*}[label=(\alph*),ref=\alph*]
-  \item \label{monoid:unit}
-    \begin{math}
-      \aPSS
-      =
-      \xLPARP{\aPSS}{\sSKIP}
-      =
-      \xSEMIP{\aPSS}{\sSKIP}
-      =
-      \xSEMIP{\sSKIP}{\aPSS}.
-    \end{math}
-
-  \\\item \label{monoid:par}
-    \begin{math}
-      \xLPAR{\xLPARP{\aPSS_1}{\aPSS_2}}{\aPSS_3}
-      =
-      \xLPAR{\aPSS_1}{\xLPARP{\aPSS_2}{\aPSS_3}}.
-    \end{math}
-
-  \\\item \label{monoid:seq}
-    \begin{math}
-      \xSEMI{\xSEMIP{\aPSS_1}{\aPSS_2}}{\aPSS_3}
-      =
-      \xSEMI{\aPSS_1}{\xSEMIP{\aPSS_2}{\aPSS_3}}.
-    \end{math}
-
-  \\\item
-    \begin{math} \label{monoid:ifelse:if:if}
-      \xIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}
-      =
-      \xSEMI{
-        \xIFTHEN{\aForm}{\aPSS_1}{}
-      }{
-        \xIFTHEN{\lnot\aForm}{\aPSS_2}{}
-      }
-      =
-      \xSEMI{
-        \xIFTHEN{\lnot\aForm}{\aPSS_2}{}
-      }{
-        \xIFTHEN{\aForm}{\aPSS_1}{}
-      }.
-    \end{math}
-
-  \\\item \label{monoid:if:dead}
-    \begin{math}
-      \xIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}
-      =
-      \aPSS_1
-    \end{math}
-    if $\aForm$ is a tautology.
-
-  \\\item \label{monoid:if:if}
-    \begin{math}
-      \xIFTHEN{\aForm}{
-        \xIFTHEN{\bForm}{\aPSS}{}
-      }{}
-      =
-      \xIFTHEN{\aForm\land\bForm}{\aPSS}{}.
-    \end{math}
-
-  \\\item \label{monoid:if:seq}
-    \begin{math}
-      \xIFTHEN{\aForm}{
-        \xSEMI{\aPSS_1}{\aPSS_3}
-      }{
-        \xSEMI{\aPSS_2}{\aPSS_3}
-      }
-      \supseteq
-      \xSEMI{
-        \xIFTHEN{\aForm}{\aPSS_1}{\aPSS_2}
-      }{
-        \aPSS_3
-      }.
-    \end{math}
-
-  \\\item \label{monoid:seq:if}
-    \begin{math}
-      \xIFTHEN{\aForm}{
-        \xSEMI{\aPSS_1}{\aPSS_2}
-      }{
-        \xSEMI{\aPSS_1}{\aPSS_3}
-      }
-      \supseteq
-      \xSEMI{
-        \aPSS_1
-      }{
-        \xIFTHEN{\aForm}{\aPSS_2}{\aPSS_3}
-      }.
-    \end{math}
-
-  \\\item \label{monoid:if:elim}
-    \begin{math}
-      \xIFTHEN{\aForm}{\aPSS}{\aPSS}
-      \supseteq
-      \aPSS.
-    \end{math}
-  \end{enumerate*}      
-  \vspace{-.5\baselineskip}
-  \begin{proof}
-    Straightforward calculation.
-    \eqref{monoid:unit} requires \ref{pom-term-tau} for
-    the termination condition in $\xSEMIP{\aPSS}{\sSKIP}$.
-
-    \eqref{monoid:seq} requires both
-    conjunction closure (\ref{tr-and}, for the termination condition) and disjunction
-    closure (\ref{tr-or}, for the predicate transformers themselves).
-
-    \eqref{monoid:ifelse:if:if} requires \ref{seq-delay-sync} and \ref{seq-delay-co} not impose order
-    when $\labelingForm_1(\bEv) \land \labelingForm_2(\aEv)$ is
-    unsatisfiable, which in turn requires that $\labelingForm$ calculates
-    \emph{weakest} preconditions, rather than simple preconditions (see \cite{semicolon}).
-
-    \eqref{monoid:if:dead} requires \ref{pom-kappa-sat}.
-
-    In \textsection\ref{sec:semca}, we refine the semantics to validate the
-    reverse inclusions for \eqref{monoid:if:seq}, \eqref{monoid:seq:if}, and
-    \eqref{monoid:if:elim}.
-  \end{proof}
-\end{lemma}
-\begin{definition}
-  \label{def:augment}
-  $\aPS_2$ is an \emph{augment} of $\aPS_1$ if
-  \begin{multicols}{4}
-    \begin{enumerate}
-    \item $\aEvs_2=\aEvs_1$,
-    \item $\labelingAct_2(\aEv)=\labelingAct_1(\aEv)$,
-    \item $\labelingForm_2(\aEv) \riff \labelingForm_1(\aEv)$,
-    \item $\aTr[2]{\bEvs}{\bForm}\riff \aTr[1]{\bEvs}{\bForm}$,
-    \item $\aTerm[2] \riff \aTerm[1]$,
-    \item ${\rrfx_2}\supseteq{\rrfx_1}$,
-    \item ${\le_2}\supseteq{\le_1}$.
-    \end{enumerate}
-  \end{multicols}
-\end{definition}
-\begin{lemma}
-  If $\aPS_1\in\sem{\aCmd}$ and $\aPS_2$  augments $\aPS_1$ then $\aPS_2\in\sem{\aCmd}$.
-
-  \vspace{-.5\baselineskip}
-  \begin{proof}
-    Induction on the definition of $\sem{}$.
-  \end{proof}
-\end{lemma}
-
-
-% A \emph{test}, $\aTest$, is statement that may write location $0$. 
-% A \emph{user program}, $\aUser$, is a statement that never writes location $0$.
-% We define an equivalence using may-testing.  Let $\testThrd$ be a
-% distinguished thread id for tests.  We require that $\testThrd$ does not
-% appear in commands.
 
 \section{Dead Store Elimination, Store Forwarding, and Monotonicity}
 
@@ -1308,9 +1291,8 @@ It does not validate:
 %     \fmerge{\aAct}{\bAct} &= \emptyset, \textotherwise
 %   \end{align*}
 % \end{definition}  
-As noted in \textsection\ref{sec:ex:term}, the semantics of \reffig{fig:sem}
-validates elimination of irrelevant relaxed reads.  In
-\textsection\ref{sec:semreg}, we discussed redundant read elimination.
+The semantics of \reffig{fig:sem}
+validates elimination of irrelevant relaxed reads and redundant reads.
 \reffig{fig:sem} also validates elimination of writes of the same value.
 However, \reffig{fig:sem} does not validate general write elimination, where,
 for example, $(\PW{x}{1}\SEMI\PW{x}{2})$ is refined to $\PW{x}{2}$.
@@ -1416,7 +1398,7 @@ although this is considered safe.
 
 Then we can replace \ref{seq-lambda}-\ref{seq-kappa} in \reffig{fig:sem} by:
 \begin{enumerate}[topsep=0pt,label=(\textsc{s}\arabic*),ref=\textsc{s}\arabic*]
-\item[] \setcounter{enumi}{\value{lambda}} \labeltextX{2}{s}{seq-lambda-merge}
+\item[] \setcounter{enumi}{\value{lambda}} \labeltextX{2}{s}{seq-lambda-mergex}
   \begin{enumerate}[leftmargin=0pt]
   \item \label{seq-lambda-merge1x}
     if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labeling(\aEv)=\labeling_1(\aEv)$,
@@ -1425,7 +1407,7 @@ Then we can replace \ref{seq-lambda}-\ref{seq-kappa} in \reffig{fig:sem} by:
   \item \label{seq-lambda-merge12x}
     if $\aEv\in\aEvs_1\cap\aEvs_2$ then $\labeling(\aEv)= \fmerge{\labeling_1(\aEv)}{\labeling_2(\aEv)}$,
   \end{enumerate}
-\item[] \setcounter{enumi}{\value{kappa}} \labeltextX{3}{s}{seq-kappa-merge}
+\item[] \setcounter{enumi}{\value{kappa}} \labeltextX{3}{s}{seq-kappa-mergex}
   \begin{enumerate}[leftmargin=0pt]
   \item \label{seq-kappa-merge1x}
     if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labelingForm(\aEv) \riff \labelingForm_1(\aEv)$,
