@@ -7,7 +7,7 @@
   \medskip
 
   \noindent
-  If $\aPS \in \sLPAR{\aPSS_1}{\aPSS_2}$ then  
+  If $\aPS \in \sPAR{\aPSS_1}{\aPSS_2}$ then  
   $(\exists\aPS_1\in\aPSS_1)$ $(\exists\aPS_2\in\aPSS_2)$
   \begin{multicols}{2}
     \begin{enumerate}[topsep=0pt,label=(\textsc{p}\arabic*),ref=\textsc{p}\arabic*]
@@ -21,7 +21,7 @@
       \item \label{par-kappa2} if $\aEv\in\aEvs_2$ then $\labelingForm(\aEv) \riff \labelingForm_2(\aEv)$,
       \end{enumerate}
     \item \label{par-tau}
-      $\aTr{\bEvs}{\bForm} \riff \aTr[1]{\bEvs}{\bForm}$,
+      $\aTr{\bEvs}{\bForm} \riff \aTr[2]{\bEvs}{\bForm}$,
     \item \label{par-term}
       $\aTerm \riff \aTerm[1]\land\aTerm[2]$,
     \item \label{par-ledep}
@@ -47,7 +47,7 @@
       \labeltextXX{6}{s}{seq-ledep}
       \labeltextXX{7}{s}{seq-lesync}
       \labeltextXX{8}{s}{seq-leloc}
-      \labeltextXX{9}{s}{seq-rmw} as for $\sLPAR{}{}$,
+      \labeltextXX{9}{s}{seq-rmw} as for $\sPAR{}{}$,
     \item[] \setcounter{enumi}{\value{kappa}} \labeltextX{3}{s}{seq-kappa}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{seq-kappa1}
@@ -100,7 +100,7 @@
       \labeltextXX{6}{i}{if-ledep}
       \labeltextXX{7}{i}{if-lesync}
       \labeltextXX{8}{i}{if-leloc}
-      \labeltextXX{9}{i}{if-rmw} as for $\sLPAR{}{}$,
+      \labeltextXX{9}{i}{if-rmw} as for $\sPAR{}{}$,
     \item[] \setcounter{enumi}{\value{kappa}} \labeltextX{4}{i}{if-kappa}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{if-kappa1}
@@ -211,7 +211,8 @@
     \item[] \setcounter{enumi}{\value{tau}} \labeltextX{4}{r}{read-tau}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{read-tau-dep}
-        if $\aEv\in\aEvs$ and $\aEv\in\bEvs$ then
+        if $\aEv\in\aEvs\cap\bEvs$ then
+        %if $\aEv\in\aEvs$ and $\aEv\in\bEvs$ then
         % if $\aEvs=\{\aEv\}$ %$\aEvs\neq\emptyset$
         % and $(\aEvs\cap\bEvs)\neq\emptyset$ then
         \begin{math}
@@ -220,7 +221,8 @@
           \limplies \bForm[\uReg{\aEv}/\aReg]
         \end{math},    
       \item \label{read-tau-ind}
-        if $\aEv\in\aEvs$ and $\aEv\notin\bEvs$ then
+        if $\aEv\in\aEvs\setminus\bEvs$ then
+        %if $\aEv\in\aEvs$ and $\aEv\notin\bEvs$ then
         % if $\aEvs=\{\aEv\}$ %$\aEvs\neq\emptyset$
         % and $(\aEvs\cap\bEvs)=\emptyset$ then
         \begin{math}
@@ -291,7 +293,7 @@
     \begin{aligned}
       \sem[\aThrd]{\SKIP} &= \sSKIP 
       \\
-      \sem[\aThrd]{\aCmd_1 \LPAR[\bThrd] \aCmd_2} &= \sLPAR{\sem[\aThrd]{\aCmd_1}}{\sem[\bThrd]{\aCmd_2}}
+      \sem[\aThrd]{\aCmd_1 \RPAR[\bThrd] \aCmd_2} &= \sPAR{\sem[\bThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
       \\
       \sem[\aThrd]{\aCmd_1 \SEMI \aCmd_2} &= \sSEMI{\sem[\aThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
       \\

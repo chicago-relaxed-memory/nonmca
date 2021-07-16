@@ -71,7 +71,7 @@ We model the following language.
     \BNFSEP \IF{\aExp} \THEN \aCmd_1 \ELSE \aCmd_2 \FI
     \BNFSEP \aCmd_1 \SEMI \aCmd_2
     \\[-.5ex]
-    \BNFSEP& \aCmd_1 \LPAR[\bThrd] \aCmd_2
+    \BNFSEP& \aCmd_1 \RPAR[\bThrd] \aCmd_2
     \BNFSEP \PCAS[\amode][\bmode]{\REF{\cExp}\,}[\ascope]{\aReg}{\aExp}{\bExp}
     \BNFSEP \PFADD[\amode][\bmode]{\REF{\cExp}\,}[\ascope]{\aReg}{\aExp}
     \BNFSEP \PEXCHG[\amode][\bmode]{\REF{\cExp}\,}[\ascope]{\aReg}{\aExp}
@@ -125,9 +125,9 @@ system ($\sSYS$).
 
 \emph{Commands}, aka \emph{statements}, $\aCmd$, include memory accesses at a
 given mode, as well as the usual structural constructs.  Following
-\cite{DBLP:conf/icfp/FerreiraHJ96}, $\LPAR$ denotes parallel composition.  If
-$(\aCmd_1 \LPAR[\bThrd] \aCmd_2)$ is executed with thread \ID{} $\aThrd$, then
-$\aCmd_2$ runs with \ID{} $\bThrd$ and $\aCmd_1$ continues under \ID{} $\aThrd$.
+\cite{DBLP:conf/icfp/FerreiraHJ96}, $\RPAR$ denotes parallel composition.  If
+$(\aCmd_1 \RPAR[\bThrd] \aCmd_2)$ is executed with thread \ID{} $\aThrd$, then
+$\aCmd_1$ runs with \ID{} $\bThrd$ and $\aCmd_2$ continues under \ID{} $\aThrd$.
 Top level programs run with thread \ID{} $\topThrd$.  In examples, we usually
 drop thread \ID{}s.  We use the symmetric $\PAR$ operator when there is no
 continuation after the parallel composition.
@@ -690,7 +690,8 @@ adopt the following conventions:
     \item[] \labeltext[\textsc{r}4]{}{read-tau-addr}
       \begin{enumerate}[leftmargin=0pt]
       \item \label{read-tau-dep-addr}
-        if $\aEv\in\aEvs$ and $\aEv\in\bEvs$ then
+        if $\aEv\in\aEvs\cap\bEvs$ then
+        %if $\aEv\in\aEvs$ and $\aEv\in\bEvs$ then
         % \begin{math}
         %   (\forall\aEv\in\aEvs\cap\bEvs)
         % \end{math}
@@ -700,7 +701,8 @@ adopt the following conventions:
             \limplies \bForm[\uReg{\aEv}/\aReg]
           \end{math},}
       \item \label{read-tau-ind-addr}
-        if $\aEv\in\aEvs$ and $\aEv\not\in\bEvs$ then
+        if $\aEv\in\aEvs\setminus\bEvs$ then
+        %if $\aEv\in\aEvs$ and $\aEv\not\in\bEvs$ then
         % \begin{math}
         %   (\forall\aEv\in\aEvs\setminus\bEvs)
         % \end{math}
