@@ -763,7 +763,8 @@ adopt the following conventions:
   If $\aPS \in \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]$ then
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$
-  $(\exists\emptyForm\in\Formulae)$
+  $(\exists\emptyForm\in\{\TRUE,\FALSE\})$
+  %$(\exists\emptyForm\in\Formulae)$
   \begin{multicols}{2}
   \begin{enumerate}[topsep=0pt,label=(\textsc{w}\arabic*),ref=\textsc{w}\arabic*]
   \item \label{write-E-ca}
@@ -794,9 +795,11 @@ adopt the following conventions:
       \begin{aligned}[t]
         \aTr{\bEvs}{\bForm} \riff
         &\textstyle\bigwedge_{\aEv\in\aEvs}
-        \cForm_\aEv
-        \limplies 
-        \bForm[\aExp/\aLoc][\aExp{=}\aVal_\aEv/\Q{\aLoc}]
+        \PBR{
+          \cForm_\aEv
+          \limplies 
+          \bForm[\aExp/\aLoc][\aExp{=}\aVal_\aEv/\Q{\aLoc}]
+        }
         \\[-.5ex]
         \land
         &
@@ -837,7 +840,7 @@ adopt the following conventions:
       \emptyForm
       %\PBR{\bigvee_{\aEv\in\aEvs}\cForm_\aEv}
       \land
-      \PBR{\bigwedge_{\aEv\in\aEvs}\cForm_\aEv \limplies \aExp{=}\aVal_\aEv}.
+      \bigwedge_{\aEv\in\aEvs}\PBR{\cForm_\aEv \limplies \aExp{=}\aVal_\aEv}.
     \end{math}
     % \stepcounter{enumi}
     % \item[] \labeltext[\textsc{w}5]{}{write-term-ca}
@@ -856,7 +859,8 @@ adopt the following conventions:
   If $\aPS \in \sLOAD[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]$ then
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$ 
-  $(\exists\emptyForm\in\Formulae)$
+  $(\exists\emptyForm\in\{\TRUE,\FALSE\})$
+  %$(\exists\emptyForm\in\Formulae)$
   \begin{multicols}{2}
   \begin{enumerate}[topsep=0pt,label=(\textsc{r}\arabic*),ref=\textsc{r}\arabic*]
   \item \label{read-E-ca}
@@ -876,17 +880,21 @@ adopt the following conventions:
         (\forall\bReg)
         \aTr{\bEvs}{\bForm} \riff
         &\textstyle\bigwedge_{\aEv\in\aEvs\cap\bEvs}
-        \cForm_\aEv
-        \limplies \aVal_\aEv{=}\uReg{\aEv}
-        \limplies \bForm[\uReg{\aEv}/\aReg]
+        \PBR{
+          \cForm_\aEv
+          \limplies \aVal_\aEv{=}\uReg{\aEv}
+          \limplies \bForm[\uReg{\aEv}/\aReg]
+        }
         \\[-.5ex]
         \land
         &\textstyle\bigwedge_{\aEv\in\aEvs\setminus\bEvs}
-        \cForm_\aEv 
-        \limplies
-        \PBR{\aVal_\aEv{=}\uReg{\aEv} \lor \aLoc{=}\uReg{\aEv}}
-        \limplies
-        \bForm[\uReg{\aEv}/\aReg]
+        \PBR{
+          \cForm_\aEv 
+          \limplies
+          \PBR{\aVal_\aEv{=}\uReg{\aEv} \lor \aLoc{=}\uReg{\aEv}}
+          \limplies
+          \bForm[\uReg{\aEv}/\aReg]
+        }
         \\[-.5ex]
         \land
         &
@@ -1007,7 +1015,8 @@ adopt the following conventions:
   $(\exists\cVal:\aEvs\fun\Val)$
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$
-  $(\exists\emptyForm\in\Formulae)$
+  $(\exists\emptyForm\in\{\TRUE,\FALSE\})$
+  %$(\exists\emptyForm\in\Formulae)$
   \begin{multicols}{2}
     \begin{enumerate}[topsep=0pt,label=(\textsc{w}\arabic*),ref=\textsc{w}\arabic*]
     \item \label{write-E-ca-addr}
@@ -1028,10 +1037,12 @@ adopt the following conventions:
       \begin{aligned}[t]
         \aTr{\bEvs}{\bForm} \riff
         &\textstyle\bigwedge_{\aEv\in\aEvs}
-        \cForm_\aEv
-        \limplies (\cExp{=}\cVal)
-        \limplies 
-        \bForm[\aExp/\aLoc][\aExp{=}\aVal_\aEv/\Q{\aLoc}]
+        \PBR{
+          \cForm_\aEv
+          \limplies (\cExp{=}\cVal)
+          \limplies 
+          \bForm[\aExp/\aLoc][\aExp{=}\aVal_\aEv/\Q{\aLoc}]
+        }
         \\[-.5ex]
         \land
         &
@@ -1074,7 +1085,7 @@ adopt the following conventions:
         \emptyForm
         % \PBR{\bigvee_{\aEv\in\aEvs}\cForm_\aEv}
         \land
-        \PBR{\bigwedge_{\aEv\in\aEvs}\cForm_\aEv \limplies \cExp{=}\cVal_\aEv \land\aExp{=}\aVal_\aEv}.
+        \bigwedge_{\aEv\in\aEvs}\PBR{\cForm_\aEv \limplies \cExp{=}\cVal_\aEv \land\aExp{=}\aVal_\aEv}.
       \end{math}
     % \stepcounter{enumi}
     % \item[] \labeltext[\textsc{w}5]{}{write-term-ca-addr}
@@ -1098,7 +1109,8 @@ adopt the following conventions:
   $(\exists\cVal:\aEvs\fun\Val)$
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$ 
-  $(\exists\emptyForm\in\Formulae)$
+  $(\exists\emptyForm\in\{\TRUE,\FALSE\})$
+  %$(\exists\emptyForm\in\Formulae)$
   \begin{multicols}{2}
   \begin{enumerate}[topsep=0pt,label=(\textsc{r}\arabic*),ref=\textsc{r}\arabic*]
   \item \label{read-E-ca-addr}
@@ -1119,17 +1131,21 @@ adopt the following conventions:
         (\forall\bReg)
         \aTr{\bEvs}{\bForm} \riff
         &\textstyle\bigwedge_{\aEv\in\aEvs\cap\bEvs}
-        \cForm_\aEv
-        \limplies (\cExp{=}\cVal_\aEv\limplies\aVal_\aEv{=}\uReg{\aEv})
-        \limplies \bForm[\uReg{\aEv}/\aReg]
+        \PBR{
+          \cForm_\aEv
+          \limplies (\cExp{=}\cVal_\aEv\limplies\aVal_\aEv{=}\uReg{\aEv})
+          \limplies \bForm[\uReg{\aEv}/\aReg]
+        }
         \\[-.5ex]
         \land
         &\textstyle\bigwedge_{\aEv\in\aEvs\setminus\bEvs}
-        \cForm_\aEv 
-        \limplies
-        \PBR{(\cExp{=}\cVal_\aEv\limplies\aVal_\aEv{=}\uReg{\aEv}) \lor (\cExp{=}\cVal_\aEv\limplies\REF{\cVal}{=}\uReg{\aEv})}
-        \limplies
-        \bForm[\uReg{\aEv}/\aReg]
+        \PBR{
+          \cForm_\aEv 
+          \limplies
+          \PBR{(\cExp{=}\cVal_\aEv\limplies\aVal_\aEv{=}\uReg{\aEv}) \lor (\cExp{=}\cVal_\aEv\limplies\REF{\cVal}{=}\uReg{\aEv})}
+          \limplies
+          \bForm[\uReg{\aEv}/\aReg]
+        }
         \\[-.5ex]
         \land
         &
