@@ -336,7 +336,7 @@ Actions $\DRP{}{}$ are $\sreaddef$ actions.
     \item[{\labeltext[1]{(1)}{moral-local}}]
     $\aThrd_1=\xThrd_2$, or
     \labeltext[2]{}{moral-nonlocal}
-    \item $\amode_1,\xmode_2\neq\mWK$,
+    \item $\amode_1,\xmode_2\gemode\mRLX$,
     \item if $\ascope_1=\sCTA$ or $\xscope_2=\sCTA$ then $\aThrd_1\xcta\xThrd_2$, %and
     \item if $\ascope_1=\sGPU$ or $\xscope_2=\sGPU$ then $\aThrd_1\xgpu\xThrd_2$.
     \end{enumerate}
@@ -365,9 +365,22 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
 \subsection{Pomsets with Predicate Transformers}
 \label{sec:pomsets}
 
+\begin{definition}  
+  \label{def:labeling:consistent}
+  Let 
+  \begin{math}
+    \regForm{\labeling}=
+    \textstyle\bigwedge_{\{(\aEv,\aVal)\in(\aEvs\times\Val)\mid\labeling(\aEv)=\DRP{}{\aVal}\}}(\uReg{\aEv}{=}\aVal)
+    \textwhere \aEvs=\fdom(\labeling)
+  \end{math}.
+  
+  We say that $\aForm$ is \emph{$\labeling$-consistent} if $\aForm\land\regForm{\labeling}$ is satisfiable.
+  We say that it is \emph{$\labeling$-inconsistent} otherwise.
+\end{definition}
+
 \begin{definition}
   \label{def:trans}
-  A \emph{predicate transformer} is a %monotone
+  A \emph{$\labeling$-predicate transformer} is a %monotone
   function
   $\aTr{}{}:\Formulae\fun\Formulae$ such that
   \begin{multicols}{2}
@@ -377,20 +390,22 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
     \item \label{tr-and}
       $\aTr{}{\bForm_1\land\bForm_2}\riff\aTr{}{\bForm_1}\land\aTr{}{\bForm_2}$,    
     \item \label{tr-or}
-      $\aTr{}{\bForm_1\lor\bForm_2}\riff\aTr{}{\bForm_1}\lor\aTr{}{\bForm_2}$, 
+      $\aTr{}{\bForm_1\lor\bForm_2}\riff\aTr{}{\bForm_1}\lor\aTr{}{\bForm_2}$,
     \item \label{tr-implies}
       if $\aForm \rimplies \bForm$, then $\aTr{}{\aForm} \rimplies
-      \aTr{}{\bForm}$.
+      \aTr{}{\bForm}$,
+    \item \label{tr-false}
+      if $\bForm$ is $\labeling$-inconsistent then $\aTr{}{\bForm}$ is $\labeling$-inconsistent.
     \end{enumerate}
   \end{multicols}
 \end{definition}
 
 \begin{definition}
   \label{def:family}
-  A \emph{family of predicate transformers} for $\aEvs$ consists of a
-  predicate transformer $\aTr{\bEvs}{}$ for each $\bEvs\subseteq\AllEvents$,
-  such that if $\cEvs \cap \aEvs \subseteq \bEvs$ then
-  $\aTr{\cEvs}{\bForm} \rimplies \aTr{\bEvs}{\bForm}$.
+  A \emph{family of $\labeling$-predicate transformers} consists
+  of a $\labeling$-predicate transformer $\aTr{\bEvs}{}$ for each
+  $\bEvs\subseteq\AllEvents$, such that if $\cEvs \cap \aEvs \subseteq \bEvs$
+  then $\aTr{\cEvs}{\bForm} \rimplies \aTr{\bEvs}{\bForm}$.
 
   We write $\aTr{}{\bForm}$ as an abbreviation of $\aTr{\aEvs}{\bForm}$.
 \end{definition}
@@ -408,14 +423,15 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
     $\labeling: \aEvs \fun \Act$ defines a \emph{label} for each event,
     \makecounter{Bkappa}
   \item \label{pom-kappa} \makecounter{kappa}
-    $\labelingForm:\aEvs\fun\Formulae$ defines a \emph{precondition} for each event, such that
+    $\labelingForm:\aEvs\fun\Formulae$ defines a \emph{precondition} for each event,
+    such that
     \begin{enumerate}
     \item \label{pom-kappa-sat}
-      $\labelingForm(\aEv)$ is satisfiable,
+      $\labelingForm(\aEv)$ is $\labeling$-consistent,
     \end{enumerate}
     \makecounter{Btau}
   \item \label{pom-tau} \makecounter{tau}
-    $\aTr{}{}:2^{\AllEvents}\fun\Formulae \fun\Formulae$ is a \emph{family of predicate transformers} over $\aEvs$, 
+    $\aTr{}{}:2^{\AllEvents}\fun\Formulae \fun\Formulae$ is a \emph{family of $\labeling$-predicate transformers}, 
     \makecounter{Bterm}
   \item \label{pom-term} \makecounter{term}
     $\aTerm:\Formulae$ is a \emph{termination condition}, such that 
