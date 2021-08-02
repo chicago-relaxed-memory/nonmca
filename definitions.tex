@@ -215,11 +215,13 @@ $\rmatchesdef$,
 $\rblocksdef$, 
 $\roverlapsdef$, 
 \rsoverlapsdeftext,
-\rsfencesdeftext, 
+\rsfencesdeftext.
 We require that
 \begin{gather*}
-  {\rsmatches}\subseteq {\rmatches}\subseteq {\rblocks}\subseteq {\roverlaps}
-  \supseteq{\rsoverlaps}.
+  {\rmatches}\subseteq {\rblocks}\subseteq {\roverlaps}
+  \supseteq{\rsoverlaps}
+  \\
+  {\rsmatches}\subseteq {\rsoverlaps}\cup{\rsfences}
 \end{gather*}
 % $\rsoverlaps$ implies $\roverlaps$
 % and that 
@@ -303,14 +305,15 @@ We say $\aAct \rcodelaysdef \bAct$ if
 
 We say $\aAct \rsyncdelaysdef \bAct$ if
 \begin{math}
-  (\aAct,\bAct)\in
-  \{(\aAct,             \DW[\gemode\mREL]{}{}     )\Cc
-  (\aAct,               \DF{\gemode\fREL}        )\Cc
-  (\DR{}{},             \DF{\gemode\fACQ}        )\Cc
-  (\DR[\gemode\mACQ]{}{},\bAct                    )\Cc
-  (\DF{\gemode\fACQ},   \bAct                    )\Cc
-  (\DF{\gemode\fREL},   \DW{}{}                  )\Cc
-  (\DW[\gemode\mREL]{\aLoc}{},\DW{\aLoc}{})\}
+  (\aAct,\bAct)\in\{
+    ( \aAct                     \Cb\DW[\gemode\mREL]{}{}      )\Cc
+    ( \aAct                     \Cb\DF{\gemode\fREL}          )\Cc
+    ( \DR{}{}                   \Cb\DF{\gemode\fACQ}          )\Cc 
+    %( \DR{\aLoc}{}              \Cb\DR[\gemode\mACQ]{\aLoc}{} )\Cc
+    ( \DR[\gemode\mACQ]{}{}     \Cb\bAct                      )\Cc 
+    ( \DF{\gemode\fACQ}         \Cb\bAct                      )\Cc
+    ( \DF{\gemode\fREL}         \Cb\DW{}{}                    )\Cc
+    ( \DW[\gemode\mREL]{\aLoc}{}\Cb\DW{\aLoc}{}               )\}
 \end{math}.\footnote{For \PTX, one could additionally include
   \begin{math}
     (\DR{\aLoc}{}, \DR[\gemode\mACQ]{\aLoc}{}),
@@ -349,7 +352,8 @@ Actions $\DRP{}{}$ are $\sreaddef$ actions.
   \eqref{moral-nonlocal} apply, from the definition of $\rsoverlaps$.
 
   We say $\aAct \rsmatchesdef \bAct$ when $\aAct$ is a release, $\bAct$ is an
-  acquire, and either $\aAct\rsoverlaps \bAct$ or $\aAct\rsfences \bAct$.
+  acquire, and either $\aAct\rsoverlaps \bAct$ or $\aAct\rsfences
+  \bAct$. \todo{This looks wrong.}
 
 \end{definition}
 
@@ -365,13 +369,18 @@ $\roverlapsdef$ and $\rsfencesdef$ applies to any pair of $\fSC$ fences.
 \subsection{Pomsets with Predicate Transformers}
 \label{sec:pomsets}
 
+The semantics here includes all the features of \cite[\textsection9]{PwT}:
+Register Recycling, Register Consistency, Fences, and \RMW{}s.  We
+account for Address Calculation and If-Closure in \textsection\ref{sec:addr-if}.
+We have proposals to account for Dead Store Elimination, Store Forwarding,
+and Monotonicity in \textsection\ref{sec:merge}.
 \begin{definition}  
   \label{def:labeling:consistent}
-  Let 
+  Let $\labeling: \aEvs \fun \Act$.
+  Then we define
   \begin{math}
     \regForm{\labeling}=
     \textstyle\bigwedge_{\{(\aEv,\aVal)\in(\aEvs\times\Val)\mid\labeling(\aEv)=\DRP{}{\aVal}\}}(\uReg{\aEv}{=}\aVal)
-    \textwhere \aEvs=\fdom(\labeling)
   \end{math}.
   
   We say that $\aForm$ is \emph{$\labeling$-consistent} if $\aForm\land\regForm{\labeling}$ is satisfiable.
@@ -606,12 +615,45 @@ $\labelingVal(\aEv)=\aVal$.
 % We lift terminology from actions to events---for example, we say that $\aEv$
 % writes $\aLoc$ if $\labeling(\aEv)$ writes $\aLoc$.
 
-\subsection{Semantics}
 
 %\input{fig-sem.tex}
 \input{fig-sem2.tex}
 
-See \reffig{fig:sem}.
+The semantic functions are defined in \reffig{fig:sem}.
+\begin{align*}
+  \begin{aligned}
+    \sem[\aThrd]{\LET{\aReg}{\aExp}} &= \sLET{\aReg}{\aExp}
+    \\
+    \sem[\aThrd]{\PR[\amode]{\aLoc}[\ascope]{\aReg}} &= \sLOAD[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]
+    \\
+    \sem[\aThrd]{\PW[\amode]{\aLoc}[\ascope]{\aExp}} &= \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]
+    \\
+    \sem[\aThrd]{\PF[\ascope]{\fmode}} &= \sFENCE[\ascope]{\fmode}[\aThrd]
+  \end{aligned}
+  &&
+  \begin{aligned}
+    \sem[\aThrd]{\SKIP} &= \sSKIP 
+    \\
+    \sem[\aThrd]{\aCmd_1 \RPAR[\bThrd] \aCmd_2} &= \sPAR{\sem[\bThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
+    \\
+    \sem[\aThrd]{\aCmd_1 \SEMI \aCmd_2} &= \sSEMI{\sem[\aThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
+    \\
+    \sem[\aThrd]{\IF{\aExp}\THEN\aCmd_1\ELSE\aCmd_2\FI} &= \sIFTHEN{\aExp{\neq}0}{\sem[\aThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
+  \end{aligned}
+\end{align*}
+\begin{align*}
+  \sem[\aThrd]{\PCAS[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}{\bExp}}
+  &=
+  \sCAS[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}{\bExp}[\aThrd]
+  \\
+  \sem[\aThrd]{\PFADD[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}}
+  &=
+  \sFADD[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}[\aThrd]
+  \\
+  \sem[\aThrd]{\PEXCHG[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}}
+  &=
+  \sEXCHG[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}[\aThrd]
+\end{align*}
 
 In diagrams, we use different shapes and colors for arrows and events.  These
 are included only to help the reader understand why order is included.  We
@@ -626,6 +668,9 @@ adopt the following conventions:
 \item \makebox{$\bEv\xwk\aEv$} arises from \emph{blocking} \eqref{cand-leloc-block}.
 \end{itemize}
 
+\clearpage
+\section{Address Calculation and If-Closure}
+\label{sec:addr-if}
 \subsection{Address Calculation}
 \label{sec:semaddr}
 \begin{definition}
@@ -1230,567 +1275,4 @@ adopt the following conventions:
   % in \refdef{def:sem:frf}, with these definitions of $\sSTORE{}{}$ and
   % $\sLOAD{}{}$.
 \end{definition}
-
-\begin{definition}
-  Let $\sLOADP{}{}$ be defined as for $\sLOAD{}{}$, adding the constraint:
-  \begin{itemize}
-  \item[{\labeltextXX{4d}{r}{read-tau-rmw}}]
-    if $(\aEvs\cap\bEvs)=\emptyset$ then
-    \begin{math}
-      \aTr{\bEvs}{\bForm} \riff
-      \bForm.
-    \end{math}
-  \end{itemize}
-  If $\aPS\in\mathit{FADD}(\aReg,\cExp,\aExp,\amode,\bmode)$ then
-  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\cExp}}{\sSTORE[\bmode]{\cExp}{\aReg{+}\aExp}})$
-  \begin{enumerate}[topsep=0pt,label=(\textsc{u}\arabic*),ref=\textsc{u}\arabic*]
-  \item if $\labeling_1(\aEv)$ is a write then there is a read $\labeling_1(\bEv)$ such that 
-    $\labelingForm(\aEv)\rimplies\labelingForm(\bEv)$ and
-    $\bEv\xrmw\aEv$.
-  \end{enumerate}
-  If $\aPS\in\mathit{EXCHG}(\aReg,\cExp,\aExp,\amode,\bmode)$ then
-  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\cExp}}{\sSTORE[\bmode]{\cExp}{\aExp}})$
-  \begin{enumerate}[topsep=0pt,label=(\textsc{u}\arabic*),ref=\textsc{u}\arabic*]
-  \item if $\labeling_1(\aEv)$ is a write then there is a read $\labeling_1(\bEv)$ such that 
-    $\labelingForm(\aEv)\rimplies\labelingForm(\bEv)$ and
-    $\bEv\xrmw\aEv$.
-  \end{enumerate}
-  If $\aPS\in\mathit{CAS}(\aReg,\cExp,\aExp,\bExp,\amode,\bmode)$ then
-  $(\exists \aPS_1\in\sSEMI{\sLOADP[\amode]{\aReg}{\cExp}}{\sIF{\aReg{=}\aExp}\sTHEN\sSTORE[\bmode]{\cExp}{\bExp}\sELSE\sSKIP\sFI})$
-  \begin{enumerate}[topsep=0pt,label=(\textsc{u}\arabic*),ref=\textsc{u}\arabic*]
-  \item if $\labeling_1(\aEv)$ is a write then there is a read $\labeling_1(\bEv)$ such that 
-    $\labelingForm(\aEv)\rimplies\labelingForm(\bEv)$ and
-    $\bEv\xrmw\aEv$.
-  \end{enumerate}
-\end{definition}
-
-
-\section{Dead Store Elimination, Store Forwarding, and Monotonicity}
-
-We validate ``monotonicity'' by updating the rules for read, write and fence
-to include $(\exists\bmode\gemode\amode)$:
-\begin{multicols}{3}
-  \begin{enumerate}
-  \item[\eqref{read-lambda}]
-    $\labelingAct(\aEv) = \DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]$,
-  \item[\eqref{write-lambda}]
-    $\labelingAct(\aEv) = \DW[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]$,
-  \item[\eqref{fence-lambda}]
-    $\labelingAct(\aEv) = \DF[\ascope]{\bmode}[\aThrd]$.
-  \end{enumerate}
-\end{multicols}
-One could do the same for scopes.
-
-
-The semantics already validates:
-\begin{itemize}
-\item $\sem{\PW{\aLoc}{\aExp}\SEMI\PW{\aLoc}{\aExp}}\supseteq\sem{\PW{\aLoc}{\aExp}}$
-\item $\sem{\PR{\aLoc}{\bReg}\SEMI\PR{\aLoc}{\aReg}}\supseteq\sem{\PR{\aLoc}{\bReg}\SEMI\LET{\aReg}{\bReg}}$
-\item $\sem{\PR{\aLoc}{\aReg}}\supseteq\sem{\SKIP}$
-\end{itemize}
-It does not validate:
-\begin{itemize}
-\item $\sem{\PW{\aLoc}{\aExp}\SEMI\PW{\aLoc}{\bExp}}\supseteq\sem{\PW{\aLoc}{\bExp}}$
-\item $\sem{\PW{\aLoc}{\aExp}\SEMI\PR{\aLoc}{\aReg}}\supseteq\sem{\PW{\aLoc}{\aExp}\SEMI\LET{\aReg}{\aExp}}$
-\end{itemize}
-
-
-% For writes, change the label rules of sequential composition to:
-% \begin{enumerate}
-% \item %\label{par-lambda1}
-%   if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labeling(\aEv) = \labeling_1(\aEv)$, 
-% \item %\label{par-lambda2}
-%   if $\aEv\in\aEvs_2\setminus\aEvs_1$ then $\labeling(\aEv) = \labeling_2(\aEv)$,
-% \item %\label{par-lambda2}
-%   if $\aEv\in\aEvs_1\cap\aEvs_2$ then $\labeling(\aEv) \in \fmerge{\labeling_1(\aEv)}{\labeling_2(\aEv)}$.
-% \end{enumerate}
-
-% \begin{definition}
-%   %   Fences use the three point order:
-%   %   \begin{math}
-%   %     \fREL \ltmode \mSC
-%   %   \end{math}
-%   %   and 
-%   %   \begin{math}
-%   %     \fACQ \ltmode \mSC.
-%   %   \end{math}
-%   \noindent    
-%   \begin{align*}
-%     \fmerge{\DR[\amode]{\aLoc}{\aVal}}{\DR[\bmode]{\aLoc}{\aVal}} &= \{ \DR[\amode\lubmode\bmode]{\aLoc}{\aVal} \}
-%     \\
-%     \fmerge{\DW[\amode]{\aLoc}{\aVal}}{\DW[\bmode]{\aLoc}{\bVal}} &= \{ \DW[\amode\lubmode\bmode]{\aLoc}{\bVal} \}
-%     \\
-%     \fmerge{\DF{\amode}}{\DF{\bmode}} &= \{ \DF{\amode\lubmode\bmode} \}
-%     \\
-%     \fmerge{\aAct}{\bAct} &= \emptyset, \textotherwise
-%   \end{align*}
-% \end{definition}  
-The semantics of \reffig{fig:sem}
-validates elimination of irrelevant relaxed reads and redundant reads.
-\reffig{fig:sem} also validates elimination of writes of the same value.
-However, \reffig{fig:sem} does not validate general write elimination, where,
-for example, $(\PW{x}{1}\SEMI\PW{x}{2})$ is refined to $\PW{x}{2}$.
-Nor does it validate store forwarding, where, 
-for example, $(\PW{x}{1}\SEMI\PR{x}{r})$ is refined to $(\PW{x}{1}\SEMI\LET{r}{1})$.
-
-Elimination can be justified in pomset by \emph{merging} actions with
-different labels.  A list of safe merges can be found in \cite[\textsection
-E]{DBLP:conf/cgo/ChakrabortyV17} and \cite[\textsection7.1]{Kang19}.  For
-examples of unsafe merges and reorderings, see \cite[\textsection
-D]{DBLP:conf/cgo/ChakrabortyV17}.
-See also \cite[\textsection6.2]{DBLP:journals/pacmpl/ChakrabortyV19}
-
-Read-read and fence-fence merges can be handled by ``monotonicity'': allowing
-actions to put down stronger modes in the model.  Then they can merge on the
-nose.
-
-Sad: read elimination can't be done the nice way using
-\begin{math}
-  \aTr{\bEvs}{\bForm} \riff \aLoc{=}\aReg  \limplies  \bForm
-\end{math}
-for \ref{read-tau-empty} because there may be a release-acquire pair between
-the read and the matching write.
-
-Let $\fmerge{}{}:\Act\times\Act\fun\Act$ be a partial function defined as follows.
-% where $\bmode\lemode\amode$, using the order on modes from
-% \textsection\ref{sec:actions}.
-\begin{displaymath}
-  \fmerge{\aAct}{\bAct}=
-  \begin{cases}
-    \aAct &
-    \textif \aAct=\bAct
-    \textor \aAct=\DWP[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]
-    \textand \bAct=\DRP[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]
-    %\;\textand\; \bmode\lemode\amode
-    \\
-    \bAct &
-    \textif  \aAct=\bAct
-    \textor  \aAct=\DWP[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]
-    \textand \bAct=\DWP[\bmode]{\aLoc}[\ascope]{\bVal}[\aThrd]
-    %\textand \amode\lemode\bmode
-    \\
-    \text{undefined} & \textotherwise    
-  \end{cases}
-\end{displaymath}
-(If we have ``monotonicity'' then we can require $\amode=\bmode$.)
-
-% Let
-% \begin{itemize}
-% \item
-%   \begin{math}
-%     \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
-%     \DR[\amode\lubmode\bmode]{\aLoc}[\ascope\lubscope\bscope]{\aVal}[\aThrd] \}
-%   \end{math},
-% \item
-%   \begin{math}
-%     \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DW[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
-%     \DW[\amode\lubmode\bmode]{\aLoc}[\ascope\lubscope\bscope]{\aVal}[\aThrd] \}
-%   \end{math},
-% \item
-%   \begin{math}
-%     \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}}{\DR[\bmode\lemode\mRLX]{\aLoc}[\bscope\lescope\ascope]{\aVal}[\aThrd]} = \{
-%     \DW[\amode\lubmode\bmode]{\aLoc}[\ascope\lubscope\bscope]{\aVal}[\aThrd] \}
-%   \end{math},
-% \item
-%   \begin{math}
-%     \fmerge{\DF[\ascope]{\amode}[\aThrd]}{\DF[\bscope]{\bmode}[\aThrd]} = \{ \DF [\ascope\lubscope\bscope]{\amode\lubmode\bmode}[\aThrd] \}
-%   \end{math}, 
-% \item
-%   \begin{math}
-%     \fmerge{\aAct}{\bAct} = \emptyset, 
-%   \end{math}
-%   otherwise.
-% \end{itemize}
-
-% \begin{itemize}
-% \item
-%   \begin{math}
-%     \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
-%     \DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-%   \end{math},
-% \item
-%   \begin{math}
-%     \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DW[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd]} = \{
-%     \DW[\bmode]{\aLoc}[\bscope]{\aVal}[\aThrd] \}
-%   \end{math},
-% \item
-%   \begin{math}
-%     \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}}{\DR[\bmode]{\aLoc}[\bscope\lescope\ascope]{\aVal}[\aThrd]} = \{
-%     \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-%   \end{math},
-% \end{itemize}
-
-If $\aAct_0=\fmerge{\aAct_1}{\aAct_2}$, then $\aAct_1$ and $\aAct_2$ can
-coalesce, resulting in $\aAct_0$.  This allows optimizations such as
-$(\PW{x}{1}\SEMI \PW{x}{2})$ to $(\PW{x}{2})$ and
-$(\PW{x}{1}\SEMI \PR{x}{r})$ to $(\PW{x}{1}\SEMI \PR{1}{r})$.  For
-associativity of sequential composition, it is important that $\fmerge{}{}$
-always take an upper bound on the modes of the two actions.  For example, it
-would invalidate associativity to allow
-$\DWP{\aLoc}{\aVal}=\fmerge{\DW{\aLoc}{\aVal}}{\DR[\mACQ]{\aLoc}{\aVal}}$,
-although this is considered safe.
-
-Then we can replace \ref{seq-lambda}-\ref{seq-kappa} in \reffig{fig:sem} by:
-\begin{enumerate}[topsep=0pt,label=(\textsc{s}\arabic*),ref=\textsc{s}\arabic*]
-\item[] \setcounter{enumi}{\value{lambda}} \labeltextX{2}{s}{seq-lambda-mergex}
-  \begin{enumerate}[leftmargin=0pt]
-  \item \label{seq-lambda-merge1x}
-    if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labeling(\aEv)=\labeling_1(\aEv)$,
-  \item \label{seq-lambda-merge2x}
-    if $\aEv\in\aEvs_2\setminus\aEvs_1$ then $\labeling(\aEv)=\labeling_2(\aEv)$,
-  \item \label{seq-lambda-merge12x}
-    if $\aEv\in\aEvs_1\cap\aEvs_2$ then $\labeling(\aEv)= \fmerge{\labeling_1(\aEv)}{\labeling_2(\aEv)}$,
-  \end{enumerate}
-\item[] \setcounter{enumi}{\value{kappa}} \labeltextX{3}{s}{seq-kappa-mergex}
-  \begin{enumerate}[leftmargin=0pt]
-  \item \label{seq-kappa-merge1x}
-    if $\aEv\in\aEvs_1\setminus\aEvs_2$ then $\labelingForm(\aEv) \riff \labelingForm_1(\aEv)$,
-  \item \label{seq-kappa-merge2x}
-    if $\aEv\in\aEvs_2\setminus\aEvs_1$ then $\labelingForm(\aEv) \riff \labelingForm'_2(\aEv)$,
-  % \item \label{seq-kappa-merge12}
-  %   if $\aEv\in\aEvs_1\cap\aEvs_2$ then either (Correct for write-write, using if-closure) (Wrong for write-read)
-  %   \begin{itemize}
-  %   \item $\labelingForm(\aEv) \riff \labelingForm_1(\aEv)\land\labelingForm'_2(\aEv)$, or
-  %   \item $\labelingForm(\aEv) \riff \labelingForm_1(\aEv)\lor\labelingForm'_2(\aEv)$ and $\labeling(\aEv)=\labeling_1(\aEv)=\labeling_2(\aEv)$.
-  %   \end{itemize}
-  \item \label{seq-kappa-merge12x}
-    if $\aEv\in\aEvs_1\cap\aEvs_2$ then either
-    \begin{itemize}
-    \item $\labeling_1(\aEv)=\labeling(\aEv)=\labeling_2(\aEv)$ and
-      $\labelingForm(\aEv) \riff \labelingForm_1(\aEv)\lor\labelingForm'_2(\aEv)$, 
-    \item $\labeling_1(\aEv)=\labeling(\aEv)\neq\labeling_2(\aEv)$ and
-      $\labelingForm_2'(\aEv) \riff \labelingForm(\aEv) \riff \labelingForm_1(\aEv)$ 
-      (write-read),
-    \item $\labeling_1(\aEv)\neq\labeling(\aEv)=\labeling_2(\aEv)$ and
-      $\labelingForm_1(\aEv) \riff \labelingForm(\aEv) \riff \labelingForm_2'(\aEv)$ 
-      %$\labelingForm(\aEv) \riff \labelingForm_1(\aEv) \riff \labelingForm_2'(\aEv)$
-      (write-write).
-    \end{itemize}
-  \end{enumerate}
-\end{enumerate}
-
-Full merge:
-\begin{math}
-  \IF{\aExp}\THEN\PW{x}{1}\FI\SEMI\PW{x}{2}
-\end{math}
-can become
-\begin{math}
-  \PW{x}{2}.
-\end{math}
-
-Partial merge:
-\begin{math}
-  \PW{x}{1}\SEMI\IF{\aExp}\THEN\PW{x}{2}\FI
-\end{math}
-can become
-\begin{math}
-  \IF{\aExp}\THEN\PW{x}{2}\ELSE\PW{x}{1}\FI.
-\end{math}
-
-To get associativity, you need the ability to merge with multiple events.
-\begin{align*}
-  \begin{gathered}[t]
-    \PW{x}{1}\SEMI
-    \IF{\aExp}\THEN\PW{x}{2}\FI
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\lnot\aExp\mid\DW{x}{1}}{}
-        \event{b}{\aExp\mid\DW{x}{2}}{right=of a}
-      \end{tikzinline}}    
-  \end{gathered}
-  &&
-  \begin{gathered}[t]
-    \IF{\BANG\aExp}\THEN\PW{x}{2}\FI
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\lnot\aExp\mid\DW{x}{2}}{}
-      \end{tikzinline}}    
-  \end{gathered}  
-\end{align*}
-This is asymmetric.  We don't expect to merge all three events in the following:
-\begin{align*}
-  \begin{gathered}[t]
-    \IF{\BANG\aExp}\THEN\PW{x}{2}\FI
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\lnot\aExp\mid\DW{x}{2}}{}
-      \end{tikzinline}}    
-  \end{gathered}  
-  &&
-  \begin{gathered}[t]
-    \PW{x}{1}\SEMI
-    \IF{\aExp}\THEN\PW{x}{2}\FI
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\lnot\aExp\mid\DW{x}{1}}{}
-        \event{b}{\aExp\mid\DW{x}{2}}{right=of a}
-      \end{tikzinline}}    
-  \end{gathered}
-\end{align*}
-We could have a lot merging:
-\begin{align*}
-  \begin{gathered}[t]
-    \IF{\bExp}\THEN
-      \PW{x}{1}\SEMI
-      \IF{\aExp}\THEN\PW{x}{3}\FI
-    \FI
-    \SEMI  
-    \IF{\lnot\bExp}\THEN
-      \PW{x}{2}\SEMI
-      \IF{\aExp}\THEN\PW{x}{3}\FI
-    \FI
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\lnot\aExp\land\bExp\mid\DW{x}{1}}{}
-        \event{b}{\aExp\land\bExp\mid\DW{x}{3}}{right=of a}
-        \event{c}{\lnot\aExp\land\lnot\bExp\mid\DW{x}{2}}{right=of b}
-        \event{d}{\aExp\land\lnot\bExp\mid\DW{x}{3}}{right=of c}
-      \end{tikzinline}}    
-  \end{gathered}
-  &&
-  \begin{gathered}[t]
-    \IF{\BANG\aExp}\THEN\PW{x}{3}\FI
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\lnot\aExp\mid\DW{x}{3}}{}
-      \end{tikzinline}}    
-  \end{gathered}  
-\end{align*}
-
-
-
-Full merge:
-\begin{math}
-  \PW{x}{1}\SEMI\IF{\aExp}\THEN\PR{x}{r}\FI
-\end{math}
-can become
-\begin{math}
-  \PW{x}{1}\SEMI\IF{\aExp}\THEN\LET{r}{1}\FI.
-\end{math}
-
-Partial merge:
-\begin{math}
-  \IF{\aExp}\THEN\PW{x}{1}\FI\SEMI\PR{x}{r}
-\end{math}
-can become
-\begin{math}
-  \IF{\aExp}\THEN\PW{x}{1}\SEMI\LET{r}{1}\ELSE\PR{x}{r}\FI.
-\end{math}
-
-I don't think we need multi-merge for write-read.  Reads only affect the
-world via the predicate transformer.  Any conditional surrounding a read is
-baked into the predicate transformer, and so does not to persist in the
-preconditions of the actions themselves after the merge.  Consider
-\begin{math}
-  \LET{r}{1}\SEMI\PW{x}{2}\SEMI\IF{\aExp}\THEN\PR{x}{r}\FI.
-\end{math}
-This can safely transform to 
-\begin{math}
-  \LET{r}{1}\SEMI\PW{x}{2}\SEMI\IF{\aExp}\THEN\LET{r}{2}\FI.
-\end{math}
-
-In the example below, the reads should \emph{not} merge.  Although the second
-read can merge with the write.
-\begin{align*}
-  \begin{gathered}[t]
-    \IF{\BANG\aExp}\THEN\PW{x}{1}\FI\SEMI
-    \IF{\aExp}\THEN\PR{x}{r}\FI
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\lnot\aExp\mid\DW{x}{1}}{}
-        \event{b}{\aExp\mid\DR{x}{1}}{right=of a}
-      \end{tikzinline}}    
-  \end{gathered}
-  &&
-  \begin{gathered}[t]
-    \IF{\BANG\aExp}\THEN\PR{x}{s}\FI
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\lnot\aExp\mid\DR{x}{1}}{}
-      \end{tikzinline}}    
-  \end{gathered}  
-\end{align*}
-Another example:
-\begin{align*}
-  \begin{gathered}[t]
-    \PW{x}{1}\SEMI
-    \IF{\aExp}\THEN\PR{x}{r}\FI
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\DW{x}{1}}{}
-      \end{tikzinline}}    
-  \end{gathered}
-  &&
-  \begin{gathered}[t]
-    \IF{\BANG\aExp}\THEN\PR{x}{s}\FI
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\lnot\aExp\mid\DR{x}{1}}{}
-      \end{tikzinline}}    
-  \end{gathered}  
-\end{align*}
-Another example:
-\begin{align*}
-  \begin{gathered}[t]
-    \PW{x}{1}
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\DW{x}{1}}{}
-      \end{tikzinline}}    
-  \end{gathered}
-  &&
-  \begin{gathered}[t]
-    \IF{\aExp}\THEN\PR{x}{r}\FI\SEMI
-    \IF{\BANG\aExp}\THEN\PR{x}{s}\FI
-    \\
-    \hbox{\begin{tikzinline}[node distance=.5em]
-        \event{a}{\DR{x}{1}}{}
-      \end{tikzinline}}    
-  \end{gathered}  
-\end{align*}
-
-
-Idea for multi-merge.  Use $\aEvs_1'\subseteq\aEvs_1$, with a surjective function
-$\fcoalesce{}:\aEvs_1\fun\aEvs_1'$ that shows how writes merge.
-\begin{itemize}
-\item Require that $(\forall\bEv\in\aEvs_1')$ $\fcoalesce{\bEv}=\bEv$.
-% \item Require that if $\fcoalesce{\cEv}=\bEv$ then $\fcoalesce{\bEv}=\bEv$.
-% \item Thus $\aEvs_1\setminus\aEvs_1'=\{\cEv\in\aEvs_1\mid\fcoalesce{\cEv}\neq\cEv\}$. (I think)
-\item Require that if $\cEv\in(\aEvs_1\setminus\aEvs_1')$ then
-  $\fcoalesce{\cEv}\in\aEvs_2$---and therefore
-  $\fcoalesce{\cEv}\in(\aEvs_1'\cap\aEvs_2)$.
-\item Take $\aEvs=\aEvs_1'\cup\aEvs_2$.
-\end{itemize}
-Require that the writes that coalesce have disjoint preconditions.
-\begin{itemize}
-\item if $\fcoalesce{\cEv}=\fcoalesce{\cEv'}$ then $\labelingForm_1(\cEv)\land\labelingForm_1(\cEv')$ is unsatisfiable
-\end{itemize}
-Then each of them has to merge into the same write
-$\aEv\in\aEvs_2$ using the merge function and combining the predicates as
-specified above.
-
-\begin{enumerate}[topsep=0pt,label=(\textsc{s}\arabic*),ref=\textsc{s}\arabic*]
-\item[] \setcounter{enumi}{\value{lambda}} \labeltextX{2}{s}{seq-lambda-merge}
-  \begin{enumerate}[leftmargin=0pt]
-  \item \label{seq-lambda-merge1}
-    if $\aEv\in\aEvs_1'\setminus\aEvs_2$ then $\labeling(\aEv)=\labeling_1(\aEv)$,
-  \item \label{seq-lambda-merge2}
-    if $\aEv\in\aEvs_2\setminus\aEvs_1'$ then $\labeling(\aEv)=\labeling_2(\aEv)$,
-  \item \label{seq-lambda-merge12}
-    if $\aEv\in(\aEvs_1'\cap\aEvs_2)$ and $\cEv\in\aEvs_1$ and $\fcoalesce{\cEv}=\aEv$ then
-    $\labeling(\aEv)= \fmerge{\labeling_1(\cEv)}{\labeling_2(\aEv)}$,
-  \end{enumerate}
-\item[] \setcounter{enumi}{\value{kappa}} \labeltextX{3}{s}{seq-kappa-merge}
-  \begin{enumerate}[leftmargin=0pt]
-  \item \label{seq-kappa-merge1}
-    if $\aEv\in\aEvs_1'\setminus\aEvs_2$ then $\labelingForm(\aEv) \riff \labelingForm_1(\aEv)$,
-  \item \label{seq-kappa-merge2}
-    if $\aEv\in\aEvs_2\setminus\aEvs_1'$ then $\labelingForm(\aEv) \riff \labelingForm'_2(\aEv)$,
-  \item \label{seq-kappa-merge12}
-    if $\aEv\in(\aEvs_1'\cap\aEvs_2)$ then
-    \begin{itemize}
-    \item $\labelingForm(\aEv) \riff \labelingForm'_2(\aEv) \lor \bigvee_{\cEv\in\cEvs}\labelingForm_1(\cEv)$,
-      where $\cEvs=\{\cEv\in\aEvs_1\mid \fcoalesce{\cEv}=\aEv \textand \labeling_1(\cEv)=\labeling_2(\aEv)\}$,
-    \item if $\fcoalesce{\cEv}=\aEv \textand \labeling_1(\cEv)=\labeling(\aEv)\neq\labeling_2(\aEv)$ then
-      $\labelingForm_2'(\cEv) \riff \labelingForm(\aEv)$ (write-read),
-    \item if $\fcoalesce{\cEv}=\aEv \textand \labeling_1(\cEv)\neq\labeling(\aEv)=\labeling_2(\aEv)$ then
-      $\labelingForm_1(\cEv) \riff \labelingForm(\aEv)$ (write-write).
-    \end{itemize}
-  \end{enumerate}
-\end{enumerate}
-
-
-% Maybe this works for dealing with fence-fence and read-read???
-% \begin{align*}
-%   \begin{aligned}[t]
-%     \fmerge{\DW[\bmode]{\aLoc}[\ascope]{\bVal}[\aThrd]}{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
-%     &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-%     \\
-%     \fmerge{\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
-%     &= \{ \DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-%     \\
-%     \fmerge{\aAct}{\bAct} &= \emptyset, \textotherwise
-%   \end{aligned}
-%   &&
-%   \begin{aligned}[t]
-%     \fmerge{\DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]}{\DR[\bmode]{\aLoc}[\ascope]{\aVal}[\aThrd]}
-%     &= \{ \DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd] \}
-%     \\
-%     \fmerge{\DF[\ascope]{\amode}[\aThrd]}{\DF[\ascope]{\bmode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
-%     \\
-%     \fmerge{\DF[\ascope]{\bmode}[\aThrd]}{\DF[\ascope]{\amode}[\aThrd]} &= \{ \DF[\ascope]{\amode}[\aThrd] \}
-%   \end{aligned}
-% \end{align*}
-
-
-\endinput
-\subsection{Generalized access modes}
-This is an option.
-
-\begin{displaymath}
-  \begin{tikzpicture}
-    \node (wk)  at (-1, 0) {$\mathstrut\mWK$};
-    \node (rlx) at (0, 0) {$\mathstrut\mRLX$};
-    \node (ra)  at (1, 0) {$\mathstrut\mRA$};
-    \node (sc)  at (2, 0) {$\mathstrut\mSC$};
-    \node (fsc) at (3, 0) {$\mathstrut\fSC$};
-    \node (rel) at (2, -0.3) {$\mathstrut\fREL$};
-    \node (acq) at (2,  0.3) {$\mathstrut\fACQ$};
-    \draw[->](wk)to(rlx);
-    \draw[->](rlx)to(ra);
-    \draw[->](ra)to(sc);
-    \draw[->](ra)to(rel);
-    \draw[->](ra)to(acq);
-    \draw[->](sc)to(fsc);
-    \draw[->](rel)to(fsc);
-    \draw[->](acq)to(fsc);
-  \end{tikzpicture}
-\end{displaymath}
-\begin{align*}
-  \fmerge{\DF{\amode}}{\DR[\bmode]{\aLoc}{\aVal}}
-  = \fmerge{\DR[\amode]{\aLoc}{\aVal}}{\DF{\bmode}}
-  &= \{ \DR[\amode\lubmode\bmode]{\aLoc}{\aVal} \}
-  \\
-  \fmerge{\DF{\amode}}{\DW[\bmode]{\aLoc}{\bVal}}
-  = \fmerge{\DW[\amode]{\aLoc}{\bVal}}{\DF{\bmode}}
-  &= \{ \DW[\amode\lubmode\bmode]{\aLoc}{\bVal} \}
-\end{align*}
-\begin{scope}
-  \begin{align*}
-    {\reorderra}
-    &=
-    \{(\DW[\amode]{}{}, \DR[\bmode]{}{}) \mid \amode\not\gemode\mSC \lor \bmode\not\gemode\mSC\}
-    \cup\{(\DW[\amode]{}{}, \DW[\mRLX]{}{} \mid \amode\not\gemode\fREL \}
-    \\&
-    \cup\{(\DR[\amode]{}{}, \DW[\bmode]{}{}) \mid \amode=\mRLX \land \bmode=\mRLX\}
-    \cup\{(\DR[\mRLX]{}{},  \DR[\bmode]{}{}) \mid \bmode\not\gemode\fACQ \}
-    \\&
-    \cup\{(\DF{\fREL},      \DF{\fACQ}    ) \}
-    \cup\{(\DF{\fREL},      \DR[\bmode]{}{}) \}%\mid \amode=\fREL \}
-    \cup\{(\DW[\amode]{}{}, \DF{\fACQ}     ) \}%\mid \bmode=\fACQ \}
-  \end{align*}  
-\end{scope}
-In terms of reordering, $\DF{\fREL}$ is the same as $\DW[\fREL]{}{}$, and
-$\DF{\fACQ}$ is the same as $\DR[\fACQ]{}{}$.
-\begin{center}
-  \setlength{\tabcolsep}{4pt}
-  \begin{tabular}{c|ccccc|ccccc}
-    &  \multicolumn{9}{|c}{$2^{\text{nd}}$} \\
-    \hline
-    $1^{\text{st}}$
-    & $\DR[\mRLX]{}{}$  & $\DR[\mACQ]{}{}$ & $\DR[\fACQ]{}{}$& $\DR[\mSC]{}{}$  & $\DR[\fSC]{}{}$ & $\DW[\mRLX]{}{}$& $\DW[\mREL]{}{}$ & $\DW[\fREL]{}{}$& $\DW[\mSC]{}{}$& $\DW[\fSC]{}{}$\\% & $\DF{\fREL}$&$\DF{\fACQ}$ &$\DF{\fSC}$\\
-    \hline                                                                                                                                                                                                                            
-    $\DR[\mRLX]{}{}$ & \cmark            & \cmark          & \xmark          & \cmark           & \xmark           & \cmark          & \xmark          & \xmark          & \xmark         & \xmark         \\%  & \xmark      &\xmark       & \xmark    \\
-    $\DR[\mACQ]{}{}$  & \xmark            & \xmark          & \xmark          & \xmark           & \xmark           & \xmark          & \xmark          & \xmark          & \xmark         & \xmark         \\%  & \xmark      &\xmark       & \xmark    \\
-    $\DR[\fACQ]{}{}$ & \xmark            & \xmark          & \xmark          & \xmark           & \xmark           & \xmark          & \xmark          & \xmark          & \xmark         & \xmark         \\%  & \xmark      &\xmark       & \xmark    \\
-    $\DR[\mSC]{}{}$  & \xmark            & \xmark          & \xmark          & \xmark           & \xmark           & \xmark          & \xmark          & \xmark          & \xmark         & \xmark         \\%  & \xmark      &\xmark       & \xmark    \\
-    $\DR[\fSC]{}{}$ & \xmark            & \xmark          & \xmark          & \xmark           & \xmark           & \xmark          & \xmark          & \xmark          & \xmark         & \xmark         \\%  & \xmark      &\xmark       & \xmark    \\
-    \hline                                                                                                                                                                                                                           
-    $\DW[\mRLX]{}{}$ & \cmark            & \cmark          & \cmark          & \cmark           & \xmark           & \cmark          & \xmark          & \xmark          & \xmark         & \xmark         \\%  & \xmark      &\cmark       & \xmark    \\
-    $\DW[\mREL]{}{}$  & \cmark            & \cmark          & \cmark          & \cmark           & \xmark           & \cmark          & \xmark          & \xmark          & \xmark         & \xmark         \\%  & \xmark      &\cmark       & \xmark    \\
-    $\DW[\fREL]{}{}$ & \cmark            & \cmark          & \cmark          & \cmark           & \xmark           & \xmark          & \xmark          & \xmark          & \xmark         & \xmark         \\%  & \xmark      &\cmark       & \xmark    \\
-    $\DW[\mSC]{}{}$  & \cmark            & \cmark          & \cmark          & \xmark           & \xmark           & \cmark          & \xmark          & \xmark          & \xmark         & \xmark         \\%  & \xmark      &\cmark       & \xmark    \\
-    $\DW[\fSC]{}{}$ & \xmark            & \xmark          & \xmark          & \xmark           & \xmark           & \xmark          & \xmark          & \xmark          & \xmark         & \xmark         \\%  & \xmark      &\cmark       & \xmark    \\
-  \end{tabular}
-\end{center}
 

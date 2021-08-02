@@ -1,5 +1,5 @@
 \begin{figure}
-  \bookmark{Semantics of programs}
+  \bookmark{Semantic Functions}
   \raggedright
   \noindent
   If $\aPS\in\sSKIP$ then $\aEvs = \emptyset$ and
@@ -149,6 +149,34 @@
   \medskip
 
   \noindent
+  If $\aPS \in \sFENCE[\ascope]{\amode}[\aThrd]$ then
+  \begin{multicols}{2}
+    \begin{enumerate}[topsep=0pt,label=(\textsc{f}\arabic*),ref=\textsc{f}\arabic*]
+    \item \label{fence-E}
+      $\fcard{\aEvs}\leq1$,
+      %if $\bEv,\aEv\in\aEvs$ then $\bEv=\aEv$,
+    \item \label{fence-lambda}
+      $\labelingAct(\aEv) = \DF[\ascope]{\amode}[\aThrd]$,
+    \item \label{fence-kappa}
+      $\labelingForm(\aEv) \riff \TRUE$,
+      %\setcounter{enumi}{\value{Btau}}
+    \item \label{fence-tau}
+      $\aTr{\bEvs}{\bForm} \riff \bForm$,
+      \stepcounter{enumi}      
+    \item[] \labeltext[\textsc{f}5]{}{fence-term}
+      \begin{enumerate}[leftmargin=0pt]
+      \item \label{fence-term-nonempty}
+        if $\aEvs\neq\emptyset$ then $\aTerm \riff \TRUE$,
+      \item \label{fence-term-empty}
+        if $\aEvs=\emptyset$ then $\aTerm \riff \FALSE$.
+      \end{enumerate}
+    % \item \label{fence-term}
+    %   if $\aEvs=\emptyset$ then $\aTerm \riff \FALSE$.
+    \end{enumerate}
+  \end{multicols}
+  \medskip
+
+  \noindent
   If $\aPS \in \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]$ then
   $(\exists\aVal\in\Val)$
   \begin{multicols}{2}
@@ -255,53 +283,54 @@
   \medskip
 
   \noindent
-  If $\aPS \in \sFENCE[\ascope]{\amode}[\aThrd]$ then
-  \begin{multicols}{2}
-    \begin{enumerate}[topsep=0pt,label=(\textsc{f}\arabic*),ref=\textsc{f}\arabic*]
-    \item \label{fence-E}
-      $\fcard{\aEvs}\leq1$,
-      %if $\bEv,\aEv\in\aEvs$ then $\bEv=\aEv$,
-    \item \label{fence-lambda}
-      $\labelingAct(\aEv) = \DF[\ascope]{\amode}[\aThrd]$,
-    \item \label{fence-kappa}
-      $\labelingForm(\aEv) \riff \TRUE$,
-      %\setcounter{enumi}{\value{Btau}}
-    \item \label{fence-tau}
-      $\aTr{\bEvs}{\bForm} \riff \bForm$,
-      \stepcounter{enumi}      
-    \item[] \labeltext[\textsc{f}5]{}{fence-term}
-      \begin{enumerate}[leftmargin=0pt]
-      \item \label{fence-term-nonempty}
-        if $\aEvs\neq\emptyset$ then $\aTerm \riff \TRUE$,
-      \item \label{fence-term-empty}
-        if $\aEvs=\emptyset$ then $\aTerm \riff \FALSE$.
-      \end{enumerate}
-    % \item \label{fence-term}
-    %   if $\aEvs=\emptyset$ then $\aTerm \riff \FALSE$.
-    \end{enumerate}
-  \end{multicols}
+  Let $\sLOADP{}{}$ be defined as for $\sLOAD{}{}$, adding the constraint:
+  \begin{enumerate}
+  \item[{\labeltextXX{4d}{r}{read-tau-rmw}}]
+    if $(\aEvs\cap\bEvs)=\emptyset$ then
+    \begin{math}
+      \aTr{\bEvs}{\bForm} \riff
+      \bForm.
+    \end{math}
+  \end{enumerate}
+  If $\aPS\in\sFADD[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}[\aThrd]$ then
+  \begin{math}
+    %\sFADD[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}[\aThrd]\subseteq\sSEMI{
+    \aPS\in\sSEMI{
+      \sLOADP[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]
+    }{
+      \sSTORE[\bmode]{\aLoc}[\ascope]{\aReg{+}\aExp}[\aThrd]
+    }
+  \end{math}
+  and %s.t.
+  \\
+  If $\aPS\in\sEXCHG[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}[\aThrd]$ then
+  \begin{math}
+    %\sEXCHG[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}[\aThrd]\subseteq\sSEMI{
+    \aPS\in\sSEMI{    
+      \sLOADP[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]
+    }{
+      \sSTORE[\bmode]{\aLoc}[\ascope]{\aExp}[\aThrd]
+    }
+  \end{math}
+  and %s.t.
+  \\
+  If $\aPS\in\sCAS[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}{\bExp}[\aThrd]$ then\\\quad
+  \begin{math}
+    %\sCAS[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}{\bExp}[\aThrd]\subseteq\sSEMI{
+    \aPS\in\sSEMI{
+      \sLOADP[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]
+    }{
+      \sIF{\aReg{=}\aExp}\sTHEN\sSTORE[\bmode]{\aLoc}[\ascope]{\bExp}[\aThrd]\sELSE\sSKIP\sFI
+    }
+  \end{math}
+  and %s.t.
+  \begin{enumerate}[label=(\textsc{u}\arabic*),ref=\textsc{u}\arabic*]
+    \setcounter{enumi}{\value{Brmw}}
+  \item if $\labeling(\aEv)$ is a write then there is a read $\labeling(\bEv)$ such that 
+    $\labelingForm(\aEv)\rimplies\labelingForm(\bEv)$ and
+    $\bEv\xrmw\aEv$.
+  \end{enumerate}
 
-  \begin{align*}
-    \begin{aligned}
-      \sem[\aThrd]{\LET{\aReg}{\aExp}} &= \sLET{\aReg}{\aExp}
-      \\
-      \sem[\aThrd]{\PR[\amode]{\aLoc}[\ascope]{\aReg}} &= \sLOAD[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]
-      \\
-      \sem[\aThrd]{\PW[\amode]{\aLoc}[\ascope]{\aExp}} &= \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]
-      \\
-      \sem[\aThrd]{\PF[\ascope]{\fmode}} &= \sFENCE[\ascope]{\fmode}[\aThrd]
-    \end{aligned}
-    &&
-    \begin{aligned}
-      \sem[\aThrd]{\SKIP} &= \sSKIP 
-      \\
-      \sem[\aThrd]{\aCmd_1 \RPAR[\bThrd] \aCmd_2} &= \sPAR{\sem[\bThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
-      \\
-      \sem[\aThrd]{\aCmd_1 \SEMI \aCmd_2} &= \sSEMI{\sem[\aThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
-      \\
-      \sem[\aThrd]{\IF{\aExp}\THEN\aCmd_1\ELSE\aCmd_2\FI} &= \sIFTHEN{\aExp{\neq}0}{\sem[\aThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
-    \end{aligned}
-  \end{align*}
-  \caption{Semantics of programs}
+  \caption{Semantic Functions}
   \label{fig:sem}
 \end{figure}
