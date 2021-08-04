@@ -28,7 +28,7 @@ The syntax is built from
   $\aReg$, $\bReg$,
 \item a set of \emph{expressions} $\Exp$, ranged over by
   $\aExp$, $\bExp$,  $\cExp$,
-\item a set of \emph{thread ids} $\Thrd$, ranged over by
+\item a set of \emph{thread \ID{}s} $\Thrd$, ranged over by
   $\aThrd$, $\bThrd$.
 \end{itemize}
 
@@ -40,13 +40,13 @@ We require that:
 \item values include at least the constants $0$ and $1$,  
 \item expressions include at least registers and values, 
 \item references do not appear in expressions: $\aExp[\bExp/\aLoc]=\aExp$,
-\item thread ids include the \emph{top-level} id $\topThrd$. % and the \emph{test} id $\testThrd$. 
+\item thread \ID{}s include the \emph{top-level} \ID{} $\topThrd$. % and the \emph{test} id $\testThrd$. 
 \end{itemize}
-We model the following language.
+We model the following language (defaults underlined).
 \begin{gather*}
   \begin{aligned}
     \amode,\bmode \BNFDEF& \mWK
-    \BNFSEP \mRLX
+    \BNFSEP \underline{\mRLX}
     \BNFSEP \mREL
     \BNFSEP \mACQ
     \BNFSEP \mRA 
@@ -58,7 +58,7 @@ We model the following language.
     &\qquad \qquad
     \ascope,\bscope \BNFDEF& \sCTA
     \BNFSEP \sGPU
-    \BNFSEP \sSYS
+    \BNFSEP \underline{\smash{\sSYS}}
   \end{aligned}
   \\
   \begin{aligned}
@@ -92,8 +92,8 @@ We model the following language.
 {release} ($\mREL$), {acquire} ($\mACQ$), {release-acquire} ($\mRA$), and
 {sequentially consistent} ($\mSC$).
 % 
-Let expressions ($\LET{\aReg}{\aExp}$) only affect thread-local state and
-thus do not have a mode.
+In examples, we systematically drop the default mode $\mRLX$.
+%
 % 
 Reads ($\PR[\amode]{\REF{\cExp}}[\ascope]{\aReg}$) support
 $\mWK$,
@@ -119,11 +119,11 @@ $\mSC$.
 % 
 In the atomic update operations, $\amode$ is a read and $\bmode$ is a write;
 we require that $\aReg$ does not occur in $\cExp$.
+%
+Let expressions ($\LET{\aReg}{\aExp}$) only affect thread-local state and
+thus do not have a mode.
 
-\emph{Scopes}, $\ascope$, are thread group ($\sCTA$), processor ($\sGPU$) and
-system ($\sSYS$).
-
-\emph{Commands}, aka \emph{statements}, $\aCmd$, include memory accesses at a
+\emph{Statements}, $\aCmd$, include memory accesses at a
 given mode, as well as the usual structural constructs.  Following
 \cite{DBLP:conf/icfp/FerreiraHJ96}, $\RPAR$ denotes parallel composition.  If
 $(\aCmd_1 \RPAR[\bThrd] \aCmd_2)$ is executed with thread \ID{} $\aThrd$, then
@@ -132,6 +132,34 @@ Top level programs run with thread \ID{} $\topThrd$.  In examples, we usually
 drop thread \ID{}s.  We use the symmetric $\PAR$ operator when there is no
 continuation after the parallel composition.
 
+\emph{Scopes}, $\ascope$, are thread group ($\sCTA$), processor ($\sGPU$) and
+system ($\sSYS$).
+%
+In examples, we systematically drop the default scope $\sSYS$.
+% 
+Let $\PBR{\xsys}=(\Thrd\times\Thrd)$.  We assume two equivalences:
+$\PBR{\xgpu}\subseteq\PBR{\xsys}$ partitions threads by \emph{processor}, and
+$\PBR{\xcta}\subseteq\PBR{\xgpu}$ refines the processor partitioning into
+\emph{thread groups}.
+%
+In examples, we mostly elide thread \ID{}s and ignore the $\sGPU$ scope.  We
+write $(\aCmd_1\RPAR[\ascope]\aCmd_2)$ to indicate that the statements run in
+threads related by $=_\ascope$, but not by any $=_\bscope$ for
+$\bscope\ltscope\ascope$.  In the following examples, let $\aThrd$ be \ID{}
+of the rightmost thread.  Then $(\aCmd_1\RPAR[\sCTA]\aCmd_2)$ is shorthand
+for $(\exists\bThrd\xcta\aThrd)$ $(\aCmd_1\RPAR[\bThrd]\aCmd_2)$.  When using
+this convention, $\RPAR$ associates to the left; thus,
+$(\aCmd_1\RPAR[\sCTA]\aCmd_2\RPAR[\sSYS]\aCmd_3)$ is read as
+$((\aCmd_1\RPAR[\sCTA]\aCmd_2)\RPAR[\sSYS]\aCmd_3)$, which is
+$(\exists\bThrd\xcta\cThrd\not\xcta\aThrd)$
+$(\aCmd_1\RPAR[\bThrd]\aCmd_2\RPAR[\cThrd]\aCmd_3)$.  When there is no
+continuation, we further simplify $\aCmd_1\RPAR[\ascope]\aCmd_2$ to
+$\aCmd_1\PAR[\ascope]\aCmd_2$ and $\aCmd_1\PAR[\sSYS]\aCmd_2$ to
+$\aCmd_1\PAR\aCmd_2$; thus, $(\aCmd_1\PAR[\sCTA]\aCmd_2\PAR\aCmd_3)$ should
+be read as $(\exists\bThrd\xcta\cThrd\not\xcta\aThrd)$
+$(\aCmd_1\RPAR[\bThrd]\aCmd_2\RPAR[\cThrd]\aCmd_3)$.
+
+  
 We use common syntax sugar, such as \emph{extended expressions}, $\aEExp$,
 which include memory locations.  For example, if $\aEExp$ includes a single
 occurrence of $\aLoc$, then $\bLoc\GETS\aEExp\SEMI \aCmd$ is shorthand for
@@ -276,9 +304,8 @@ Let actions be reads, writes and fences:
   \BNFSEP \DR[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]
   \BNFSEP \DF[\ascope]{\fmode}[\aThrd]
 \end{displaymath}
-In examples, we systematically drop the default mode $\mRLX$ and the default
-scope $\sSYS$.  In definitions, we drop elements of actions that are
-existentially quantified.
+In definitions, we drop elements of actions that are existentially
+quantified.
 % 
 We write $\DXP[\amode]{\aLoc}[\ascope]{}[\aThrd]$ to stand for an
 \emph{access}: either $\DWP[\amode]{\aLoc}[\ascope]{}[\aThrd]$ or
@@ -324,12 +351,7 @@ We say $\aAct \rsyncdelaysdef \bAct$ if
 % $\sreleasedef$ actions.
 Actions $\DRP{}{}$ are $\sreaddef$ actions.
 
-\begin{definition}
-  We assume two equivalences:
-  $\PBR{\xgpu}\subseteq(\Thrd\times\Thrd)$ partitions threads by
-  \emph{processor}, and $\PBR{\xcta}\subseteq\PBR{\xgpu}$ refines the processor
-  partitioning into \emph{thread groups}.
-  
+\begin{definition}  
   We say
   $\DXP[\amode_1]{\aLoc}[\ascope_1]{}[\aThrd_1] \rsoverlapsdef
   \DXP[\xmode_2]{\aLoc}[\xscope_2]{}[\xThrd_2]$ when %they overlap and
@@ -422,7 +444,7 @@ and Monotonicity in \textsection\ref{sec:merge}.
 \begin{definition}
   \label{def:pomset}
   A \emph{pomset with predicate transformers} 
-  is a tuple $(\aEvs, \labeling, \labelingForm, \aTr{}{}, {\aTerm}, {\ledep}, {\lesync}, {\leloc}, {\rrmw})$ where
+  is a tuple $(\aEvs, \labeling, \labelingForm, \aTr{}{}, {\aTerm}, {\ltdep}, {\ltsync}, {\ltloc}, {\rrmw})$ where
   \begin{enumerate}[,label=(\textsc{m}\arabic*),ref=\textsc{m}\arabic*]
     \makecounter{BE}
   \item \label{pom-E} \makecounter{E}
@@ -450,17 +472,17 @@ and Monotonicity in \textsection\ref{sec:merge}.
     \end{enumerate}
     \makecounter{Bledep}
   \item \label{pom-ledep} \makecounter{ledep}
-    ${\ledep} : (\aEvs\times\aEvs)$ is a partial order capturing \emph{dependency},
+    ${\ltdep} : (\aEvs\times\aEvs)$ is a strict partial order capturing \emph{dependency},
     \makecounter{Blesync}
   \item \label{pom-lesync} \makecounter{lesync}
-    ${\lesync} : (\aEvs\times\aEvs)$ is a partial order capturing \emph{synchronization}, 
+    ${\ltsync} : (\aEvs\times\aEvs)$ is a strict partial order capturing \emph{synchronization}, 
     \makecounter{Bleloc}
   \item \label{pom-leloc} \makecounter{leloc}
-    ${\leloc} : (\aEvs\times\aEvs)$ is a partial order capturing \emph{per-location order}, such that 
+    ${\ltloc} : (\aEvs\times\aEvs)$ is a strict partial order capturing \emph{per-location order}, such that 
     \begin{enumerate}
     \item \label{pom-leloc-lesync}
       if $\labeling(\bEv)\roverlaps\labeling(\aEv)$ 
-      then $\bEv\lesync\aEv$ implies $\bEv\leloc\aEv$,      
+      then $\bEv\ltsync\aEv$ implies $\bEv\ltloc\aEv$,      
     \end{enumerate}
     \makecounter{Brmw}
   \item \label{pom-rmw} \makecounter{rmw}
@@ -469,20 +491,18 @@ and Monotonicity in \textsection\ref{sec:merge}.
     \item \label{pom-rmw-block}
       if $\bEv\xrmw\aEv$ then $\labeling(\aEv) \rblocks \labeling(\bEv)$,
     \item \label{pom-rmw-lesync} \label{pom-rmw-leloc}
-      if $\bEv\xrmw\aEv$ then $\bEv \lesync \aEv$ and $\bEv \leloc \aEv$,    
+      if $\bEv\xrmw\aEv$ then $\bEv \ltsync \aEv$ and $\bEv \ltloc \aEv$,    
     \item \label{pom-rmw-atomic}
-      if $\labeling(\cEv)\roverlaps\labeling(\bEv)$ then
+      if $\labeling(\cEv)\roverlaps\labeling(\bEv)$ and if $\bEv \xrmw \aEv$ then
       \begin{enumerate}        
       \item \label{pom-rmw-atomic1}
-        if $\bEv \xrmw \aEv$ then
-        $\cEv\ledep \aEv$ implies $\cEv\ledep \bEv$,
-        $\cEv\lesync \aEv$ implies $\cEv\lesync \bEv$,
-        $\cEv\leloc \aEv$ implies $\cEv\leloc \bEv$,
+        $\cEv\ltdep \aEv$ implies $\cEv\ledep \bEv$,
+        $\cEv\ltsync \aEv$ implies $\cEv\lesync \bEv$,
+        $\cEv\ltloc \aEv$ implies $\cEv\leloc \bEv$,
       \item \label{pom-rmw-atomic2}
-        if $\bEv \xrmw \aEv$ then
-        $\bEv\ledep \cEv$ implies $\aEv\ledep \cEv$,
-        $\bEv\lesync \cEv$ implies $\aEv\lesync \cEv$,
-        $\bEv\leloc \cEv$ implies $\aEv\leloc \cEv$.
+        $\bEv\ltdep \cEv$ implies $\aEv\ledep \cEv$,
+        $\bEv\ltsync \cEv$ implies $\aEv\lesync \cEv$,
+        $\bEv\ltloc \cEv$ implies $\aEv\leloc \cEv$.
       \end{enumerate}
     \end{enumerate}
   \end{enumerate}
@@ -510,12 +530,12 @@ and Monotonicity in \textsection\ref{sec:merge}.
     \end{enumerate}
     \setcounter{enumi}{\value{Bledep}}
   \item \label{cand-ledep-rf}
-    if $\bEv\xrfx\aEv$ then $\bEv \ledep \aEv$,
+    if $\bEv\xrfx\aEv$ then $\bEv \ltdep \aEv$,
     \setcounter{enumi}{\value{lesync}}
   \item[] 
     \begin{enumerate}[leftmargin=0pt]
     \item \label{cand-lesync-rf}
-      if $\bEv'\lesync\bEv\xrfx\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \lesync \aEv'$,
+      if $\bEv'\lesync\bEv\xrfx\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \ltsync \aEv'$,
     \item \label{cand-lesync-sc}
       if $\labeling(\bEv) \rsfences \labeling(\aEv)$ then either $\bEv\lesync\aEv$ or $\aEv\lesync\bEv$, 
       \todo{Is this right?}
@@ -524,11 +544,11 @@ and Monotonicity in \textsection\ref{sec:merge}.
   \item[] 
     \begin{enumerate}[leftmargin=0pt]
     \item  \label{cand-leloc-rf}
-      if $\bEv\xrfx\aEv$ then $\bEv \leloc \aEv$,
+      if $\bEv\xrfx\aEv$ then $\bEv \ltloc \aEv$,
     \item \label{cand-leloc-block}
       if $\bEv\xrfx\aEv$ and $\labeling(\cEv) \rblocks \labeling(\aEv)$ then either $\cEv\leexists\bEv$ or $\aEv\leexists\cEv$,\\
-      where $\bEv'\leexists\aEv'$ when $\aEv'\leloc\bEv'$ implies $\bEv'=\aEv'$ and
-      $\labeling(\bEv') \rsoverlaps \labeling(\aEv')$ implies $\bEv'\leloc\aEv'$.
+      where $\bEv'{\,\leexists\,}\aEv'$ when $\aEv'{\,\leloc\,}\bEv'$ implies $\bEv'{\,=\,}\aEv'$ and
+      $\labeling(\bEv') \rsoverlaps \labeling(\aEv')$ implies $\bEv'{\,\leloc\,}\aEv'$.
     \end{enumerate}
   \end{enumerate}
 
@@ -552,18 +572,16 @@ and Monotonicity in \textsection\ref{sec:merge}.
 
 Note that for the \IMM{} model, \ref{cand-leloc-block} is equivalent to:\footnote{If all accesses are morally strong with each other, weak fulfillment
   degenerates to
-  \begin{center}
+  \begin{scope}
     $\forall\labelingAct(\cEv)=\DWP[]{x}{}$ either
-    $\cEv \leloc \bEv$ or $\aEv \leloc \cEv$
-  \end{center}
-
+    $\cEv \leloc \bEv$ or $\aEv \leloc \cEv$.
+  \end{scope}
   If no accesses are morally strong with each other, weak fulfillment
   degenerates to
-  \begin{center}
+  \begin{scope}
     $\not\mkern-5mu\exists\labelingAct(\cEv)=\DWP[]{x}{}$ 
-    both $\bEv \ltloc \cEv$ and $\cEv \ltloc \aEv$
-  \end{center}
-
+    both $\bEv \ltloc \cEv$ and $\cEv \ltloc \aEv$.
+  \end{scope}
   Note that the difference between strong and weak fulfillment is limited to $\leloc$.
   We sometimes write $\lelocstrong$ for strong fulfillment and
   $\lelocweak$ for weak fulfillment.}
@@ -602,8 +620,8 @@ Let $\aPS$ range over pomsets, and $\aPSS$ over sets of pomsets.
 We drop quantifiers
 when clear from context, such as
 $(\forall\aEv\in\aEvs)(\forall\aLoc\in\Loc)$.
-We write $\bEv\ltsync\aEv$ when $\bEv\lesync\aEv$ and $\bEv\neq\aEv$, and similarly
-for $\ltdep$ and $\ltloc$.
+We write $\bEv\lesync\aEv$ to mean that either $\bEv\ltsync\aEv$ or $\bEv=\aEv$, and similarly
+for $\ledep$ and $\leloc$.
 We sometimes use projection functions---for example, if
 $\labeling(\aEv)=\DW[\amode]{\aLoc}[\ascope]{\aVal}[\aThrd]$ then 
 $\labelingThrd(\aEv)=\aThrd$,
