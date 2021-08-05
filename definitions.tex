@@ -466,10 +466,14 @@ and Monotonicity in \textsection\ref{sec:merge}.
     \makecounter{Bterm}
   \item \label{pom-term} \makecounter{term}
     $\aTerm:\Formulae$ is a \emph{termination condition}, such that 
-    \begin{enumerate}
-    \item \label{pom-term-tau}
-      $\aTerm\rimplies\aTr{}{\TRUE}$,
-    \end{enumerate}
+    \begin{multicols}{2}
+      \begin{enumerate}
+      \item \label{pom-term-sat}
+        $\aTerm$ is $\labeling$-consistent,
+      \item \label{pom-term-tau}
+        $\aTerm\rimplies\aTr{}{\TRUE}$,
+      \end{enumerate}
+    \end{multicols}
     \makecounter{Bledep}
   \item \label{pom-ledep} \makecounter{ledep}
     ${\ltdep} : (\aEvs\times\aEvs)$ is a strict partial order capturing \emph{dependency},
