@@ -1422,48 +1422,6 @@ Reason: they are citing the flowing/pop model
     \end{tikzinline}}
 \end{gather*}
 
-\section{Two order idea}
-The two order idea from OOPSLA talk is:
-\begin{itemize}
-\item Require: $\bEv\ltloc\aEv$ when $\bEv\ltdep\aEv$ and they conflict
-\end{itemize}
-This does not work for the \IMM{} or ARMv7, but it may work for Power, TSO,
-ARMv8.  That would be nice.  Let's write $\ltloctwo$ for this notion, with
-strong fulfillment.
-
-With this there is a cycle in \ref{arm7-weak} (weak/strong fulfillment not relevant here):
-\begin{gather*}
-  \tag{$\ltloctwo$}
-  \hbox{\begin{tikzinline}[node distance=1.5em]
-      \event{a}{\DR{x}{1}}{}
-      \event{b}{d:\DW{x}{1}}{right=of a}
-      \wk{a}{b}
-      \event{c}{\DR{x}{1}}{right=3em of b}
-      \event{d}{\DW{y}{1}}{right=of c}
-      %\po{c}{d}
-      \event{e}{\DR{y}{1}}{right=3em of d}
-      \event{f}{e:\DW{x}{1}}{right=of e}
-      % \po{e}{f}
-      \po[out=-15,in=-165]{c}{f}
-      \rf{b}{c}
-      \rf{d}{e}
-      \rf[out=172,in=8]{f}{a}
-    \end{tikzinline}}    
-\end{gather*}
-Anton says: \ref{arm7-weak} is forbidden by Power, TSO, ARMv8, but allowed by
-ARMv7. Maybe it isn't that important to support it anymore.
-
-There is also a cycle in \ref{pub-rel-rlx-coe}.  Anton says: I checked
-Power/ARMv7 models in this regard. They disallow the behavior (as well as
-ARMv8 and TSO), so we can in principle strengthen \IMM{} to forbid it as
-well.  For that, we may add axiom to \IMM{} forbidding cycles in
-\begin{math}
-  \rco \cup ([\mathsf{W}]; \rrfe^?; ([\mathsf{R}^{\fACQ}] \cup \rpox;
-  [\mathsf{FW}^{\fREL}]); \rar^{*}; [\mathsf{W}]).
-\end{math}
-This works if we have acquire/release accesses on the path
-since they are compiled with fences to Power.
-
 \section{RFI Examples}
 
 Bad example:
