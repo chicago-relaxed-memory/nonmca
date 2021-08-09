@@ -724,8 +724,12 @@ adopt the following conventions:
           \aTr{\bEvs}{\bForm} \riff 
           (\cExp{=}\cVal)
           \limplies 
-          \bForm[\aExp/\REF{\cVal}][\aExp{=}\aVal/\Q{\REF{\cVal}}]
-        \end{math},}
+          \bForm
+          [\aExp/\REF{\cVal}]
+          [\aExp{=}\aVal/\Q{\REF{\cVal}}]
+          [\TRUE/\A{\cVal}]
+          [(\cExp{\neq}\Aother\land\A{\Aother})/\A{\Aother{\neq}\cVal}]
+         \end{math},}
       \item \label{write-tau-empty-addr}
         if $\aEvs=\emptyset$ then
         \makebox[0pt][l]{\begin{math}
@@ -736,8 +740,10 @@ adopt the following conventions:
           (\cExp{=}\dVal)
           \limplies 
           \bForm
-          [\aExp/\REF{\dVal}][\FALSE/\Q{\REF{\dVal}}],
-        \end{math}}
+          [\aExp/\REF{\dVal}]
+          [\FALSE/\Q{\REF{\dVal}}]
+          [\FALSE/\A{\Aother}],
+         \end{math}}
       \end{enumerate}
       \columnbreak
       \stepcounter{enumi}
@@ -791,7 +797,11 @@ adopt the following conventions:
         % \end{math}
         \makebox[0pt][l]{\begin{math}
             \aTr{\bEvs}{\bForm} \riff
-            \PBR{(\cExp{=}\cVal\limplies\aVal{=}\uReg{\aEv}) \lor (\cExp{=}\cVal\limplies\REF{\cVal}{=}\uReg{\aEv})}
+            \PBR{
+              (\cExp{=}\cVal\limplies\aVal{=}\uReg{\aEv})
+              \lor
+              ((\cExp{=}\cVal\land\A{\cVal})\limplies\REF{\cVal}\EQ\uReg{\aEv})
+            }
             \limplies
             \bForm[\uReg{\aEv}/\aReg]
           \end{math},}
