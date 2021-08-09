@@ -2,6 +2,13 @@
   \bookmark{Semantic Functions}
   \raggedright
   \noindent
+  Suppose $\aRel_i$ is a relation in $\aEvs_i\times\aEvs_i$.
+  We say $\aRel \rextendsdef{\aRel_i}{}$ if
+  ${\aRel}\supseteq {\aRel_i}$ and
+  $\aRel\cap(\aEvs_i\times \aEvs_i) = \aRel_i$.
+  \medskip
+
+  \noindent
   If $\aPS\in\sSKIP$ then $\aEvs = \emptyset$ and
   and $\aTr{\bEvs}{\bForm} \riff \bForm$
   and $\aTerm\riff\TRUE$.
@@ -26,11 +33,11 @@
     \item \label{par-term}
       $\aTerm \riff \aTerm[1]\land\aTerm[2]$,
     \item \label{par-ledep}
-      ${\ltdep}\supseteq\PBR{{\ltdep_1}\cup{\ltdep_2}}$, 
+      ${\ltdep}\rextends{\ltdep_1}{\ltdep_2}$, 
     \item \label{par-lesync}
-      ${\ltsync}\supseteq\PBR{{\ltsync_1}\cup{\ltsync_2}}$, 
+      ${\ltsync}\rextends{\ltsync_1}{\ltsync_2}$, 
     \item \label{par-leloc}
-      ${\ltloc}\supseteq\PBR{{\ltloc_1}\cup{\ltloc_2}}$, 
+      ${\ltloc}\rextends{\ltloc_1}{\ltloc_2}$, 
     \item \label{par-rmw}
       ${\rrmw}=\PBR{{\rrmw_1}\cup{\rrmw_2}}$.
     \end{enumerate}    
