@@ -691,11 +691,393 @@ adopt the following conventions:
 \end{itemize}
 
 \clearpage
+\section{Sync examples}
+
+The first of these is seen in hardware.  All are allowed by \PTX.
+Showing $\rrfx$ that is not included in the order using a dotted arrow.
+$\aThrd\xcta\bThrd\not\xcta\cThrd$
+\begin{gather*}
+  {
+    \PW{x}[\sCTA]{1}
+    \SEMI
+    \PW[\mREL]{y}[\sCTA]{1}
+  }\PAR[\sCTA]{
+    \PR[\mACQ]{y}[\sCTA]{r}
+    \SEMI
+    \PW{z}{r}
+  }\PAR{
+    \PR[\mACQ]{z}{r}
+    \SEMI
+    \PR{x}[\sCTA]{s}
+  }
+  \\
+  \tag{$\ltsync$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a1}{\DW{x}[\sCTA]{1}[\aThrd]}{}
+      \event{a2}{\DW[\mREL]{y}[\sCTA]{1}[\aThrd]}{right=of a1}
+      \event{b1}{\DR[\mACQ]{y}[\sCTA]{1}[\bThrd]}{right=3em of a2}
+      \event{b2}{\DW{z}{1}[\bThrd]}{right=of b1}
+      \event{c1}{\DR[\mACQ]{z}{1}[\cThrd]}{right=3em of b2}
+      \event{c2}{\DR{x}[\sCTA]{0}[\cThrd]}{right=of c1}
+      \sync{a1}{a2}
+      \sync{b1}{b2}
+      \sync{c1}{c2}
+      \rf{a2}{b1}
+      \rf[dotted]{b2}{c1}
+      %\wk[out=-165,in=-15]{c2}{a1}
+    \end{tikzinline}}
+\end{gather*}
+
+\begin{gather*}
+  {
+    \PW{x}{1}
+    \SEMI
+    \PW[\mREL]{y}{1}
+  }\PAR{
+    \PR[\mACQ]{y}{r}
+    \SEMI
+    \PW{z}{r}
+  }\PAR{
+    \PR[\mACQ]{z}{r}
+    \SEMI
+    \PR{x}{s}
+  }
+  % \\
+  % \tag{$\ltdep$}
+  % \hbox{\begin{tikzinline}[node distance=1.5em]
+  %     \event{a1}{\DW{x}{1}}{}
+  %     \event{a2}{\DW[\mREL]{y}{1}}{right=of a1}
+  %     \event{b1}{\DR[\mACQ]{y}{1}}{right=3em of a2}
+  %     \event{b2}{\DW{z}{1}}{right=of b1}
+  %     \event{c1}{\DR[\mACQ]{z}{1}}{right=3em of b2}
+  %     \event{c2}{\DR{x}{0}}{right=of c1}
+  %     %\sync{a1}{a2}
+  %     \po{b1}{b2}
+  %     %\sync{c1}{c2}
+  %     \rf{a2}{b1}
+  %     \rf{b2}{c1}
+  %     %\wk[out=-165,in=-15]{c2}{a1}
+  %   \end{tikzinline}}
+  \\
+  \tag{$\ltsync$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a1}{\DW{x}{1}}{}
+      \event{a2}{\DW[\mREL]{y}{1}}{right=of a1}
+      \event{b1}{\DR[\mACQ]{y}{1}}{right=3em of a2}
+      \event{b2}{\DW{z}{1}}{right=of b1}
+      \event{c1}{\DR[\mACQ]{z}{1}}{right=3em of b2}
+      \event{c2}{\DR{x}{0}}{right=of c1}
+      \sync{a1}{a2}
+      \sync{b1}{b2}
+      \sync{c1}{c2}
+      \rf{a2}{b1}
+      \rf[dotted]{b2}{c1}
+      %\wk[out=-165,in=-15]{c2}{a1}
+    \end{tikzinline}}
+  % \\
+  % \tag{$\ltloc$}
+  % \hbox{\begin{tikzinline}[node distance=1.5em]
+  %     \event{a1}{\DW{x}{1}}{}
+  %     \event{a2}{\DW[\mREL]{y}{1}}{right=of a1}
+  %     \event{b1}{\DR[\mACQ]{y}{1}}{right=3em of a2}
+  %     \event{b2}{\DW{z}{1}}{right=of b1}
+  %     \event{c1}{\DR[\mACQ]{z}{1}}{right=3em of b2}
+  %     \event{c2}{\DR{x}{0}}{right=of c1}
+  %     %\sync{a1}{a2}
+  %     %\sync{b1}{b2}
+  %     %\sync{c1}{c2}
+  %     \rf{a2}{b1}
+  %     \rf{b2}{c1}
+  %     \wk[out=-165,in=-15]{c2}{a1}
+  %   \end{tikzinline}}
+\end{gather*}
+
+\begin{gather*}
+  {
+    \PW{x}{1}
+    \SEMI
+    \PW[\mREL]{y}{1}
+  }\PAR{
+    \PR{y}{r}
+    \SEMI
+    \PW[\mREL]{z}{r}
+  }\PAR{
+    \PR[\mACQ]{z}{r}
+    \SEMI
+    \PR{x}{s}
+  }
+  \\
+  \tag{$\ltsync$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a1}{\DW{x}{1}}{}
+      \event{a2}{\DW[\mREL]{y}{1}}{right=of a1}
+      \event{b1}{\DR{y}{1}}{right=3em of a2}
+      \event{b2}{\DW[\mREL]{z}{1}}{right=of b1}
+      \event{c1}{\DR[\mACQ]{z}{1}}{right=3em of b2}
+      \event{c2}{\DR{x}{0}}{right=of c1}
+      \sync{a1}{a2}
+      \sync{b1}{b2}
+      \sync{c1}{c2}
+      \rf[dotted]{a2}{b1}
+      \rf{b2}{c1}
+      %\wk[out=-165,in=-15]{c2}{a1}
+    \end{tikzinline}}
+\end{gather*}
+
+To get publication using fences we need an additional closure property for
+$\rrfx$ on sync order:
+\begin{gather*}
+  {
+    \PW{x}{1}
+    \SEMI
+    \PF{\fREL}
+    \SEMI
+    \PW{y}{1}
+  }\PAR{
+    \PR{y}{r}
+    \SEMI
+    \PF{\fACQ}
+    \SEMI
+    \PR{x}{s}
+  }
+  \\
+  \tag{$\ltsync$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a1}{\DW{x}{1}}{}
+      \event{a2}{\DF{\fREL}}{right=of a1}
+      \event{a3}{\DW{y}{1}}{right=of a2}
+      \event{b1}{\DR{y}{1}}{right=3em of a3}
+      \event{b2}{\DF{\fACQ}}{right=of b1}
+      \event{b3}{\DR{x}{0}}{right=of b2}
+      \sync{a1}{a2}
+      \sync{a2}{a3}
+      \sync{b1}{b2}
+      \sync{b2}{b3}
+      \rf[dotted]{a3}{b1}
+      %\wk[out=-165,in=-15]{b3}{a1}
+    \end{tikzinline}}
+\end{gather*}
+Previous def of candidate requires:
+\begin{itemize}
+\item[(\ref{cand-lesync-rf})]
+  if $\bEv\xrfx\aEv$ and $\labeling(\bEv) \rsmatches \labeling(\aEv)$ then $\bEv \ltsync \aEv$.
+\end{itemize}
+This is not good enough for fences.
+A possible fix is the following closure condition:
+\begin{itemize}
+\item[(\ref{cand-lesync-rf}$'$)]
+  if $\bEv'\lesync\bEv\xrfx\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \ltsync \aEv'$.
+\end{itemize}
+With that we have the following, using $\xliftrf$ for edges induced by closure
+when $\bEv'\neq\bEv$ or $\aEv'\neq\aEv$:
+\begin{gather*}
+  {
+    \PW{x}{1}
+    \SEMI
+    \PF{\fREL}
+    \SEMI
+    \PW{y}{1}
+  }\PAR{
+    \PR{y}{r}
+    \SEMI
+    \PF{\fACQ}
+    \SEMI
+    \PR{x}{s}
+  }
+  \\
+  \tag{$\ltsync$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a1}{\DW{x}{1}}{}
+      \event{a2}{\DF{\fREL}}{right=of a1}
+      \event{a3}{\DW{y}{1}}{right=of a2}
+      \event{b1}{\DR{y}{1}}{right=3em of a3}
+      \event{b2}{\DF{\fACQ}}{right=of b1}
+      \event{b3}{\DR{x}{0}}{right=of b2}
+      \sync{a1}{a2}
+      \sync{a2}{a3}
+      \sync{b1}{b2}
+      \sync{b2}{b3}
+      \rf[dotted]{a3}{b1}
+      \liftrf[out=-15,in=-165]{a2}{b2}
+      %\wk[out=-165,in=-15]{b3}{a1}
+    \end{tikzinline}}
+\end{gather*}
+This seems to work for the above examples, but it could be too strong in general.
+\begin{itemize}
+\item One possibility is to restrict to preceding and following things in the
+  same thread:
+  \begin{itemize}
+  \item[(\ref{cand-lesync-rf}$''$)]
+    if $\bEv'\lesyncpo\bEv\xrfx\aEv\lesyncpo\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \ltsync \aEv'$.
+  \end{itemize}
+  where $\lesyncpo$ is the obvious restriction of $\lesync$ to actions on the
+  same thread.
+\item With either (\ref{cand-lesync-rf}$'$) or (\ref{cand-lesync-rf}$''$) is
+  it too strong to require that $\ltsync$ be
+  transitive?   In particular:
+  \begin{itemize}
+  \item if we restrict to $\lesyncpo$, the closure condition
+    (\ref{cand-lesync-rf}$''$) could add order between actions on the same thread
+    via cross-thread reads.
+  \item How does transitivity interact with scopes?
+  \end{itemize}
+\end{itemize}
+Anton proposes:
+\begin{itemize}
+\item[(\ref{pom-rmw-lesync}$'$)]
+  if $\bEv\xrmw\aEv$ then %$\bEv \lesync \aEv$ and
+  $\bEv \ltloc \aEv$,    
+\item[(\ref{cand-lesync-rf}$'''$)]
+  if $\bEv'\lesync\bEv\mathrel{(\xrfx;(\xrmw;\xrfx)^{*})}\aEv\lesync\aEv'$ and $\labeling(\bEv') \rsmatches \labeling(\aEv')$ then $\bEv' \ltsync \aEv'$.
+\end{itemize}
+
+The following behavior is allowed by Arm, IMM, and C11, but forbidden by \PTX.
+\PTX{} forbids it since acquire reads work as fences for po-previous reads from
+the same location (symmetrically to release writes for po-latter writes to
+the same location in \IMM, \cXI, and \PTX).
+\begin{gather*}
+  {
+    \PW{x}{1}
+    \SEMI
+    \PW[\mREL]{y}{1}
+  }\PAR{
+    \PR{y}{r}
+    \SEMI
+    \PW{y}{2}
+    \SEMI
+    \PR[\mACQ]{y}{s}
+     \SEMI
+    \PR{x}{t}
+  }
+  \\
+  \tag{$\ltsync$}
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a}{\DW{x}{1}}{}
+      \raevent{b}{\DW[\mREL]{y}{1}}{right=of a}
+      \event{c}{\DR{y}{1}}{right=3em of b}
+      \event{d}{\DW{y}{2}}{right=of c}
+      \raevent{e}{\DR[\mACQ]{y}{2}}{right=of d}
+      \event{f}{\DR{x}{0}}{right=of e}
+      \sync{a}{b}
+      \rf[dotted]{b}{c}
+      \sync[out=15,in=165]{c}{e}
+      %\wk{c}{d}
+      \rf[dotted]{d}{e}
+      \sync{e}{f}
+      %\wk[out=-165,in=-15]{f}{a}
+      \liftrf[out=-15,in=-165]{b}{e}
+    \end{tikzinline}}
+\end{gather*}
+To allow this on for IMM, we need to drop
+\begin{math}
+  (\DR{\aLoc}{}, \DR[\gemode\mACQ]{\aLoc}{})
+\end{math}
+from $\rsyncdelays$.
+
+The following is allowed by \cXI{}, but not \IMM{} or \PTX.
+The goal here is to construct a cycle
+$a\xrfx b \xhb c \xrfx d \xhb a$
+where $\rrfx$  will be included in synch-relation.
+In relational notation, the cycle has the following form:
+\begin{displaymath}
+  \PBRbig{{\rrmw} ; ({\rrfe} ; {\rrmw})^2 ; {\rppo} ; \Wclass[\mREL]; {\rrfe} ; \Rclass[\mACQ] ; {\rppo}}^2
+\end{displaymath}
+\begin{gather*}
+  {
+    \PR[\mACQ]{x}{r}
+    \SEMI
+    \PINC{y}{}
+  }\PAR{
+    \PINC{y}{}
+  }\PAR{
+    \PINC{y}{}
+    \SEMI
+    \PW[\mREL]{z}{1}
+  }\PAR{
+    \PR[\mACQ]{z}{s}
+    \SEMI
+    \PINC{w}{}
+  }\PAR{
+    \PINC{w}{}
+  }\PAR{
+    \PINC{w}{}
+    \SEMI
+    \PW[\mREL]{x}{1}
+  }
+  \\
+  \hbox{\begin{tikzinline}[node distance=1.5em]
+      \event{a1}{\DR[\mACQ]{x}{1}}{}
+      \event{a2}{\DR{y}{0}}{below=of a1}
+      \event{a3}{\DW{y}{1}}{below=of a2}
+      \sync{a1}{a2}
+      \rmw{a2}{a3}
+      \event{b1}{\DR{y}{1}}{right=of a1}
+      \event{b2}{\DW{y}{2}}{below=of b1}
+      \rmw{b1}{b2}
+      \event{c1}{\DR{y}{2}}{right=of b1}
+      \event{c2}{\DW{y}{3}}{below=of c1}
+      \event{c3}{\DW[\mREL]{z}{1}}{below=of c2}
+      \rmw{c1}{c2}
+      \sync{c2}{c3}
+      \event{d1}{\DR[\mACQ]{z}{1}}{right=of c1}
+      \event{d2}{\DR{w}{0}}{below=of d1}
+      \event{d3}{\DW{w}{1}}{below=of d2}
+      \sync{d1}{d2}
+      \rmw{d2}{d3}
+      \event{e1}{\DR{w}{1}}{right=of d1}
+      \event{e2}{\DW{w}{2}}{below=of e1}
+      \rmw{e1}{e2}
+      \event{f1}{\DR{w}{2}}{right=of e1}
+      \event{f2}{\DR{w}{3}}{below=of f1}
+      \event{f3}{\DW[\mREL]{x}{1}}{below=of f2}
+      \rmw{f1}{f2}
+      \sync{f2}{f3}
+      \rf{a3}{b1}
+      \rf{b2}{c1}
+      \rf{c3}{d1}
+      \rf{d3}{e1}
+      \rf{e2}{f1}
+      \rf{f3}{a1}
+    \end{tikzinline}}
+\end{gather*}
+
+
+About release sequences, fences, and \RMW{}s:
+\begin{itemize}
+\item Jamboard 10 allowed  by IMM
+\item Examples like
+  \begin{displaymath}
+    \DW{x}{}
+    \xpox
+    \DF{\fREL}
+    \xpox
+    \xrmw
+    \xrfx
+    \xrmw
+    \xrfx
+    \xrmw
+    \xpox
+    \DF{\fACQ}
+  \end{displaymath}
+\end{itemize}
+
+About SC fences:
+\begin{itemize}
+\item total order on SC fences must obey
+  \begin{displaymath}
+    \DF{\fSC}\xpox\DW{x}{}\xeco\DW{x}{}\xpox\DF{\fSC}
+  \end{displaymath}
+  but it's not in happens before.
+\end{itemize}
+
+
+\endinput
+
 \section{Address Calculation and If-Closure}
 \label{sec:addr-if}
 \subsection{Address Calculation}
 \label{sec:semaddr}
-\begin{definition}
+\begin{scope}
   \label{def:semaddr}
   %Let $\semaddr{}$ be defined as in \reffig{fig:seq}, changing $\sSTORE{}{}$ and $\sLOAD{}{}$:
 
@@ -757,7 +1139,7 @@ adopt the following conventions:
     \end{enumerate}
   \end{multicols}
 
-  \medskip
+  \smallskip
   \noindent
   If $\aPS \in \sLOAD[\amode]{\aReg}[\ascope]{\cExp}[\aThrd]$ then
   $(\exists\cVal\in\Val)$
@@ -828,13 +1210,13 @@ adopt the following conventions:
     %   if $\aEvs=\emptyset$ and $\amode\neq\mRLX$ then $\aTerm \riff \FALSE$. 
     \end{enumerate}
   \end{multicols}
-\end{definition}
+\end{scope}
 
 
 \subsection{If-closure}
 \label{sec:semca}
 
-\begin{definition}
+\begin{scope}
   \label{def:semca}
   \label{def:partition}
   Let $\aEvs\subseteq\AllEvents$ and $\cForm:\aEvs\fun\Formulae$ and
@@ -848,6 +1230,7 @@ adopt the following conventions:
     % \item $\lnot\emptyForm\lor\bigvee_{\aEv\in\aEvs}\cForm_\aEv$ is a tautology.
     \item $\emptyForm\riff\bigvee_{\aEv\in\aEvs}\cForm_\aEv$.
     \end{enumerate*}
+    \smallskip
   %\end{multicols}
   %Let $\semca{}$ be defined as in \reffig{fig:seq}, changing $\sSTORE{}{}$ and $\sLOAD{}{}$:
 
@@ -856,7 +1239,7 @@ adopt the following conventions:
   If $\aPS \in \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]$ then
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$
-  $(\exists\emptyForm\in\{\TRUE,\FALSE\})$
+  $(\exists\emptyForm\in\Formulae)$
   %$(\exists\emptyForm\in\Formulae)$
   \begin{multicols}{2}
   \begin{enumerate}[topsep=0pt,label=(\textsc{w}\arabic*),ref=\textsc{w}\arabic*]
@@ -946,13 +1329,13 @@ adopt the following conventions:
   \end{enumerate}
   \end{multicols}
 
-  \medskip
+  \smallskip
   \noindent
   \begin{minipage}{1.0\linewidth}
   If $\aPS \in \sLOAD[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]$ then
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$ 
-  $(\exists\emptyForm\in\{\TRUE,\FALSE\})$
+  $(\exists\emptyForm\in\Formulae)$
   %$(\exists\emptyForm\in\Formulae)$
   \begin{multicols}{2}
   \begin{enumerate}[topsep=0pt,label=(\textsc{r}\arabic*),ref=\textsc{r}\arabic*]
@@ -1078,7 +1461,7 @@ adopt the following conventions:
   %   \end{enumerate}
   \end{multicols}
   \end{minipage}
-  % \medskip
+  % \smallskip
   % Could make \textsc{d}4b:
   % \begin{math}
   %   (\forall\aEv\in\aEvs\setminus\bEvs)
@@ -1091,15 +1474,16 @@ adopt the following conventions:
   %   \limplies
   %   \bForm[\uReg{\aEv}/\aReg][\uReg{\aEv}/\aLoc]
   % \end{math},
-  % \medskip Similarly, let $\frf{\semca{}}$ be defined as for $\frf{\semrr{}}$
+  % \smallskip Similarly, let $\frf{\semca{}}$ be defined as for $\frf{\semrr{}}$
   % in \refdef{def:sem:frf}, with these definitions of $\sSTORE{}{}$ and
   % $\sLOAD{}{}$.
-\end{definition}
+\end{scope}
 
 \subsection{Address Calculation and If-closure}
 \label{sec:semcaaddr}
 
-\begin{definition}
+\todo{Add $\A{\aVal}$.}
+\begin{scope}
   \label{def:semcaaddr}
   %Let $\semcaaddr{}$ be defined as in \reffig{fig:seq}, changing $\sSTORE{}{}$ and $\sLOAD{}{}$:
 
@@ -1108,7 +1492,7 @@ adopt the following conventions:
   $(\exists\cVal:\aEvs\fun\Val)$
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$
-  $(\exists\emptyForm\in\{\TRUE,\FALSE\})$
+  $(\exists\emptyForm\in\Formulae)$
   %$(\exists\emptyForm\in\Formulae)$
   \begin{multicols}{2}
     \begin{enumerate}[topsep=0pt,label=(\textsc{w}\arabic*),ref=\textsc{w}\arabic*]
@@ -1195,14 +1579,14 @@ adopt the following conventions:
     \end{enumerate}
   \end{multicols}
 
-  \medskip
+  \smallskip
   \noindent
   \begin{minipage}{1.0\linewidth}
   If $\aPS \in \sLOAD[\amode]{\aReg}[\ascope]{\cExp}[\aThrd]$ then
   $(\exists\cVal:\aEvs\fun\Val)$
   $(\exists\aVal:\aEvs\fun\Val)$
   $(\exists\cForm:\aEvs\fun\Formulae)$ 
-  $(\exists\emptyForm\in\{\TRUE,\FALSE\})$
+  $(\exists\emptyForm\in\Formulae)$
   %$(\exists\emptyForm\in\Formulae)$
   \begin{multicols}{2}
   \begin{enumerate}[topsep=0pt,label=(\textsc{r}\arabic*),ref=\textsc{r}\arabic*]
@@ -1303,8 +1687,8 @@ adopt the following conventions:
   \end{enumerate}
   \end{multicols}
   \end{minipage}
-  % \medskip Similarly, let $\frf{\semaddr{}}$ be defined as for $\frf{\semrr{}}$
+  % \smallskip Similarly, let $\frf{\semaddr{}}$ be defined as for $\frf{\semrr{}}$
   % in \refdef{def:sem:frf}, with these definitions of $\sSTORE{}{}$ and
   % $\sLOAD{}{}$.
-\end{definition}
+\end{scope}
 
