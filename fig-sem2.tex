@@ -254,8 +254,13 @@
         % and $(\aEvs\cap\bEvs)\neq\emptyset$ then
         \begin{math}
           \aTr{\bEvs}{\bForm} \riff
-          \aVal{=}\uReg{\aEv}
-          \limplies \bForm[\uReg{\aEv}/\aReg]
+          \PBR{
+            \Q{\aLoc}
+            \limplies
+            \aVal{=}\uReg{\aEv}
+          }
+          \limplies
+          \bForm[\uReg{\aEv}/\aReg]
         \end{math},    
       \item \label{read-tau-ind}
         if $\aEv\in\aEvs\setminus\bEvs$ then
@@ -264,7 +269,12 @@
         % and $(\aEvs\cap\bEvs)=\emptyset$ then
         \begin{math}
           \aTr{\bEvs}{\bForm} \riff
-          \PBR{\aVal{=}\uReg{\aEv} \lor \aLoc{=}\uReg{\aEv}} \limplies
+          \PBR{
+            \Q{\aLoc}
+            \limplies
+            {\aVal{=}\uReg{\aEv} \lor \aLoc{=}\uReg{\aEv}}
+          }
+          \limplies
           \bForm[\uReg{\aEv}/\aReg],
         \end{math}
       \item \label{read-tau-empty}
