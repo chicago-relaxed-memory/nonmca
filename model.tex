@@ -86,7 +86,7 @@ exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
       \event{d}{\DW{y}{1}}{right=of c}
       \event{e}{\DR[\fACQ]{y}{1}}{right=2.5em of d}
       \event{f}{\DW{x}{2}}{right=of e}
-      \coe[out=165,in=15]{f}[above]{b}
+      \coe[out=-165,in=-15]{f}[above]{b}
       %\rfe[out=-165,in=-15]{f}{a}
       \bob{c}{d}
       \bob{e}{f}
@@ -129,7 +129,7 @@ power...
       \sync{ry1}{rx0}
       \rf{wx1}{rx1}
       \rf{wy1}{ry1}
-      \wk[out=170,in=10]{rx0}{wx1}
+      \wk[out=-170,in=-10]{rx0}{wx1}
       \wk{ry0}{wy1}
     \end{tikzinline}}
 \end{gather*}
@@ -414,7 +414,7 @@ Example from talk:
       \po{e}{f}
       \rf{b}{c}
       \rf{d}{e}
-      \rf[out=172,in=8]{f}{a}
+      \rf[out=-172,in=-8]{f}{a}
     \end{tikzinline}}
   \\
   \tag{$\ltsync$}
@@ -430,7 +430,7 @@ Example from talk:
       \po{e}{f}
       %\rf{b}{c}
       %\rf{d}{e}
-      %\rf[out=172,in=8]{f}{a}
+      %\rf[out=-172,in=-8]{f}{a}
     \end{tikzinline}}
   \\
   \tag{$\ltlocstrong$}
@@ -447,7 +447,7 @@ Example from talk:
       %\po[out=-15,in=-165]{c}{f}
       \rf{b}{c}
       \rf{d}{e}
-      \rf[out=172,in=8]{f}{a}
+      \rf[out=-172,in=-8]{f}{a}
     \end{tikzinline}}
   \\
   \tag{$\ltlocweak$}
@@ -490,7 +490,7 @@ Before fulfilling the read:
       \raevent{wy1}{\DW[\mREL]{y}{1}}{right=of wx1}
       \raevent{ry1}{\DR[\mACQ]{y}{1}}{right=2.5em of wy1}
       \event{rx}{\DR[\mWK]{x}[\sCTA]{}}{right=of ry1}
-      \sync[out=-15,in=-165]{wx0}{wy1}
+      \sync[out=15,in=165]{wx0}{wy1}
       \sync{wx1}{wy1}
       \sync{ry1}{rx}
       \rf{wy1}{ry1}
@@ -505,7 +505,7 @@ Before fulfilling the read:
       \event{rx}{\DR[\mWK]{x}[\sCTA]{}}{right=of ry1}
       \rf{wy1}{ry1}
       \wki{wx0}{wx1}
-      \rf[out=-15,in=-165]{wx1}{rx}
+      \rf[out=15,in=165]{wx1}{rx}
     \end{tikzinline}}
 \end{gather*}
 $(\DW{x}{1})\leexists(\DR{x}{})$ is required by \ref{cand-leloc-block}, enforcing publication.
@@ -526,7 +526,7 @@ $(\DR{x}{0})$ must be allowed:
       \raevent{wy1}{\DW[\mREL]{y}[\sCTA]{1}}{right=of wx1}
       \raevent{ry1}{\DR[\mACQ]{y}[\sCTA]{1}}{right=2.5em of wy1}
       \event{rx}{\DR[\mWK]{x}[\sCTA]{}}{right=of ry1}
-      \sync[out=-15,in=-165]{wx0}{wy1}
+      \sync[out=15,in=165]{wx0}{wy1}
       \sync{wx1}{wy1}
       \sync{ry1}{rx}
       \rf{wy1}{ry1}
@@ -539,7 +539,7 @@ $(\DR{x}{0})$ must be allowed:
       \raevent{wy1}{\DW[\mREL]{y}[\sCTA]{1}}{right=of wx1}
       \raevent{ry1}{\DR[\mACQ]{y}[\sCTA]{1}}{right=2.5em of wy1}
       \event{rx}{\DR[\mWK]{x}[\sCTA]{}}{right=of ry1}
-      \sync[out=-15,in=-165]{wx0}{wy1}
+      \sync[out=15,in=165]{wx0}{wy1}
       \sync{wx1}{wy1}
       \sync{ry1}{rx}
       % \rf{wy1}{ry1}
@@ -948,7 +948,7 @@ Leading sync is also unsound in \cXI{} with \RMW{}
       \rf{e}{d}
       \rmw{c1}{c2}
       %\wk{c2}{d}
-      \wk[out=-15,in=-165]{c2}{e}
+      \wk[out=15,in=165]{c2}{e}
       % \sync[out=-15,in=-165]{c1}{d}
       %\wk{c2}{d}
       \sync{e}{f}
@@ -980,7 +980,7 @@ Leading sync is also unsound in \cXI{} with SC fences
       \sync{a}{b}
       \sync{b}{c}
       \rf{d}{e}
-      \rf[out=-15,in=-165]{f}{h}
+      \rf[out=15,in=165]{f}{h}
       \wk[in=-15,out=-165]{f}{a}
       %\rf[out=-15,in=-165]{a}{g}
       \wk{c}{d}
