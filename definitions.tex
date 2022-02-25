@@ -51,10 +51,6 @@ We model the following language (defaults underlined).
     \BNFSEP \mACQ
     \BNFSEP \mRA 
     \BNFSEP \mSC
-    % &
-    % \fmode \BNFDEF& \fACQ 
-    % \BNFSEP \fREL
-    % \BNFSEP \fSC
     &\qquad \qquad
     \ascope,\bscope \BNFDEF& \sCTA
     \BNFSEP \sGPU
@@ -63,21 +59,18 @@ We model the following language (defaults underlined).
   \\
   \begin{aligned}
     \aCmd%,\aTest
-    \BNFDEF& \SKIP
-    \BNFSEP \LET{\aReg}{\aExp}
+    \BNFDEF& \LET{\aReg}{\aExp}
     \BNFSEP \PR[\amode]{\REF{\cExp}}[\ascope]{\aReg}
     \BNFSEP \PW[\amode]{\REF{\cExp}}[\ascope]{\aExp}
     \BNFSEP \PF[\ascope]{\fmode}
-    \BNFSEP \IF{\aExp} \THEN \aCmd_1 \ELSE \aCmd_2 \FI
+    \BNFSEP \SKIP
     \BNFSEP \aCmd_1 \SEMI \aCmd_2
+    \BNFSEP \IF{\aExp} \THEN \aCmd_1 \ELSE \aCmd_2 \FI
     \\[-.5ex]
     \BNFSEP& \aCmd_1 \RPAR[\bThrd] \aCmd_2
     \BNFSEP \PCAS[\amode][\bmode]{\REF{\cExp}\,}[\ascope]{\aReg}{\aExp}{\bExp}
     \BNFSEP \PFADD[\amode][\bmode]{\REF{\cExp}\,}[\ascope]{\aReg}{\aExp}
     \BNFSEP \PEXCHG[\amode][\bmode]{\REF{\cExp}\,}[\ascope]{\aReg}{\aExp}
-    % \BNFSEP \PCAS[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}{\bExp}
-    % \BNFSEP \PFADD[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
-    % \BNFSEP \PEXCHG[\amode_1][\amode_2]{\REF{\cExp}}[\ascope]{\aReg}{\aExp}
   \end{aligned}
 \end{gather*}
 % \emph{Access modes}, $\amode$, are {weak} ($\mWK$), are {relaxed} ($\mRLX$),
@@ -204,12 +197,33 @@ We require that
   $\uRegs{\AllEvents}=\{\uReg{\aEv}\mid\aEv\in\AllEvents\}$ which do not appear in commands:
   $\aCmd[\bExp/\uReg{\aEv}]=\aCmd$,
 \item formulae include $\TRUE$, $\FALSE$, $\Q{\aLoc}$, and the equalities $(\aExp{=}\bExp)$ and $(\aLoc{=}\aExp)$,
-\item formulae are closed under negation, conjunction, disjunction, and
+\item formulae are closed under $\lnot$, $\land$, $\lor$, $\limplies$, and
   substitutions $[\aExp/\aReg]$, $[\aExp/\aLoc]$, $[\aForm/\Q{\aLoc}]$,
 \item there is a relation $\rimpliesdef$ between
   formulae, capturing entailment, 
 \item $\rimpliesdef$ has the expected semantics for $=$, $\lnot$, $\land$, $\lor$,
   $\limplies$ and substitution.
+\item there is a subset of $\Act$, distinguishing
+  $\sreaddef$ actions,
+\item there are several relations over $\Act\times\Act$, detailed in the next  
+  subsection: 
+  $\rmatchesdef$, 
+  $\rblocksdef$, 
+  $\roverlapsdef$, 
+  \rsmatchesdeftext, 
+  \rsoverlapsdeftext,
+  \rsfencesdeftext,  
+  $\rsyncdelaysdef$,
+  $\rcodelaysdef$,
+\item 
+  \begin{math}
+    {\rmatches}\subseteq {\rblocks}\subseteq {\roverlaps}
+    \supseteq{\rsoverlaps}
+  \end{math}
+\item 
+  \begin{math}
+    {\rsmatches}\subseteq {\rsoverlaps}\cup{\rsfences}
+  \end{math}
 \end{itemize}
 We relax the first assumption in examples, assuming that each register is
 assigned at most once.
@@ -230,30 +244,6 @@ We say
 $\aForm$ is \emph{unsatisfiable} if $\aForm\vDash\FALSE$.
 
 
-
-We also require that there is a subset of actions, distinguishing
-$\sreaddef$ %and $\sreleasedef$
-actions. 
-We require several binary relations between actions, detailed in the next
-subsection: 
-$\rsyncdelaysdef$,
-$\rcodelaysdef$,
-\rsmatchesdeftext, 
-$\rmatchesdef$, 
-$\rblocksdef$, 
-$\roverlapsdef$, 
-\rsoverlapsdeftext,
-\rsfencesdeftext.
-We require that
-\begin{gather*}
-  {\rmatches}\subseteq {\rblocks}\subseteq {\roverlaps}
-  \supseteq{\rsoverlaps}
-  \\
-  {\rsmatches}\subseteq {\rsoverlaps}\cup{\rsfences}
-\end{gather*}
-% $\rsoverlaps$ implies $\roverlaps$
-% and that 
-% $\rsmatches$ implies $\rmatches$ implies $\rblocks$ implies $\roverlaps$.
 
 
 \subsection{Actions}
@@ -398,15 +388,13 @@ We have proposals to account for Dead Store Elimination, Store Forwarding,
 and Monotonicity in \textsection\ref{sec:merge}.
 \begin{definition}  
   \label{def:labeling:consistent}
-  Let $\labeling: \aEvs \fun \Act$.
-  Then we define
+  Let $\aEvs\subseteq\AllEvents$ and $\labeling: \aEvs \fun \Act$.  Define
   \begin{math}
     \regForm{\labeling}=
     \textstyle\bigwedge_{\{(\aEv,\aVal)\in(\aEvs\times\Val)\mid\labeling(\aEv)=\DRP{}{\aVal}\}}(\uReg{\aEv}{=}\aVal)
   \end{math}.
   
-  We say that $\aForm$ is \emph{$\labeling$-consistent} if $\aForm\land\regForm{\labeling}$ is satisfiable.
-  We say that it is \emph{$\labeling$-inconsistent} otherwise.
+  We say that $\aForm$ is \emph{$\labeling$-inconsistent} if $\aForm\land\regForm{\labeling}$ is unsatisfiable.
 \end{definition}
 
 \begin{definition}
@@ -437,8 +425,6 @@ and Monotonicity in \textsection\ref{sec:merge}.
   of a $\labeling$-predicate transformer $\aTr{\bEvs}{}$ for each
   $\bEvs\subseteq\AllEvents$, such that if $\cEvs \cap \aEvs \subseteq \bEvs$
   then $\aTr{\cEvs}{\bForm} \rimplies \aTr{\bEvs}{\bForm}$.
-
-  We write $\aTr{}{\bForm}$ as an abbreviation of $\aTr{\aEvs}{\bForm}$.
 \end{definition}
 
 \begin{definition}
@@ -458,7 +444,7 @@ and Monotonicity in \textsection\ref{sec:merge}.
     such that
     \begin{enumerate}
     \item \label{pom-kappa-sat}
-      $\labelingForm(\aEv)$ is $\labeling$-consistent,
+      $\aEv\notin\aEvs$ implies $\labelingForm(\aEv)=\FALSE$,
     \end{enumerate}
     \makecounter{Btau}
   \item \label{pom-tau} \makecounter{tau}
@@ -466,14 +452,10 @@ and Monotonicity in \textsection\ref{sec:merge}.
     \makecounter{Bterm}
   \item \label{pom-term} \makecounter{term}
     $\aTerm:\Formulae$ is a \emph{termination condition}, such that 
-    \begin{multicols}{2}
-      \begin{enumerate}
-      \item \label{pom-term-sat}
-        $\aTerm$ is $\labeling$-consistent,
-      \item \label{pom-term-tau}
-        $\aTerm\rimplies\aTr{}{\TRUE}$,
-      \end{enumerate}
-    \end{multicols}
+    \begin{enumerate}
+    \item \label{pom-term-tau}
+      $\aTerm\rimplies\aTrAbbrv{\aEvs}{\TRUE}$,
+    \end{enumerate}
     \makecounter{Bledep}
   \item \label{pom-ledep} \makecounter{ledep}
     ${\ltdep} : (\aEvs\times\aEvs)$ is a strict partial order capturing \emph{dependency},
@@ -492,12 +474,10 @@ and Monotonicity in \textsection\ref{sec:merge}.
   \item \label{pom-rmw} \makecounter{rmw}
     ${\rrmw} : \aEvs\fun\aEvs$ is a partial function capturing read-modify-write \emph{atomicity}, such that
     \begin{enumerate}
-    \item \label{pom-rmw-block}
-      if $\bEv\xrmw\aEv$ then $\labeling(\aEv) \rblocks \labeling(\bEv)$,
-    \item \label{pom-rmw-lesync} \label{pom-rmw-leloc}
-      if $\bEv\xrmw\aEv$ then $\bEv \ltsync \aEv$ and $\bEv \ltloc \aEv$,    
+    \item \label{pom-rmw-block} \label{pom-rmw-lesync} \label{pom-rmw-leloc}
+      if $\bEv\xrmw\aEv$ then $\labeling(\aEv) \rblocks \labeling(\bEv)$, $\bEv \ltsync \aEv$, and $\bEv \ltloc \aEv$,    
     \item \label{pom-rmw-atomic}
-      if $\labeling(\cEv)\roverlaps\labeling(\bEv)$ and if $\bEv \xrmw \aEv$ then
+      if if $\bEv \xrmw \aEv$ and $\labeling(\cEv)\roverlaps\labeling(\bEv)$ then
       \begin{enumerate}        
       \item \label{pom-rmw-atomic1}
         $\cEv\ltdep \aEv$ implies $\cEv\ledep \bEv$,
@@ -640,41 +620,46 @@ $\labelingVal(\aEv)=\aVal$.
 
 %\input{fig-sem.tex}
 \input{fig-sem2.tex}
+\input{fig-sem3.tex}
 
-The semantic functions are defined in \reffig{fig:sem}.
-\begin{align*}
+The semantic functions are defined in \reffig{fig:sem} and \reffig{fig:rmw}.
+\begin{gather*}
   \begin{aligned}
-    \sem[\aThrd]{\LET{\aReg}{\aExp}} &= \sLET{\aReg}{\aExp}
+    \sembase{\LET{\aReg}{\aExp}} &= \sLET{\aReg}{\aExp}
     \\
-    \sem[\aThrd]{\PR[\amode]{\aLoc}[\ascope]{\aReg}} &= \sLOAD[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]
+    \sembase{\PW[\amode]{\aLoc}{\aExp}} &= \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]
     \\
-    \sem[\aThrd]{\PW[\amode]{\aLoc}[\ascope]{\aExp}} &= \sSTORE[\amode]{\aLoc}[\ascope]{\aExp}[\aThrd]
-    \\
-    \sem[\aThrd]{\PF[\ascope]{\fmode}} &= \sFENCE[\ascope]{\fmode}[\aThrd]
+    \sembase{\PR[\amode]{\aLoc}{\aReg}} &= \sLOAD[\amode]{\aReg}[\ascope]{\aLoc}[\aThrd]
   \end{aligned}
-  &&
+  \qquad
   \begin{aligned}
-    \sem[\aThrd]{\SKIP} &= \sSKIP 
+    \sembase{\PF[\ascope]{\fmode}} &= \sFENCE[\ascope]{\fmode}[\aThrd]
     \\
-    \sem[\aThrd]{\aCmd_1 \RPAR[\bThrd] \aCmd_2} &= \sPAR{\sem[\bThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
+    \sembase{\SKIP} &= \sSKIP 
     \\
-    \sem[\aThrd]{\aCmd_1 \SEMI \aCmd_2} &= \sSEMI{\sem[\aThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
-    \\
-    \sem[\aThrd]{\IF{\aExp}\THEN\aCmd_1\ELSE\aCmd_2\FI} &= \sIFTHEN{\aExp{\neq}0}{\sem[\aThrd]{\aCmd_1}}{\sem[\aThrd]{\aCmd_2}}
+    \;\;
   \end{aligned}
-\end{align*}
+  \qquad
+  \begin{aligned}
+    \sembase{\aCmd_1 \RPAR \aCmd_2} &= \sPAR{\sembase{\aCmd_1}}{\sembase{\aCmd_2}}
+    \\
+    \sembase{\aCmd_1 \SEMI \aCmd_2} &= \sSEMI{\sembase{\aCmd_1}}{\sembase{\aCmd_2}}
+    \\
+    \makebox[0cm][r]{$\sembase{\IF{\aExp}\THEN\aCmd_1\ELSE\aCmd_2\FI}$} &= \sIFTHEN{\aExp{\neq}0}{\sembase{\aCmd_1}}{\sembase{\aCmd_2}}
+  \end{aligned}
+\end{gather*}
 \begin{align*}
   \sem[\aThrd]{\PCAS[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}{\bExp}}
   &=
-  \sCAS[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}{\bExp}[\aThrd]
+    \sCAS[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}{\bExp}[\aThrd]
   \\
   \sem[\aThrd]{\PFADD[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}}
   &=
-  \sFADD[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}[\aThrd]
+    \sFADD[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}[\aThrd]
   \\
   \sem[\aThrd]{\PEXCHG[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}}
   &=
-  \sEXCHG[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}[\aThrd]
+    \sEXCHG[\amode][\bmode]{\aLoc}[\ascope]{\aReg}{\aExp}[\aThrd]
 \end{align*}
 
 In diagrams, we use different shapes and colors for arrows and events.  These
@@ -690,7 +675,7 @@ adopt the following conventions:
 \item \makebox{$\bEv\xwk\aEv$} arises from \emph{blocking} \eqref{cand-leloc-block}.
 \end{itemize}
 
-\clearpage
+\newpage
 \section{Sync examples}
 
 The first of these is seen in hardware.  All are allowed by \PTX.

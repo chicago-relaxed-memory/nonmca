@@ -96,6 +96,13 @@ exists (0:X2=2 /\ 1:X5=1 /\ 2:X5=1)
 \end{gather*}
 
 \section{IRIW}
+Check the examples in \cite[Fig 17]{DBLP:journals/pacmpl/BenderP19}.  They
+should all be allowed.  That semantics is based on two partial orders, I
+think: co and vo (although vo is perhaps not transitive).
+
+Also check example from
+\url{https://bugs.openjdk.java.net/browse/JDK-8262877}, which should be forbidden.
+
 Status of IRIW is unclear in our model, since we allow everything allowed by
 power...
 \begin{gather*}
